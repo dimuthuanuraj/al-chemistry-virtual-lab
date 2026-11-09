@@ -1,0 +1,350 @@
+[
+ {
+  "file": "ammonia-tests.html",
+  "id": "al-exp-15",
+  "exp": 15,
+  "eyebrow": "A/L Chemistry · Unit 06 · s, p and d block · Experiment 15",
+  "title": [
+   "Ammonia gas and ammonium salts",
+   "ඇමෝනියා වායුව සහ ඇමෝනියම් ලවණ",
+   "அமோனியா வாயுவும் அமோனியம் உப்புகளும்"
+  ],
+  "aim": [
+   "Identify ammonia gas and ammonium ions using litmus, HCl fumes and Nessler's reagent.",
+   "ලිට්මස්, HCl දුම් සහ නෙස්ලර් ප්‍රතිකාරකය භාවිතයෙන් ඇමෝනියා වායුව සහ ඇමෝනියම් අයන හඳුනා ගැනීම.",
+   "பாசிச்சாயம், HCl புகை, நெஸ்லர் கரணியம் ஆகியவற்றைப் பயன்படுத்தி அமோனியா வாயுவையும் அமோனியம் அயன்களையும் இனங்காணல்."
+  ]
+ },
+ {
+  "file": "anion-tests.html",
+  "id": "al-exp-11",
+  "exp": 11,
+  "eyebrow": "A/L Chemistry · Unit 06 · s, p and d block · Experiment 11",
+  "title": [
+   "Identification of anions",
+   "ඇනායන හඳුනා ගැනීම",
+   "அனயன்களை இனங்காணல்"
+  ],
+  "aim": [
+   "Identify common anions in aqueous solution using precipitation, gas and colour tests.",
+   "අවක්ෂේපණ, වායු සහ වර්ණ පරීක්ෂා භාවිතයෙන් ජලීය ද්‍රාවණයේ පොදු ඇනායන හඳුනා ගැනීම.",
+   "வீழ்படிவு, வாயு, நிறச் சோதனைகளைப் பயன்படுத்தி நீர்க்கரைசலிலுள்ள பொதுவான அனயன்களை இனங்காணல்."
+  ]
+ },
+ {
+  "file": "cathode-rays.html",
+  "id": "al-exp-01",
+  "exp": 1,
+  "eyebrow": "A/L Chemistry · Unit 01 · Atomic structure · Experiment 1",
+  "title": [
+   "Properties of cathode rays",
+   "කැතෝඩ කිරණවල ගුණ",
+   "கதோட்டுக் கதிர்களின் இயல்புகள்"
+  ],
+  "aim": [
+   "Identify the parts of the circuit that drives a Crookes (cathode-ray) tube and observe the properties of cathode rays.",
+   "ක්‍රූක්ස් (කැතෝඩ කිරණ) නළයක් ක්‍රියා කරවන පරිපථයේ කොටස් හඳුනා ගැනීම සහ කැතෝඩ කිරණවල ගුණ නිරීක්ෂණය කිරීම.",
+   "குரூக்ஸ் (கதோட்டுக் கதிர்) குழாயை இயக்கும் சுற்றின் பகுதிகளை இனங்காணலும் கதோட்டுக் கதிர்களின் இயல்புகளை அவதானித்தலும்."
+  ]
+ },
+ {
+  "file": "cu-complex-ions.html",
+  "id": "cu-complex-ions",
+  "exp": null,
+  "eyebrow": "A/L Chemistry · d-block elements · Complex ions",
+  "title": [
+   "Complex ions of copper(II)",
+   "තඹ(II) හි සංකීර්ණ අයන",
+   "செப்பு(II) இன் சிக்கல் அயன்கள்"
+  ],
+  "aim": [
+   "To observe how copper(II) ions form complex ions with ammonia and with chloride ions, and to see that ligand exchange can be reversed.",
+   "තඹ(II) අයන ඇමෝනියා සහ ක්ලෝරයිඩ් අයන සමඟ සංකීර්ණ අයන සාදන ආකාරය නිරීක්ෂණය කිරීම සහ ලිගන්ඩ හුවමාරුව ප්‍රතිවර්ත කළ හැකි බව දැකීම.",
+   "செப்பு(II) அயன்கள் அமோனியாவுடனும் குளோரைட்டு அயன்களுடனும் சிக்கல் அயன்களை உருவாக்குவதை அவதானித்தல், இணைவிப் பரிமாற்றம் மீளக்கூடியது என்பதைக் காணல்."
+  ]
+ },
+ {
+  "file": "d-block-colours.html",
+  "id": "al-exp-18",
+  "exp": 18,
+  "eyebrow": "A/L Chemistry · Unit 06 · s, p and d block · Experiment 18",
+  "title": [
+   "Colours of d-block ions in aqueous solution",
+   "ජලීය ද්‍රාවණයේ d-ගොනුවේ අයනවල වර්ණ",
+   "நீர்க் கரைசலில் d-தொகுதி அயன்களின் நிறங்கள்"
+  ],
+  "aim": [
+   "Observe the colours of aqueous transition-metal ions and explain why Zn²⁺ is colourless.",
+   "ජලීය සංක්‍රාන්ති-ලෝහ අයනවල වර්ණ නිරීක්ෂණය කර Zn²⁺ අවර්ණ වන්නේ ඇයිදැයි පැහැදිලි කිරීම.",
+   "நீர்க் கரைசலிலுள்ள தாண்டல் உலோக அயன்களின் நிறங்களை அவதானித்து Zn²⁺ ஏன் நிறமற்றது என விளக்கல்."
+  ]
+ },
+ {
+  "file": "enthalpy-neutralisation.html",
+  "id": "al-exp-07",
+  "exp": 7,
+  "eyebrow": "A/L Chemistry · Unit 05 · Energetics · Experiment 7",
+  "title": [
+   "Enthalpy of neutralisation",
+   "උදාසීනීකරණ එන්තැල්පිය",
+   "நடுநிலையாக்கல் வெப்பவுள்ளுறை"
+  ],
+  "aim": [
+   "Measure the temperature rise on mixing acids and bases and compare enthalpies of neutralisation for NaOH/HCl, KOH/HNO₃, NaOH/CH₃COOH and NH₄OH/HCl.",
+   "අම්ල සහ භස්ම මිශ්‍ර කිරීමේදී උෂ්ණත්ව වැඩිවීම මැන NaOH/HCl, KOH/HNO₃, NaOH/CH₃COOH සහ NH₄OH/HCl සඳහා උදාසීනීකරණ එන්තැල්පි සැසඳීම.",
+   "அமிலங்களையும் மூலங்களையும் கலக்கும்போது ஏற்படும் வெப்பநிலை உயர்வை அளந்து NaOH/HCl, KOH/HNO₃, NaOH/CH₃COOH, NH₄OH/HCl ஆகியவற்றின் நடுநிலையாக்கல் வெப்பவுள்ளுறைகளை ஒப்பிடுதல்."
+  ]
+ },
+ {
+  "file": "fe-kmno4-titration.html",
+  "id": "al-exp-19",
+  "exp": 19,
+  "eyebrow": "A/L Chemistry · Unit 06 · s, p and d block · Experiment 19",
+  "title": [
+   "Concentration of Fe²⁺ by acidified KMnO₄ titration",
+   "ආම්ලික KMnO₄ අනුමාපනයෙන් Fe²⁺ සාන්ද්‍රණය",
+   "அமிலமாக்கிய KMnO₄ நியமிப்பால் Fe²⁺ செறிவு"
+  ],
+  "aim": [
+   "Prepare an Fe²⁺ solution and determine its concentration by titration with 0.02 mol dm⁻³ KMnO₄ (self-indicator).",
+   "Fe²⁺ ද්‍රාවණයක් පිළියෙල කර, 0.02 mol dm⁻³ KMnO₄ (ස්ව-දර්ශකය) සමඟ අනුමාපනයෙන් එහි සාන්ද්‍රණය නිර්ණය කිරීම.",
+   "Fe²⁺ கரைசலைத் தயாரித்து, 0.02 mol dm⁻³ KMnO₄ (சுயகாட்டி) உடன் நியமித்து அதன் செறிவைத் துணிதல்."
+  ]
+ },
+ {
+  "file": "flame-tests.html",
+  "id": "al-exp-10",
+  "exp": 10,
+  "eyebrow": "A/L Chemistry · Unit 06 · s, p and d block · Experiment 10",
+  "title": [
+   "Flame tests (Li, Na, K, Ca, Sr, Ba)",
+   "ජ්වාලා පරීක්ෂා (Li, Na, K, Ca, Sr, Ba)",
+   "சுவாலைச் சோதனைகள் (Li, Na, K, Ca, Sr, Ba)"
+  ],
+  "aim": [
+   "Identify metal ions by the colour they give to a non-luminous Bunsen flame and explain the colours.",
+   "අදීප්ත බන්සන් ජ්වාලාවට ලබා දෙන වර්ණයෙන් ලෝහ අයන හඳුනා ගෙන එම වර්ණ පැහැදිලි කිරීම.",
+   "ஒளிராப் பன்சன் சுவாலைக்கு உலோக அயன்கள் தரும் நிறத்தால் அவற்றை இனங்கண்டு அந்நிறங்களை விளக்குதல்."
+  ]
+ },
+ {
+  "file": "glassware-balance.html",
+  "id": "al-exp-03",
+  "exp": 3,
+  "eyebrow": "A/L Chemistry · Unit 03 · Chemical calculations · Experiment 3",
+  "title": [
+   "Handling glassware and the four-beam balance",
+   "වීදුරු උපකරණ හැසිරවීම සහ දඬු හතරේ තුලාව",
+   "கண்ணாடி உபகரணங்களைக் கையாளலும் நான்கு கோல் தராசும்"
+  ],
+  "aim": [
+   "Identify laboratory glassware and its purpose, and weigh accurately with a four-beam balance.",
+   "විද්‍යාගාර වීදුරු උපකරණ සහ ඒවායේ කාර්යය හඳුනා ගැනීම සහ දඬු හතරේ තුලාවකින් නිවැරදිව කිරීම.",
+   "ஆய்வுகூடக் கண்ணாடி உபகரணங்களையும் அவற்றின் பயன்பாட்டையும் இனங்காணலும் நான்கு கோல் தராசால் துல்லியமாக நிறுத்தலும்."
+  ]
+ },
+ {
+  "file": "halide-tests.html",
+  "id": "al-exp-13",
+  "exp": 13,
+  "eyebrow": "A/L Chemistry · Unit 06 · s, p and d block · Experiment 13",
+  "title": [
+   "Identification of halides (Cl⁻, Br⁻, I⁻)",
+   "හේලයිඩ හඳුනා ගැනීම (Cl⁻, Br⁻, I⁻)",
+   "ஏலைட்டுகளை இனங்காணல் (Cl⁻, Br⁻, I⁻)"
+  ],
+  "aim": [
+   "Identify chloride, bromide and iodide ions using AgNO₃/NH₃, lead salts, conc. H₂SO₄ and chlorine water with an organic solvent.",
+   "AgNO₃/NH₃, ලෙඩ් ලවණ, සාන්ද්‍ර H₂SO₄ සහ කාබනික ද්‍රාවකයක් සමඟ ක්ලෝරීන් ජලය භාවිතයෙන් ක්ලෝරයිඩ, බ්‍රෝමයිඩ සහ අයඩයිඩ අයන හඳුනා ගැනීම.",
+   "AgNO₃/NH₃, ஈய உப்புகள், செறிந்த H₂SO₄, சேதனக் கரைப்பானுடன் குளோரீன் நீர் ஆகியவற்றைப் பயன்படுத்திக் குளோரைட்டு, புரோமைட்டு, அயடைட்டு அயன்களை இனங்காணல்."
+  ]
+ },
+ {
+  "file": "hess-law.html",
+  "id": "al-exp-08",
+  "exp": 8,
+  "eyebrow": "A/L Chemistry · Unit 05 · Energetics · Experiment 8",
+  "title": [
+   "Validation of Hess's law",
+   "හෙස් නියමය සත්‍යාපනය",
+   "எசின் விதியை வாய்ப்புப் பார்த்தல்"
+  ],
+  "aim": [
+   "Measure ΔH for two different routes from NaOH(s) + HCl(aq) to NaCl(aq) and show that they are equal (Hess's law).",
+   "NaOH(s) + HCl(aq) සිට NaCl(aq) දක්වා වෙනස් මාර්ග දෙකක් සඳහා ΔH මැන ඒවා සමාන බව පෙන්වීම (හෙස් නියමය).",
+   "NaOH(s) + HCl(aq) இலிருந்து NaCl(aq) இற்கான இரு வெவ்வேறு பாதைகளுக்கு ΔH ஐ அளந்து அவை சமம் எனக் காட்டுதல் (எசின் விதி)."
+  ]
+ },
+ {
+  "file": "kmno4-titration.html",
+  "id": "kmno4-titration",
+  "exp": null,
+  "eyebrow": "A/L Chemistry · Unit 03 · Redox titration",
+  "title": [
+   "Standardising KMnO₄ with Fe²⁺",
+   "Fe²⁺ භාවිතයෙන් KMnO₄ සම්මත කිරීම",
+   "Fe²⁺ மூலம் KMnO₄ ஐ நியமமாக்கல்"
+  ],
+  "aim": []
+ },
+ {
+  "file": "magnesium-ar.html",
+  "id": "al-exp-06",
+  "exp": 6,
+  "eyebrow": "A/L Chemistry · Unit 04 · Gaseous state · Experiment 6",
+  "title": [
+   "Relative atomic mass of magnesium from H₂ volume",
+   "H₂ පරිමාවෙන් මැග්නීසියම්හි සාපේක්ෂ පරමාණුක ස්කන්ධය",
+   "H₂ கனவளவிலிருந்து மகனீசியத்தின் சார் அணுத்திணிவு"
+  ],
+  "aim": [
+   "React a known mass of Mg with excess dilute HCl, measure the volume of H₂ and calculate the relative atomic mass of Mg.",
+   "දන්නා ස්කන්ධයක Mg වැඩිපුර තනුක HCl සමඟ ප්‍රතික්‍රියා කරවා, H₂ පරිමාව මැන, Mg හි සාපේක්ෂ පරමාණුක ස්කන්ධය ගණනය කිරීම.",
+   "அறிந்த திணிவுள்ள Mg ஐ மிகை ஐதான HCl உடன் தாக்கமுறச் செய்து, H₂ இன் கனவளவை அளந்து, Mg இன் சார் அணுத்திணிவைக் கணித்தல்."
+  ]
+ },
+ {
+  "file": "molar-volume.html",
+  "id": "al-exp-05",
+  "exp": 5,
+  "eyebrow": "A/L Chemistry · Unit 04 · Gaseous state · Experiment 5",
+  "title": [
+   "Molar volume of a gas (oxygen from KMnO₄)",
+   "වායුවක මවුලික පරිමාව (KMnO₄ වලින් ඔක්සිජන්)",
+   "வாயுவின் மூலர்க் கனவளவு (KMnO₄ இலிருந்து ஒட்சிசன்)"
+  ],
+  "aim": [
+   "Collect and measure oxygen from heating KMnO₄ and calculate the molar volume of oxygen.",
+   "KMnO₄ රත් කිරීමෙන් ඔක්සිජන් එක්රැස් කර මැන ඔක්සිජන්හි මවුලික පරිමාව ගණනය කිරීම.",
+   "KMnO₄ ஐ வெப்பமாக்கிப் பெறும் ஒட்சிசனைச் சேகரித்து அளந்து, ஒட்சிசனின் மூலர்க் கனவளவைக் கணித்தல்."
+  ]
+ },
+ {
+  "file": "nitrogen-air.html",
+  "id": "al-exp-12",
+  "exp": 12,
+  "eyebrow": "A/L Chemistry · Unit 06 · s, p and d block · Experiment 12",
+  "title": [
+   "Nitrogen in air (Mg₃N₂ from burning Mg)",
+   "වාතයේ නයිට්‍රජන් (දැවෙන Mg වලින් Mg₃N₂)",
+   "வளியிலுள்ள நைதரசன் (எரியும் Mg இலிருந்து Mg₃N₂)"
+  ],
+  "aim": [
+   "Show that air contains nitrogen by burning Mg to form Mg₃N₂ and detecting ammonia released with water.",
+   "Mg දහනය කර Mg₃N₂ සාදා, ජලය සමඟ පිට වන ඇමෝනියා හඳුනා ගැනීමෙන් වාතයේ නයිට්‍රජන් ඇති බව පෙන්වීම.",
+   "Mg ஐ எரித்து Mg₃N₂ ஐ உருவாக்கி, நீருடன் வெளியேறும் அமோனியாவைக் கண்டறிவதன் மூலம் வளியில் நைதரசன் உண்டு எனக் காட்டுதல்."
+  ]
+ },
+ {
+  "file": "oxalate-kmno4.html",
+  "id": "al-exp-20",
+  "exp": 20,
+  "eyebrow": "A/L Chemistry · Unit 06 · s, p and d block · Experiment 20",
+  "title": [
+   "Standardising KMnO₄ with acidified oxalate",
+   "ආම්ලික ඔක්සලේට් භාවිතයෙන් KMnO₄ ප්‍රමිතිකරණය",
+   "அமிலமாக்கிய ஒட்சலேற்று மூலம் KMnO₄ ஐ நியமமாக்கல்"
+  ],
+  "aim": [
+   "Prepare a standard sodium/potassium oxalate solution and use it to find the exact concentration of a KMnO₄ solution.",
+   "සම්මත සෝඩියම්/පොටෑසියම් ඔක්සලේට් ද්‍රාවණයක් පිළියෙල කර එය භාවිතයෙන් KMnO₄ ද්‍රාවණයක නිවැරදි සාන්ද්‍රණය සෙවීම.",
+   "நியம சோடியம்/பொற்றாசியம் ஒட்சலேற்றுக் கரைசலைத் தயாரித்து, அதைப் பயன்படுத்தி KMnO₄ கரைசலின் சரியான செறிவைக் காணல்."
+  ]
+ },
+ {
+  "file": "s-block-metals.html",
+  "id": "al-exp-09",
+  "exp": 9,
+  "eyebrow": "A/L Chemistry · Unit 06 · s, p and d block · Experiment 9",
+  "title": [
+   "s-block metals with air, water and acids",
+   "s-ගොනුවේ ලෝහ වාතය, ජලය සහ අම්ල සමඟ",
+   "s-தொகுதி உலோகங்கள் வளி, நீர், அமிலங்களுடன்"
+  ],
+  "aim": [
+   "Compare the reactions of Na, Mg and Ca with air, water and dilute acid and identify trends in groups 1 and 2.",
+   "Na, Mg සහ Ca වාතය, ජලය සහ තනුක අම්ලය සමඟ දක්වන ප්‍රතික්‍රියා සසඳා 1 සහ 2 කාණ්ඩවල ප්‍රවණතා හඳුනා ගැනීම.",
+   "Na, Mg, Ca ஆகியன வளி, நீர், ஐதான அமிலம் ஆகியவற்றுடன் காட்டும் தாக்கங்களை ஒப்பிட்டு 1, 2 ஆம் கூட்டங்களின் போக்குகளை இனங்காணல்."
+  ]
+ },
+ {
+  "file": "solubility-spot-plate.html",
+  "id": "al-exp-16",
+  "exp": 16,
+  "eyebrow": "A/L Chemistry · Unit 06 · s, p and d block · Experiment 16",
+  "title": [
+   "Solubility of s-block salts",
+   "s-ගොනුවේ ලවණවල ද්‍රාව්‍යතාව",
+   "s-தொகுதி உப்புகளின் கரைதிறன்"
+  ],
+  "aim": [
+   "Find which salts of K⁺, Mg²⁺, Ca²⁺, Sr²⁺ and Ba²⁺ precipitate with common anions and identify group trends.",
+   "K⁺, Mg²⁺, Ca²⁺, Sr²⁺ සහ Ba²⁺ හි කුමන ලවණ පොදු ඇනායන සමඟ අවක්ෂේප වේදැයි සොයා කාණ්ඩ ප්‍රවණතා හඳුනා ගැනීම.",
+   "K⁺, Mg²⁺, Ca²⁺, Sr²⁺, Ba²⁺ இன் எந்த உப்புகள் பொதுவான அனயன்களுடன் வீழ்படிவாகின்றன எனக் கண்டு கூட்டப் போக்குகளை இனங்காணல்."
+  ]
+ },
+ {
+  "file": "standard-solutions.html",
+  "id": "al-exp-04",
+  "exp": 4,
+  "eyebrow": "A/L Chemistry · Unit 03 · Chemical calculations · Experiment 4",
+  "title": [
+   "Preparation of standard solutions",
+   "සම්මත ද්‍රාවණ පිළියෙළ කිරීම",
+   "நியமக் கரைசல்களைத் தயாரித்தல்"
+  ],
+  "aim": [
+   "Prepare 250 cm³ of 1 mol dm⁻³ Na₂CO₃ solution accurately using a four-beam balance and a volumetric flask.",
+   "දඬු හතරේ තුලාවක් සහ පරිමාමිතික ප්ලාස්කුවක් භාවිතයෙන් 1 mol dm⁻³ Na₂CO₃ ද්‍රාවණ 250 cm³ ක් නිවැරදිව පිළියෙළ කිරීම.",
+   "நான்கு கோல் தராசையும் அளவீட்டுக் குடுவையையும் பயன்படுத்தி 1 mol dm⁻³ Na₂CO₃ கரைசல் 250 cm³ ஐத் துல்லியமாகத் தயாரித்தல்."
+  ]
+ },
+ {
+  "file": "thermal-stability.html",
+  "id": "al-exp-17",
+  "exp": 17,
+  "eyebrow": "A/L Chemistry · Unit 06 · s, p and d block · Experiment 17",
+  "title": [
+   "Thermal stability of s-block carbonates, hydrogencarbonates and nitrates",
+   "s-ගොනුවේ කාබනේට්, හයිඩ්‍රජන් කාබනේට් සහ නයිට්‍රේට්වල තාප ස්ථායිතාව",
+   "s-தொகுதிக் காபனேற்றுகள், ஐதரசன் காபனேற்றுகள், நைத்திரேற்றுகளின் வெப்ப உறுதி"
+  ],
+  "aim": [
+   "Compare how easily s-block carbonates, hydrogencarbonates and nitrates decompose on heating.",
+   "s-ගොනුවේ කාබනේට්, හයිඩ්‍රජන් කාබනේට් සහ නයිට්‍රේට් රත් කළ විට කොතරම් පහසුවෙන් වියෝජනය වේද යන්න සැසඳීම.",
+   "s-தொகுதிக் காபனேற்றுகள், ஐதரசன் காபனேற்றுகள், நைத்திரேற்றுகள் சூடாக்கும்போது எவ்வளவு எளிதாகப் பிரிகையடைகின்றன என ஒப்பிடல்."
+  ]
+ },
+ {
+  "file": "thiosulphate-titration.html",
+  "id": "al-exp-14",
+  "exp": 14,
+  "eyebrow": "A/L Chemistry · Unit 06 · s, p and d block · Experiment 14",
+  "title": [
+   "Standardising sodium thiosulphate with KIO₃ and KI",
+   "KIO₃ සහ KI භාවිතයෙන් සෝඩියම් තයෝසල්ෆේට් ප්‍රමිතිකරණය",
+   "KIO₃, KI மூலம் சோடியம் தயோசல்பேற்றை நியமமாக்கல்"
+  ],
+  "aim": [
+   "Standardise a Na₂S₂O₃ solution by titrating the iodine liberated from a standard KIO₃ solution with excess KI and acid, using starch indicator.",
+   "වැඩිපුර KI සහ අම්ලය සමඟ සම්මත KIO₃ ද්‍රාවණයකින් මුදා හරින අයඩීන් පිෂ්ට දර්ශකය සමඟ අනුමාපනය කර Na₂S₂O₃ ද්‍රාවණයක් ප්‍රමිතිකරණය කිරීම.",
+   "மிகையான KI, அமிலத்துடன் நியம KIO₃ கரைசலிலிருந்து விடுவிக்கப்படும் அயடீனை மாப்பொருள் காட்டியுடன் நியமித்து Na₂S₂O₃ கரைசலை நியமமாக்கல்."
+  ]
+ },
+ {
+  "file": "vsepr-shapes.html",
+  "id": "al-exp-02",
+  "exp": 2,
+  "eyebrow": "A/L Chemistry · Unit 02 · Structure and bonding · Experiment 2",
+  "title": [
+   "Shapes of molecules and ions (VSEPR)",
+   "අණු සහ අයනවල හැඩ (VSEPR)",
+   "மூலக்கூறுகளினதும் அயன்களினதும் வடிவங்கள் (VSEPR)"
+  ],
+  "aim": [
+   "Build models of molecules and ions and deduce their electron-pair geometry and shape using VSEPR theory.",
+   "අණු සහ අයනවල ආකෘති ගොඩනගා VSEPR වාදය භාවිතයෙන් ඒවායේ ඉලෙක්ට්‍රෝන යුගල ජ්‍යාමිතිය සහ හැඩය නිර්ණය කිරීම.",
+   "மூலக்கூறுகளினதும் அயன்களினதும் மாதிரிகளைக் கட்டி, VSEPR கொள்கையைப் பயன்படுத்தி அவற்றின் இலத்திரன் சோடிக் கேத்திரகணிதத்தையும் வடிவத்தையும் உய்த்தறிதல்."
+  ]
+ }
+]

@@ -1,0 +1,902 @@
+<title>Copper(II) Complex Ions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: test-tube bench on the left, a working notebook (guide / observations / colours / questions) on the right. Same system as the KMnO₄ bench. */
+:root{
+  --bg:#e7eceb; --surface:#f8faf9; --surface-2:#eef2f1; --ink:#162127; --muted:#56666c; --line:#cbd5d4;
+  --accent:#8b1d6f; --accent-soft:#f3dcea; --on-accent:#ffffff; --current:#b7791f;
+  --ok:#2c7a4d; --ok-soft:#dcefe3; --warn:#9a520a; --warn-soft:#f8e8d5; --bad:#a3302b; --bad-soft:#f6dedc;
+  --wall-top:#dde5e4; --wall-bot:#c5d0cf; --bench:#2a3236; --bench-edge:#1b2124; --glass:rgba(40,60,70,.45); --scale-ink:#1c2a31;
+  --f-display:"Bricolage Grotesque", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", "Noto Sans Sinhala", "Noto Sans Tamil", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.5); --scale-ink:#1c2a31;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.5); --scale-ink:#1c2a31;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 28px}
+:lang(si) body,:lang(ta) body{line-height:1.65}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1440px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.top > div:first-child{min-width:0}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+:lang(si) .eyebrow,:lang(ta) .eyebrow{letter-spacing:.02em;font-size:12.5px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 6px;text-wrap:balance;letter-spacing:-.01em}
+:lang(si) h1,:lang(ta) h1{letter-spacing:0;font-size:clamp(22px,2.6vw,32px);line-height:1.3}
+.eqn{font-family:var(--f-mono);font-size:13.5px;color:var(--muted)}
+.eqn b{color:var(--accent);font-weight:500}
+.top-actions{display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap}
+.student{font-size:13px;color:var(--muted)}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;min-height:44px;font-weight:500;font-size:14px;transition:background .15s,border-color .15s,transform .05s;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.next{border-color:var(--current);box-shadow:0 0 0 3px color-mix(in srgb,var(--current) 30%,transparent)}
+.btn[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.btn.hold{touch-action:none;user-select:none;-webkit-user-select:none}
+.btn.hold.active{background:var(--accent);color:var(--on-accent)}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:16px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:minmax(0,1fr)}}
+
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.prompt{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.prompt .dot{width:9px;height:9px;border-radius:50%;background:var(--current);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--current) 25%,transparent)}
+.prompt p{margin:0;font-weight:500;min-width:0}
+.viewport{position:relative;height:clamp(380px,calc(100vh - 360px),640px);background:var(--wall-bot)}
+@media (max-width:980px){.viewport{height:clamp(320px,60vw,560px)}}
+canvas#cv{display:block;width:100%;height:100%;touch-action:manipulation}
+.chips{position:absolute;left:12px;top:12px;display:flex;flex-direction:column;gap:6px;pointer-events:none;align-items:flex-start}
+.chip{font-family:var(--f-mono);font-size:12.5px;background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line);padding:4px 9px;border-radius:999px;font-variant-numeric:tabular-nums}
+.chip.ok{border-color:var(--ok);color:var(--ok)}
+.toast{position:absolute;left:50%;bottom:16px;transform:translate(-50%,10px);opacity:0;transition:opacity .25s,transform .25s;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 32px);width:max-content;pointer-events:none;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.toast.party{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);font-weight:600}
+
+.dock{display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row .label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-right:2px}
+:lang(si) .row .label,:lang(ta) .row .label{letter-spacing:0;font-size:12.5px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface-2)}
+.seg button{border:0;background:transparent;padding:8px 12px;min-height:42px;font-size:14px;font-weight:500;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.lang button{min-height:36px}
+.lang button[lang="si"]{font-family:"Noto Sans Sinhala",var(--f-body)}
+.lang button[lang="ta"]{font-family:"Noto Sans Tamil",var(--f-body)}
+select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px;max-width:100%}
+.spacer{flex:1}
+.kbd{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.selinfo{display:flex;gap:12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-2);flex-wrap:wrap}
+.selinfo .sw{width:34px;height:34px;border-radius:50%;border:1px solid var(--line);flex:none}
+.selinfo .sw.ppt{background-image:radial-gradient(circle,rgba(0,0,0,.18) 1.2px,transparent 1.6px);background-size:6px 6px}
+.selinfo .txt{display:flex;flex-direction:column;min-width:0;font-size:14px}
+.selinfo .txt b{font-family:var(--f-mono);font-weight:500;font-size:13px;color:var(--muted)}
+
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.tabs button{flex:1;min-width:0;border:0;background:transparent;padding:12px 4px;min-height:46px;font-weight:600;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;line-height:1.3;position:relative}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs button.ping::after{content:"";position:absolute;top:8px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--current)}
+.pane{padding:16px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:980px){.pane{max-height:none}}
+h2{font-family:var(--f-display);font-size:18px;font-weight:700;margin:0;letter-spacing:-.005em}
+:lang(si) h2,:lang(ta) h2{letter-spacing:0}
+h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+:lang(si) h3,:lang(ta) h3{letter-spacing:0;font-size:13px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2)}
+.box.safety{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.box.safety h3{color:var(--warn)}
+.box.safety ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ring{position:relative;width:46px;height:46px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;font-weight:500}
+.chiplist{display:flex;flex-wrap:wrap;gap:6px}
+.chiplist span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;background:var(--surface)}
+.eqs{display:flex;flex-direction:column;gap:4px;font-family:var(--f-mono);font-size:12.5px;overflow-x:auto}
+
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid transparent}
+.steps li .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-family:var(--f-mono);color:var(--muted);margin-top:2px}
+.steps li.done{color:var(--muted)}
+.steps li.done .tick{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.steps li.now{background:var(--surface);border-color:var(--current)}
+.steps li.now .tick{border-color:var(--current);color:var(--current)}
+
+.log{font-size:13.5px;display:flex;flex-direction:column;gap:5px;max-height:220px;overflow:auto}
+.log > div{display:grid;grid-template-columns:58px 1fr;gap:6px}
+.log span{font-family:var(--f-mono);color:var(--muted);font-size:11.5px;padding-top:2px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;background:var(--surface-2);font-weight:600;vertical-align:bottom}
+:lang(si) th,:lang(ta) th{letter-spacing:0;font-size:12px}
+td{padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
+td:first-child{font-family:var(--f-mono);font-weight:500}
+
+.cc{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px}
+.cc .ttl{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:600}
+.cc .ttl em{font-style:normal;font-weight:500;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.cc .ttl em.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.cc .flow{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start}
+.cc .st{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:13px;min-width:0}
+.cc .st small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+:lang(si) .cc .st small,:lang(ta) .cc .st small{letter-spacing:0}
+.cc .sw{width:52px;height:52px;border-radius:12px;border:1px solid var(--line);box-shadow:inset 0 -8px 12px rgba(0,0,0,.08)}
+.cc .sw.ppt{background-image:radial-gradient(circle,rgba(40,80,120,.35) 1.4px,transparent 1.8px);background-size:7px 7px}
+.cc .arrow{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);padding-top:14px;max-width:110px;text-align:center}
+.cc .arrow b{font-size:20px;color:var(--ink);line-height:1}
+.cc .via{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;justify-content:center}
+.cc .via i{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid var(--line)}
+.replay{display:grid;grid-template-columns:110px 1fr;gap:14px;align-items:center}
+.replay canvas{width:110px;height:230px;border-radius:10px;background:#ffffff;border:1px solid var(--line)}
+.replay .ctl{display:flex;flex-direction:column;gap:8px;min-width:0}
+input[type=range]{width:100%;accent-color:var(--accent);min-height:30px}
+.rname{font-size:14px;font-weight:600}
+
+.q{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}
+.q p{margin:0 0 4px;font-weight:600}
+.q button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px}
+.q button:hover:not(:disabled){border-color:var(--accent)}
+.q button.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.q button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.q button:disabled{cursor:default}
+.note{font-size:13px;padding:8px 10px;border-radius:8px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--accent);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1 data-i18n="title"></h1>
+      <div class="eqn">[Cu(H₂O)₆]²⁺ + 4Cl⁻ <b>⇌</b> [CuCl₄]²⁻ + 6H₂O</div>
+    </div>
+    <div class="top-actions">
+      <span class="student" id="student" hidden></span>
+      <div class="seg lang" role="group" aria-label="Language / භාෂාව / மொழி" id="langSeg">
+        <button data-lang="si" lang="si" aria-pressed="false">සිංහල</button>
+        <button data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button data-lang="ta" lang="ta" aria-pressed="false">தமிழ்</button>
+      </div>
+      <button class="btn" id="resetBtn" data-i18n="reset"></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="prompt"><span class="dot"></span><p id="prompt" aria-live="polite"></p></div>
+      <div class="viewport" id="viewport">
+        <canvas id="cv" role="img" tabindex="0" data-i18n-aria="canvasAria"></canvas>
+        <div class="chips" id="chips"></div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+      <div class="dock">
+        <div class="row">
+          <span class="label" data-i18n="safety"></span>
+          <button class="btn" id="gogglesBtn" aria-pressed="false"></button>
+          <button class="btn" id="fumeBtn" aria-pressed="false"></button>
+          <button class="btn" id="fillBtn" data-i18n="fill"></button>
+        </div>
+        <div class="row">
+          <label class="label" for="tubeSel" data-i18n="tubeL"></label>
+          <select id="tubeSel">
+            <option value="A" data-i18n="tubeA"></option>
+            <option value="B" data-i18n="tubeB"></option>
+            <option value="C" data-i18n="tubeC"></option>
+          </select>
+          <span class="label" data-i18n="reagentL"></span>
+          <div class="seg" role="group" id="reagSeg" data-i18n-aria="reagentL">
+            <button data-r="nh3" aria-pressed="true" data-i18n="rNH3"></button>
+            <button data-r="hcl" aria-pressed="false" data-i18n="rHCl"></button>
+            <button data-r="water" aria-pressed="false" data-i18n="rWater"></button>
+          </div>
+        </div>
+        <div class="row">
+          <button class="btn" id="dropBtn"></button>
+          <button class="btn primary hold" id="holdBtn" data-i18n="hold"></button>
+          <span class="spacer"></span>
+          <span class="kbd" data-i18n="keys"></span>
+        </div>
+        <div class="selinfo" id="selinfo" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="guide" data-i18n="tabGuide"></button>
+        <button role="tab" aria-selected="false" data-tab="obs" data-i18n="tabObs"></button>
+        <button role="tab" aria-selected="false" data-tab="colours" data-i18n="tabColours"></button>
+        <button role="tab" aria-selected="false" data-tab="quiz" data-i18n="tabQuiz" id="quizTab"></button>
+      </div>
+
+      <div class="pane" id="pane-guide">
+        <div class="headrow">
+          <div><h3 data-i18n="aimH"></h3><p class="small" data-i18n="aim"></p></div>
+          <div class="ring" aria-hidden="true"><svg width="46" height="46"><circle cx="23" cy="23" r="18" fill="none" stroke="var(--line)" stroke-width="4"/><circle id="ringArc" cx="23" cy="23" r="18" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><span id="ringTxt">0/6</span></div>
+        </div>
+        <div><h3 data-i18n="appH"></h3><div class="chiplist" id="appList"></div></div>
+        <div><h3 data-i18n="procH"></h3><ul class="steps" id="steps"></ul></div>
+        <div class="box safety"><h3 data-i18n="safeH"></h3><ul id="safeList"></ul></div>
+        <div class="box"><h3 data-i18n="eqH"></h3>
+          <div class="eqs">
+            <div>Cu²⁺(aq) + 2OH⁻(aq) → Cu(OH)₂(s)</div>
+            <div>Cu(OH)₂(s) + 4NH₃(aq) → [Cu(NH₃)₄]²⁺(aq) + 2OH⁻(aq)</div>
+            <div>[Cu(H₂O)₆]²⁺ + 4Cl⁻ ⇌ [CuCl₄]²⁻ + 6H₂O</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pane" id="pane-obs" hidden>
+        <div><h3 data-i18n="logH"></h3><div class="log" id="log"></div></div>
+        <div><h3 data-i18n="resH"></h3>
+          <div class="tablewrap"><table>
+            <thead><tr><th data-i18n="thTube"></th><th data-i18n="thReagent"></th><th data-i18n="thObs"></th><th data-i18n="thInf"></th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table></div>
+        </div>
+      </div>
+
+      <div class="pane" id="pane-colours" hidden>
+        <div><h2 data-i18n="coloursH"></h2><p class="small muted" style="margin-top:4px" data-i18n="coloursIntro"></p></div>
+        <div id="cards" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div class="box">
+          <h3 data-i18n="replayH"></h3>
+          <div class="replay">
+            <canvas id="mini" width="220" height="460" aria-hidden="true"></canvas>
+            <div class="ctl">
+              <select id="replaySel" data-i18n-aria="replaySelAria"></select>
+              <input type="range" id="replay" min="0" max="1000" value="0" data-i18n-aria="replayH">
+              <button class="btn" id="playBtn" style="align-self:flex-start"></button>
+              <div class="rname" id="rname"></div>
+              <div class="small muted" id="rhint"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pane" id="pane-quiz" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <h2 data-i18n="quizH"></h2><span class="score" id="score"></span>
+        </div>
+        <div id="quiz" style="display:flex;flex-direction:column;gap:12px"></div>
+        <button class="btn" id="retryBtn" data-i18n="tryAgain" style="align-self:flex-start"></button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const SIM_ID = "cu-complex-ions";
+
+// =====================================================================
+// LANGUAGES
+// =====================================================================
+const I18N = {
+en: {
+  eyebrow: "A/L Chemistry · d-block elements · Complex ions", title: "Complex ions of copper(II)", student: "Student: {name}{cls}", reset: "Reset bench",
+  safety: "Safety", goggles: "Put on goggles", gogglesOn: "Goggles on", fume: "Switch on fume cupboard", fumeOn: "Fume cupboard on", fill: "Add 2 cm³ CuSO₄ to each tube",
+  tubeL: "Tube", tubeA: "A · ammonia test", tubeB: "B · chloride test", tubeC: "C · control",
+  reagentL: "Reagent", rNH3: "dil. NH₃", rHCl: "conc. HCl", rWater: "Water", drop: "Add one drop", dropWater: "Add 0.5 cm³", hold: "Hold to add",
+  keys: "Keys: A/B/C tube · 1/2/3 reagent · D add",
+  selTube: "Tube {t} · {v} cm³", solution: "Solution: {c}", ppt: "Precipitate: {c}", noPpt: "No precipitate", emptyTube: "Empty",
+  tabGuide: "Guide", tabObs: "Observations", tabColours: "Colours", tabQuiz: "Questions",
+  aimH: "Aim", aim: "To observe how copper(II) ions form complex ions with ammonia and with chloride ions, and to see that ligand exchange can be reversed.",
+  appH: "Apparatus and chemicals", app: ["3 test tubes in a rack", "White card", "Droppers", "0.10 mol dm⁻³ CuSO₄(aq)", "2 mol dm⁻³ NH₃(aq)", "Conc. HCl (about 12 mol dm⁻³)", "Distilled water", "Safety goggles", "Fume cupboard"],
+  procH: "Procedure", steps: ["Put on safety goggles", "Pour about 2 cm³ of CuSO₄(aq) into tubes A, B and C", "Add dilute NH₃ to tube A drop by drop until a precipitate forms", "Keep adding NH₃ to tube A until it is in excess", "In the fume cupboard, add conc. HCl to tube B dropwise until the colour stops changing", "Add water to tube B until the colour changes back"],
+  safeH: "Safety", safe: ["Wear goggles throughout. Ammonia solution irritates the eyes.", "Conc. HCl is corrosive and gives off choking fumes. Use it only in a fume cupboard.", "Rinse any splash on skin with plenty of water."],
+  eqH: "Equations", logH: "Observation log", resH: "Results table", thTube: "Tube", thReagent: "Reagent added", thObs: "Observation", thInf: "Inference", noRes: "Results appear here as you work.",
+  r1o: "A pale blue precipitate forms.", r1i: "Cu(OH)₂ is formed: Cu²⁺ + 2OH⁻ → Cu(OH)₂", r2o: "The pale blue precipitate dissolves in excess NH₃ to give a deep blue solution.", r2i: "The soluble complex [Cu(NH₃)₄]²⁺ is formed.",
+  r3o: "The blue solution turns green and then yellow-green.", r3i: "Cl⁻ ligands replace H₂O to form [CuCl₄]²⁻.", r4o: "On adding water the yellow-green solution turns green and then blue.", r4i: "The equilibrium shifts back to [Cu(H₂O)₆]²⁺ as [Cl⁻] falls.",
+  tR1: "dil. NH₃ (a few drops)", tR2: "dil. NH₃ (excess)", tR3: "conc. HCl", tR4: "water",
+  coloursH: "Colour changes", coloursIntro: "Each card shows the colour before and after, with its textbook name. Do the step on the bench to record it, then replay it slowly below.",
+  before: "Before", after: "After", via: "Seen on the way: {c}", seen: "Recorded", notYet: "Not done yet",
+  replayH: "Replay a colour change", replaySelAria: "Colour change to replay", play: "Play slowly", pause: "Pause", replayNone: "Do this step on the bench to record it.", replayHint: "Drag the slider to move forwards and backwards.",
+  nBlue: "blue", nPaleBlue: "pale blue", nDeepBlue: "deep blue", nGreen: "green", nYG: "yellow-green", nPalePpt: "pale blue precipitate", nColourless: "colourless", nPptDissolving: "precipitate dissolving",
+  cvPrecip: "precipitate", cvColourless: "colourless", cvFume: "Fume cupboard · fan on", cvFumes: "HCl fumes", cvCorrosive: "corrosive", cvIrritant: "irritant",
+  quizH: "Knowledge check", tryAgain: "Try again", best: "best {p}%", scoreLeft: "{n} left", correct: "Correct. ", notQuite: "Not quite. ",
+  canvasAria: "Three test tubes A, B and C in a rack in front of a white card, with bottles of copper(II) sulfate, dilute ammonia, concentrated hydrochloric acid and water. Click a tube or a bottle to select it.",
+  chipGoggles: "Goggles on", chipFume: "Fume cupboard on", chipNH3: "Tube A: {n} drops NH₃", chipCl: "Tube B: [Cl⁻] {c} mol dm⁻³",
+  p0: "Put on safety goggles before you handle any chemicals.", p1: "Pour about 2 cm³ of CuSO₄(aq) into each of the three tubes.",
+  p2: "Select tube A and dilute NH₃. Add it drop by drop and watch for a precipitate.", p2b: "A pale blue precipitate is forming. Keep adding drops.",
+  p3: "Keep adding NH₃ to tube A. Watch what happens to the precipitate in excess.",
+  p4: "Switch on the fume cupboard, select tube B and conc. HCl, and add it dropwise.", p4b: "The solution is turning green. Keep adding conc. HCl.",
+  p5: "Now add water to tube B and watch the colour.", pDone: "All steps done. Compare tubes A and B with the control, tube C, then try the Questions tab.",
+  tGoggles: "Put on safety goggles first. Ammonia and conc. HCl can damage your eyes.", tFill: "Pour CuSO₄(aq) into the tubes first.", tFilled: "The tubes already contain CuSO₄(aq).",
+  tControl: "Tube C is the control. Keep it unchanged so you can compare colours with it.", tNH3B: "Add ammonia to tube A. Tube B is kept for the chloride test.",
+  tHClA: "Add conc. HCl to tube B. Tube A is for the ammonia test.", tFume: "Conc. HCl gives off choking fumes. Switch on the fume cupboard first.",
+  tOrder: "Finish the ammonia test in tube A first, as the handbook order says.", tWaterB: "Add water to tube B, to reverse the chloride change.",
+  tWaterEarly: "First turn tube B yellow-green with conc. HCl. Then add water to see the change reverse.", tFull: "This tube is nearly full. A test tube should be no more than about two-thirds full.",
+  tDone: "Practical complete! Now answer the questions in the Questions tab.",
+  lGoggles: "Safety goggles on.", lFume: "Fume cupboard switched on.", lFill: "About 2 cm³ of CuSO₄(aq) added to tubes A, B and C. Each is a blue solution.",
+  lPpt: "Tube A: a pale blue precipitate forms with a few drops of NH₃(aq).", lDissolve: "Tube A: the precipitate dissolves in excess NH₃(aq) to give a deep blue solution.",
+  lGreen: "Tube B: the blue solution turns green.", lYG: "Tube B: the solution turns yellow-green with excess conc. HCl.", lBackGreen: "Tube B: on adding water the solution turns green.", lBlue: "Tube B: with more water the solution turns blue again.",
+  quiz: [
+    { q: "What do you first see when a few drops of dilute NH₃ are added to CuSO₄(aq)?", o: ["A deep blue solution", "A pale blue precipitate", "A yellow-green solution", "A brick-red precipitate"], e: "NH₃(aq) supplies OH⁻ ions. With a little NH₃, Cu²⁺ + 2OH⁻ → Cu(OH)₂, a pale blue precipitate." },
+    { q: "Why does the precipitate dissolve when excess NH₃ is added?", o: ["Cu(OH)₂ is amphoteric and dissolves in base", "NH₃ ligands replace water and hydroxide to form soluble [Cu(NH₃)₄(H₂O)₂]²⁺", "The solution becomes acidic", "The precipitate is oxidised to Cu²⁺"], e: "Excess NH₃ acts as a ligand. It forms the soluble deep blue complex ion, often written [Cu(NH₃)₄]²⁺." },
+    { q: "Which species gives the yellow-green colour with conc. HCl?", o: ["[Cu(H₂O)₆]²⁺", "CuCl₂(s)", "[CuCl₄]²⁻", "Cu⁺"], e: "Excess Cl⁻ ions replace the water ligands: [Cu(H₂O)₆]²⁺ + 4Cl⁻ ⇌ [CuCl₄]²⁻ + 6H₂O. The tetrahedral [CuCl₄]²⁻ is yellow, and mixed with the blue ion it looks yellow-green." },
+    { q: "Why does adding water turn the yellow-green solution blue again?", o: ["Water oxidises the copper", "The ligand exchange is reversible, and lowering [Cl⁻] shifts the equilibrium to [Cu(H₂O)₆]²⁺", "Water removes the precipitate", "HCl evaporates when water is added"], e: "Diluting lowers [Cl⁻] and raises the proportion of water, so by Le Chatelier's principle the equilibrium moves back to the blue aqua ion. The green seen on the way is a mixture of both." },
+  ],
+},
+si: {
+  eyebrow: "උ.පෙ. රසායන විද්‍යාව · d-ගොනුවේ මූලද්‍රව්‍ය · සංකීර්ණ අයන", title: "තඹ(II) හි සංකීර්ණ අයන", student: "ශිෂ්‍යයා: {name}{cls}", reset: "නැවත අරඹන්න",
+  safety: "ආරක්ෂාව", goggles: "ආරක්ෂිත කණ්ණාඩි පළඳින්න", gogglesOn: "කණ්ණාඩි පැළඳ ඇත", fume: "ධූම කුටිය ක්‍රියාත්මක කරන්න", fumeOn: "ධූම කුටිය ක්‍රියාත්මකයි", fill: "සෑම නළයකටම CuSO₄ 2 cm³ එක් කරන්න",
+  tubeL: "නළය", tubeA: "A · ඇමෝනියා පරීක්ෂාව", tubeB: "B · ක්ලෝරයිඩ් පරීක්ෂාව", tubeC: "C · පාලක නළය",
+  reagentL: "ප්‍රතිකාරකය", rNH3: "තනුක NH₃", rHCl: "සාන්ද්‍ර HCl", rWater: "ජලය", drop: "එක් බිංදුවක් එක් කරන්න", dropWater: "0.5 cm³ එක් කරන්න", hold: "එක් කිරීමට ඔබාගෙන සිටින්න",
+  keys: "යතුරු: A/B/C නළය · 1/2/3 ප්‍රතිකාරකය · D එක් කරන්න",
+  selTube: "නළය {t} · {v} cm³", solution: "ද්‍රාවණය: {c}", ppt: "අවක්ෂේපය: {c}", noPpt: "අවක්ෂේපයක් නැත", emptyTube: "හිස්ය",
+  tabGuide: "මාර්ගෝපදේශය", tabObs: "නිරීක්ෂණ", tabColours: "වර්ණ", tabQuiz: "ප්‍රශ්න",
+  aimH: "අරමුණ", aim: "තඹ(II) අයන ඇමෝනියා සහ ක්ලෝරයිඩ් අයන සමඟ සංකීර්ණ අයන සාදන ආකාරය නිරීක්ෂණය කිරීම සහ ලිගන්ඩ හුවමාරුව ප්‍රතිවර්ත කළ හැකි බව දැකීම.",
+  appH: "උපකරණ සහ රසායන ද්‍රව්‍ය", app: ["රාක්කයක පරීක්ෂා නළ 3", "සුදු කාඩ්පතක්", "බිංදු නළ", "0.10 mol dm⁻³ CuSO₄(aq)", "2 mol dm⁻³ NH₃(aq)", "සාන්ද්‍ර HCl (12 mol dm⁻³ පමණ)", "ආසුත ජලය", "ආරක්ෂිත කණ්ණාඩි", "ධූම කුටිය"],
+  procH: "ක්‍රියා පිළිවෙළ", steps: ["ආරක්ෂිත කණ්ණාඩි පළඳින්න", "A, B සහ C නළවලට CuSO₄(aq) 2 cm³ පමණ බැගින් දමන්න", "අවක්ෂේපයක් සෑදෙන තුරු A නළයට තනුක NH₃ බිංදුවෙන් බිංදුව එක් කරන්න", "NH₃ වැඩිපුර වන තුරු A නළයට දිගටම එක් කරන්න", "ධූම කුටිය තුළ, වර්ණය වෙනස් වීම නවතින තුරු B නළයට සාන්ද්‍ර HCl බිංදුවෙන් බිංදුව එක් කරන්න", "වර්ණය නැවත වෙනස් වන තුරු B නළයට ජලය එක් කරන්න"],
+  safeH: "ආරක්ෂාව", safe: ["සෑම විටම කණ්ණාඩි පළඳින්න. ඇමෝනියා ද්‍රාවණය ඇස්වලට කෝපකාරීයි.", "සාන්ද්‍ර HCl විඛාදකයි, හුස්ම හිර කරවන දුමාර පිට කරයි. එය ධූම කුටිය තුළ පමණක් භාවිත කරන්න.", "සමට ඉසුණු දෑ ජලය බහුලව යොදා සෝදන්න."],
+  eqH: "සමීකරණ", logH: "නිරීක්ෂණ සටහන", resH: "ප්‍රතිඵල වගුව", thTube: "නළය", thReagent: "එක් කළ ප්‍රතිකාරකය", thObs: "නිරීක්ෂණය", thInf: "අනුමානය", noRes: "ඔබ වැඩ කරන විට ප්‍රතිඵල මෙහි දිස් වේ.",
+  r1o: "ළා නිල් අවක්ෂේපයක් සෑදේ.", r1i: "Cu(OH)₂ සෑදේ: Cu²⁺ + 2OH⁻ → Cu(OH)₂", r2o: "වැඩිපුර NH₃ තුළ ළා නිල් අවක්ෂේපය දිය වී තද නිල් ද්‍රාවණයක් ලැබේ.", r2i: "ද්‍රාව්‍ය සංකීර්ණය [Cu(NH₃)₄]²⁺ සෑදේ.",
+  r3o: "නිල් ද්‍රාවණය කොළ පැහැ වී පසුව කහ-කොළ පැහැ වේ.", r3i: "Cl⁻ ලිගන්ඩ H₂O ප්‍රතිස්ථාපනය කර [CuCl₄]²⁻ සාදයි.", r4o: "ජලය එක් කළ විට කහ-කොළ ද්‍රාවණය කොළ පැහැ වී පසුව නිල් පැහැ වේ.", r4i: "[Cl⁻] අඩු වන විට සමතුලිතතාව නැවත [Cu(H₂O)₆]²⁺ දෙසට විස්ථාපනය වේ.",
+  tR1: "තනුක NH₃ (බිංදු කිහිපයක්)", tR2: "තනුක NH₃ (වැඩිපුර)", tR3: "සාන්ද්‍ර HCl", tR4: "ජලය",
+  coloursH: "වර්ණ වෙනස්වීම්", coloursIntro: "සෑම කාඩ්පතකම පෙර සහ පසු වර්ණය පෙළපොතේ නාමය සමඟ දැක්වේ. එය සටහන් කිරීමට මේසය මත පියවර කරන්න, ඉන්පසු පහතින් සෙමින් නැවත බලන්න.",
+  before: "පෙර", after: "පසු", via: "අතරමැදදී දකින්නේ: {c}", seen: "සටහන් විය", notYet: "තවම කර නැත",
+  replayH: "වර්ණ වෙනස්වීමක් නැවත බලන්න", replaySelAria: "නැවත බැලිය යුතු වර්ණ වෙනස්වීම", play: "සෙමින් ධාවනය", pause: "නවතන්න", replayNone: "එය සටහන් කිරීමට මේසය මත මෙම පියවර කරන්න.", replayHint: "ඉදිරියට සහ පසුපසට යාමට ස්ලයිඩරය අදින්න.",
+  nBlue: "නිල්", nPaleBlue: "ළා නිල්", nDeepBlue: "තද නිල්", nGreen: "කොළ", nYG: "කහ-කොළ", nPalePpt: "ළා නිල් අවක්ෂේපය", nColourless: "අවර්ණ", nPptDissolving: "අවක්ෂේපය දිය වෙමින්",
+  cvPrecip: "අවක්ෂේපය", cvColourless: "අවර්ණ", cvFume: "ධූම කුටිය · පංකාව ක්‍රියාත්මකයි", cvFumes: "HCl දුමාර", cvCorrosive: "විඛාදක", cvIrritant: "කෝපකාරී",
+  quizH: "දැනුම පරීක්ෂාව", tryAgain: "නැවත උත්සාහ කරන්න", best: "උපරිම {p}%", scoreLeft: "ඉතිරි {n}", correct: "නිවැරදියි. ", notQuite: "තවම නිවැරදි නැත. ",
+  canvasAria: "සුදු කාඩ්පතක් ඉදිරියේ රාක්කයක ඇති A, B, C පරීක්ෂා නළ තුන, සහ තඹ(II) සල්ෆේට්, තනුක ඇමෝනියා, සාන්ද්‍ර හයිඩ්‍රොක්ලෝරික් අම්ලය සහ ජලය බෝතල්. තෝරා ගැනීමට නළයක් හෝ බෝතලයක් ක්ලික් කරන්න.",
+  chipGoggles: "කණ්ණාඩි පැළඳ ඇත", chipFume: "ධූම කුටිය ක්‍රියාත්මකයි", chipNH3: "A නළය: NH₃ බිංදු {n}", chipCl: "B නළය: [Cl⁻] {c} mol dm⁻³",
+  p0: "ඕනෑම රසායන ද්‍රව්‍යයක් හැසිරවීමට පෙර ආරක්ෂිත කණ්ණාඩි පළඳින්න.", p1: "නළ තුනටම CuSO₄(aq) 2 cm³ පමණ බැගින් දමන්න.",
+  p2: "A නළය සහ තනුක NH₃ තෝරන්න. බිංදුවෙන් බිංදුව එක් කර අවක්ෂේපයක් ඇති වේදැයි බලන්න.", p2b: "ළා නිල් අවක්ෂේපයක් සෑදෙමින් පවතී. දිගටම බිංදු එක් කරන්න.",
+  p3: "A නළයට දිගටම NH₃ එක් කරන්න. වැඩිපුර NH₃ තුළ අවක්ෂේපයට සිදු වන දේ බලන්න.",
+  p4: "ධූම කුටිය ක්‍රියාත්මක කර, B නළය සහ සාන්ද්‍ර HCl තෝරා, බිංදුවෙන් බිංදුව එක් කරන්න.", p4b: "ද්‍රාවණය කොළ පැහැයට හැරෙමින් පවතී. දිගටම සාන්ද්‍ර HCl එක් කරන්න.",
+  p5: "දැන් B නළයට ජලය එක් කර වර්ණය නිරීක්ෂණය කරන්න.", pDone: "සියලු පියවර අවසන්. A සහ B නළ පාලක නළය වන C සමඟ සසඳා, ප්‍රශ්න ටැබය උත්සාහ කරන්න.",
+  tGoggles: "පළමුව ආරක්ෂිත කණ්ණාඩි පළඳින්න. ඇමෝනියා සහ සාන්ද්‍ර HCl ඇස්වලට හානි කළ හැක.", tFill: "පළමුව නළවලට CuSO₄(aq) දමන්න.", tFilled: "නළවල දැනටමත් CuSO₄(aq) ඇත.",
+  tControl: "C නළය පාලක නළයයි. වර්ණ සැසඳීමට එය වෙනස් නොකර තබන්න.", tNH3B: "ඇමෝනියා A නළයට එක් කරන්න. B නළය ක්ලෝරයිඩ් පරීක්ෂාව සඳහා වෙන් කර ඇත.",
+  tHClA: "සාන්ද්‍ර HCl B නළයට එක් කරන්න. A නළය ඇමෝනියා පරීක්ෂාව සඳහායි.", tFume: "සාන්ද්‍ර HCl හුස්ම හිර කරවන දුමාර පිට කරයි. පළමුව ධූම කුටිය ක්‍රියාත්මක කරන්න.",
+  tOrder: "අත්පොතේ පිළිවෙළ අනුව පළමුව A නළයේ ඇමෝනියා පරීක්ෂාව අවසන් කරන්න.", tWaterB: "ක්ලෝරයිඩ් වෙනස ප්‍රතිවර්ත කිරීමට B නළයට ජලය එක් කරන්න.",
+  tWaterEarly: "පළමුව සාන්ද්‍ර HCl මගින් B නළය කහ-කොළ පැහැ කරන්න. ඉන්පසු වෙනස ප්‍රතිවර්ත වන අයුරු බැලීමට ජලය එක් කරන්න.", tFull: "මෙම නළය පිරෙන්නට ආසන්නයි. පරීක්ෂා නළයක් තුනෙන් දෙකකට වඩා පිරවිය යුතු නැත.",
+  tDone: "ප්‍රායෝගිකය අවසන්! දැන් ප්‍රශ්න ටැබයේ ප්‍රශ්නවලට පිළිතුරු දෙන්න.",
+  lGoggles: "ආරක්ෂිත කණ්ණාඩි පැළඳ ඇත.", lFume: "ධූම කුටිය ක්‍රියාත්මක කරන ලදී.", lFill: "A, B සහ C නළවලට CuSO₄(aq) 2 cm³ පමණ බැගින් එක් කරන ලදී. සෑම එකක්ම නිල් ද්‍රාවණයකි.",
+  lPpt: "A නළය: NH₃(aq) බිංදු කිහිපයක් සමඟ ළා නිල් අවක්ෂේපයක් සෑදේ.", lDissolve: "A නළය: වැඩිපුර NH₃(aq) තුළ අවක්ෂේපය දිය වී තද නිල් ද්‍රාවණයක් ලැබේ.",
+  lGreen: "B නළය: නිල් ද්‍රාවණය කොළ පැහැ වේ.", lYG: "B නළය: වැඩිපුර සාන්ද්‍ර HCl සමඟ ද්‍රාවණය කහ-කොළ පැහැ වේ.", lBackGreen: "B නළය: ජලය එක් කළ විට ද්‍රාවණය කොළ පැහැ වේ.", lBlue: "B නළය: තවත් ජලය එක් කළ විට ද්‍රාවණය නැවත නිල් පැහැ වේ.",
+  quiz: [
+    { q: "CuSO₄(aq) වෙත තනුක NH₃ බිංදු කිහිපයක් එක් කළ විට පළමුව දකින්නේ කුමක්ද?", o: ["තද නිල් ද්‍රාවණයක්", "ළා නිල් අවක්ෂේපයක්", "කහ-කොළ ද්‍රාවණයක්", "ගඩොල් රතු අවක්ෂේපයක්"], e: "NH₃(aq) මගින් OH⁻ අයන සපයයි. NH₃ ස්වල්පයක් සමඟ Cu²⁺ + 2OH⁻ → Cu(OH)₂ ලෙස ළා නිල් අවක්ෂේපයක් සෑදේ." },
+    { q: "වැඩිපුර NH₃ එක් කළ විට අවක්ෂේපය දිය වන්නේ ඇයි?", o: ["Cu(OH)₂ උභයගුණී බැවින් භස්මයේ දිය වේ", "NH₃ ලිගන්ඩ ජලය සහ හයිඩ්‍රොක්සයිඩ් ප්‍රතිස්ථාපනය කර ද්‍රාව්‍ය [Cu(NH₃)₄(H₂O)₂]²⁺ සාදයි", "ද්‍රාවණය ආම්ලික වේ", "අවක්ෂේපය Cu²⁺ බවට ඔක්සිකරණය වේ"], e: "වැඩිපුර NH₃ ලිගන්ඩයක් ලෙස ක්‍රියා කරයි. එය බොහෝ විට [Cu(NH₃)₄]²⁺ ලෙස ලියන ද්‍රාව්‍ය තද නිල් සංකීර්ණ අයනය සාදයි." },
+    { q: "සාන්ද්‍ර HCl සමඟ කහ-කොළ වර්ණය ලබා දෙන්නේ කුමන විශේෂයද?", o: ["[Cu(H₂O)₆]²⁺", "CuCl₂(s)", "[CuCl₄]²⁻", "Cu⁺"], e: "වැඩිපුර Cl⁻ අයන ජල ලිගන්ඩ ප්‍රතිස්ථාපනය කරයි: [Cu(H₂O)₆]²⁺ + 4Cl⁻ ⇌ [CuCl₄]²⁻ + 6H₂O. චතුස්තලීය [CuCl₄]²⁻ කහ පැහැති අතර නිල් අයනය සමඟ මිශ්‍ර වූ විට කහ-කොළ ලෙස පෙනේ." },
+    { q: "ජලය එක් කළ විට කහ-කොළ ද්‍රාවණය නැවත නිල් වන්නේ ඇයි?", o: ["ජලය තඹ ඔක්සිකරණය කරයි", "ලිගන්ඩ හුවමාරුව ප්‍රතිවර්තයි; [Cl⁻] අඩු කිරීමෙන් සමතුලිතතාව [Cu(H₂O)₆]²⁺ දෙසට යයි", "ජලය අවක්ෂේපය ඉවත් කරයි", "ජලය එක් කළ විට HCl වාෂ්ප වේ"], e: "තනුක කිරීමෙන් [Cl⁻] අඩු වී ජලයේ අනුපාතය වැඩි වේ. ලෙ ෂැටලියේ මූලධර්මයට අනුව සමතුලිතතාව නැවත නිල් ජලීය අයනය දෙසට යයි. අතරමැදදී දකින කොළ පැහැය දෙකේම මිශ්‍රණයකි." },
+  ],
+},
+ta: {
+  eyebrow: "க.பொ.த (உ/த) இரசாயனவியல் · d-தொகுதி மூலகங்கள் · சிக்கல் அயன்கள்", title: "செப்பு(II) இன் சிக்கல் அயன்கள்", student: "மாணவர்: {name}{cls}", reset: "மீண்டும் தொடங்கு",
+  safety: "பாதுகாப்பு", goggles: "பாதுகாப்புக் கண்ணாடி அணி", gogglesOn: "கண்ணாடி அணிந்துள்ளீர்", fume: "புகை அலுமாரியை இயக்கு", fumeOn: "புகை அலுமாரி இயங்குகிறது", fill: "ஒவ்வொரு குழாயிலும் 2 cm³ CuSO₄ இடு",
+  tubeL: "குழாய்", tubeA: "A · அமோனியாச் சோதனை", tubeB: "B · குளோரைட்டுச் சோதனை", tubeC: "C · கட்டுப்பாட்டுக் குழாய்",
+  reagentL: "சோதனைப்பொருள்", rNH3: "ஐதான NH₃", rHCl: "செறிந்த HCl", rWater: "நீர்", drop: "ஒரு துளி சேர்", dropWater: "0.5 cm³ சேர்", hold: "சேர்க்க அழுத்திப் பிடி",
+  keys: "விசைகள்: A/B/C குழாய் · 1/2/3 சோதனைப்பொருள் · D சேர்",
+  selTube: "குழாய் {t} · {v} cm³", solution: "கரைசல்: {c}", ppt: "வீழ்படிவு: {c}", noPpt: "வீழ்படிவு இல்லை", emptyTube: "வெறுமை",
+  tabGuide: "வழிகாட்டி", tabObs: "அவதானிப்புகள்", tabColours: "நிறங்கள்", tabQuiz: "வினாக்கள்",
+  aimH: "நோக்கம்", aim: "செப்பு(II) அயன்கள் அமோனியாவுடனும் குளோரைட்டு அயன்களுடனும் சிக்கல் அயன்களை உருவாக்குவதை அவதானித்தல், இணைவிப் பரிமாற்றம் மீளக்கூடியது என்பதைக் காணல்.",
+  appH: "உபகரணங்களும் இரசாயனங்களும்", app: ["தாங்கியில் 3 சோதனைக் குழாய்கள்", "வெள்ளை அட்டை", "துளிக்குழாய்கள்", "0.10 mol dm⁻³ CuSO₄(aq)", "2 mol dm⁻³ NH₃(aq)", "செறிந்த HCl (சுமார் 12 mol dm⁻³)", "காய்ச்சி வடித்த நீர்", "பாதுகாப்புக் கண்ணாடி", "புகை அலுமாரி"],
+  procH: "செய்முறை", steps: ["பாதுகாப்புக் கண்ணாடி அணிக", "A, B, C குழாய்களில் சுமார் 2 cm³ CuSO₄(aq) இடுக", "வீழ்படிவு உருவாகும் வரை A குழாயில் ஐதான NH₃ ஐத் துளி துளியாகச் சேர்க்க", "NH₃ மிகையாகும் வரை A குழாயில் தொடர்ந்து சேர்க்க", "புகை அலுமாரியினுள், நிறமாற்றம் நிற்கும் வரை B குழாயில் செறிந்த HCl ஐத் துளி துளியாகச் சேர்க்க", "நிறம் மீண்டும் மாறும் வரை B குழாயில் நீர் சேர்க்க"],
+  safeH: "பாதுகாப்பு", safe: ["எப்போதும் கண்ணாடி அணிக. அமோனியாக் கரைசல் கண்களை உறுத்தும்.", "செறிந்த HCl அரிக்கும் தன்மையுடையது, மூச்சுத் திணறவைக்கும் புகையை வெளியிடும். புகை அலுமாரியினுள் மட்டும் பயன்படுத்துக.", "தோலில் தெறித்தால் அதிக நீரால் கழுவுக."],
+  eqH: "சமன்பாடுகள்", logH: "அவதானிப்புப் பதிவு", resH: "முடிவுகள் அட்டவணை", thTube: "குழாய்", thReagent: "சேர்க்கப்பட்ட பொருள்", thObs: "அவதானிப்பு", thInf: "அனுமானம்", noRes: "நீங்கள் செய்யும்போது முடிவுகள் இங்கே தோன்றும்.",
+  r1o: "வெளிர் நீல வீழ்படிவு உருவாகிறது.", r1i: "Cu(OH)₂ உருவாகிறது: Cu²⁺ + 2OH⁻ → Cu(OH)₂", r2o: "மிகை NH₃ இல் வெளிர் நீல வீழ்படிவு கரைந்து கடும் நீலக் கரைசல் கிடைக்கிறது.", r2i: "கரையக்கூடிய சிக்கல் [Cu(NH₃)₄]²⁺ உருவாகிறது.",
+  r3o: "நீலக் கரைசல் பச்சையாகி, பின் மஞ்சள்-பச்சையாகிறது.", r3i: "Cl⁻ இணைவிகள் H₂O ஐப் பிரதியிட்டு [CuCl₄]²⁻ ஐ உருவாக்குகின்றன.", r4o: "நீர் சேர்க்கும்போது மஞ்சள்-பச்சைக் கரைசல் பச்சையாகி, பின் நீலமாகிறது.", r4i: "[Cl⁻] குறையும்போது சமநிலை மீண்டும் [Cu(H₂O)₆]²⁺ பக்கம் நகர்கிறது.",
+  tR1: "ஐதான NH₃ (சில துளிகள்)", tR2: "ஐதான NH₃ (மிகை)", tR3: "செறிந்த HCl", tR4: "நீர்",
+  coloursH: "நிறமாற்றங்கள்", coloursIntro: "ஒவ்வொரு அட்டையும் முன்னும் பின்னுமான நிறத்தைப் பாடநூல் பெயருடன் காட்டுகிறது. பதிவு செய்ய மேசையில் அப்படியைச் செய்து, பின் கீழே மெதுவாக மீண்டும் பாருங்கள்.",
+  before: "முன்", after: "பின்", via: "இடையில் காண்பது: {c}", seen: "பதியப்பட்டது", notYet: "இன்னும் செய்யவில்லை",
+  replayH: "நிறமாற்றத்தை மீண்டும் பார்", replaySelAria: "மீண்டும் பார்க்க வேண்டிய நிறமாற்றம்", play: "மெதுவாக இயக்கு", pause: "நிறுத்து", replayNone: "இதைப் பதிவு செய்ய மேசையில் இப்படியைச் செய்க.", replayHint: "முன்னும் பின்னும் நகர வழுக்கியை இழுக்கவும்.",
+  nBlue: "நீலம்", nPaleBlue: "வெளிர் நீலம்", nDeepBlue: "கடும் நீலம்", nGreen: "பச்சை", nYG: "மஞ்சள்-பச்சை", nPalePpt: "வெளிர் நீல வீழ்படிவு", nColourless: "நிறமற்றது", nPptDissolving: "வீழ்படிவு கரைகிறது",
+  cvPrecip: "வீழ்படிவு", cvColourless: "நிறமற்றது", cvFume: "புகை அலுமாரி · விசிறி இயங்குகிறது", cvFumes: "HCl புகை", cvCorrosive: "அரிக்கும்", cvIrritant: "உறுத்தும்",
+  quizH: "அறிவுச் சோதனை", tryAgain: "மீண்டும் முயல்க", best: "அதிகூடியது {p}%", scoreLeft: "{n} மீதம்", correct: "சரி. ", notQuite: "சரியில்லை. ",
+  canvasAria: "வெள்ளை அட்டைக்கு முன் தாங்கியிலுள்ள A, B, C சோதனைக் குழாய்கள், செப்பு(II) சல்பேற்று, ஐதான அமோனியா, செறிந்த ஐதரோகுளோரிக் அமிலம், நீர் போத்தல்கள். தெரிவு செய்ய ஒரு குழாயை அல்லது போத்தலைச் சொடுக்குக.",
+  chipGoggles: "கண்ணாடி அணிந்துள்ளீர்", chipFume: "புகை அலுமாரி இயங்குகிறது", chipNH3: "A குழாய்: NH₃ {n} துளிகள்", chipCl: "B குழாய்: [Cl⁻] {c} mol dm⁻³",
+  p0: "எந்த இரசாயனத்தையும் கையாளும் முன் பாதுகாப்புக் கண்ணாடி அணிக.", p1: "மூன்று குழாய்களிலும் சுமார் 2 cm³ CuSO₄(aq) இடுக.",
+  p2: "A குழாயையும் ஐதான NH₃ ஐயும் தெரிவு செய்க. துளி துளியாகச் சேர்த்து வீழ்படிவு உருவாகிறதா எனப் பார்க்க.", p2b: "வெளிர் நீல வீழ்படிவு உருவாகிறது. தொடர்ந்து துளிகளைச் சேர்க்க.",
+  p3: "A குழாயில் தொடர்ந்து NH₃ சேர்க்க. மிகை NH₃ இல் வீழ்படிவுக்கு என்ன நிகழ்கிறது எனப் பார்க்க.",
+  p4: "புகை அலுமாரியை இயக்கி, B குழாயையும் செறிந்த HCl ஐயும் தெரிவு செய்து, துளி துளியாகச் சேர்க்க.", p4b: "கரைசல் பச்சையாக மாறுகிறது. தொடர்ந்து செறிந்த HCl சேர்க்க.",
+  p5: "இப்போது B குழாயில் நீர் சேர்த்து நிறத்தை அவதானிக்க.", pDone: "எல்லாப் படிகளும் முடிந்தன. A, B குழாய்களைக் கட்டுப்பாட்டுக் குழாய் C உடன் ஒப்பிட்டு, வினாக்கள் தாவலை முயல்க.",
+  tGoggles: "முதலில் பாதுகாப்புக் கண்ணாடி அணிக. அமோனியாவும் செறிந்த HCl உம் கண்களைப் பாதிக்கலாம்.", tFill: "முதலில் குழாய்களில் CuSO₄(aq) இடுக.", tFilled: "குழாய்களில் ஏற்கனவே CuSO₄(aq) உள்ளது.",
+  tControl: "C குழாய் கட்டுப்பாட்டுக் குழாய். நிறங்களை ஒப்பிட அதை மாற்றாமல் வைத்திருக்க.", tNH3B: "அமோனியாவை A குழாயில் சேர்க்க. B குழாய் குளோரைட்டுச் சோதனைக்கு உரியது.",
+  tHClA: "செறிந்த HCl ஐ B குழாயில் சேர்க்க. A குழாய் அமோனியாச் சோதனைக்கு உரியது.", tFume: "செறிந்த HCl மூச்சுத் திணறவைக்கும் புகையை வெளியிடும். முதலில் புகை அலுமாரியை இயக்குக.",
+  tOrder: "கைநூல் ஒழுங்கின்படி முதலில் A குழாயில் அமோனியாச் சோதனையை முடிக்க.", tWaterB: "குளோரைட்டு மாற்றத்தை மீளச்செய்ய B குழாயில் நீர் சேர்க்க.",
+  tWaterEarly: "முதலில் செறிந்த HCl மூலம் B குழாயை மஞ்சள்-பச்சையாக்குக. பின் மாற்றம் மீள்வதைக் காண நீர் சேர்க்க.", tFull: "இந்தக் குழாய் நிரம்பும் நிலையில் உள்ளது. சோதனைக் குழாயை மூன்றில் இரண்டு பங்குக்கு மேல் நிரப்பக் கூடாது.",
+  tDone: "செய்முறை முடிந்தது! இப்போது வினாக்கள் தாவலில் உள்ள வினாக்களுக்கு விடையளிக்க.",
+  lGoggles: "பாதுகாப்புக் கண்ணாடி அணியப்பட்டது.", lFume: "புகை அலுமாரி இயக்கப்பட்டது.", lFill: "A, B, C குழாய்களில் சுமார் 2 cm³ CuSO₄(aq) இடப்பட்டது. ஒவ்வொன்றும் நீலக் கரைசல்.",
+  lPpt: "A குழாய்: சில துளி NH₃(aq) உடன் வெளிர் நீல வீழ்படிவு உருவாகிறது.", lDissolve: "A குழாய்: மிகை NH₃(aq) இல் வீழ்படிவு கரைந்து கடும் நீலக் கரைசல் கிடைக்கிறது.",
+  lGreen: "B குழாய்: நீலக் கரைசல் பச்சையாகிறது.", lYG: "B குழாய்: மிகை செறிந்த HCl உடன் கரைசல் மஞ்சள்-பச்சையாகிறது.", lBackGreen: "B குழாய்: நீர் சேர்க்கும்போது கரைசல் பச்சையாகிறது.", lBlue: "B குழாய்: மேலும் நீர் சேர்க்கக் கரைசல் மீண்டும் நீலமாகிறது.",
+  quiz: [
+    { q: "CuSO₄(aq) இற்குச் சில துளி ஐதான NH₃ சேர்க்கும்போது முதலில் காண்பது என்ன?", o: ["கடும் நீலக் கரைசல்", "வெளிர் நீல வீழ்படிவு", "மஞ்சள்-பச்சைக் கரைசல்", "செங்கட்டிச் சிவப்பு வீழ்படிவு"], e: "NH₃(aq) OH⁻ அயன்களைத் தருகிறது. சிறிதளவு NH₃ உடன் Cu²⁺ + 2OH⁻ → Cu(OH)₂ என வெளிர் நீல வீழ்படிவு உருவாகிறது." },
+    { q: "மிகை NH₃ சேர்க்கும்போது வீழ்படிவு ஏன் கரைகிறது?", o: ["Cu(OH)₂ ஈரியல்பானது, எனவே மூலத்தில் கரைகிறது", "NH₃ இணைவிகள் நீரையும் ஐதரொட்சைட்டையும் பிரதியிட்டுக் கரையக்கூடிய [Cu(NH₃)₄(H₂O)₂]²⁺ ஐ உருவாக்குகின்றன", "கரைசல் அமிலமாகிறது", "வீழ்படிவு Cu²⁺ ஆக ஒட்சியேற்றப்படுகிறது"], e: "மிகை NH₃ இணைவியாகச் செயற்படுகிறது. அது பொதுவாக [Cu(NH₃)₄]²⁺ என எழுதப்படும் கரையக்கூடிய கடும் நீலச் சிக்கல் அயனை உருவாக்குகிறது." },
+    { q: "செறிந்த HCl உடன் மஞ்சள்-பச்சை நிறத்தைத் தருவது எது?", o: ["[Cu(H₂O)₆]²⁺", "CuCl₂(s)", "[CuCl₄]²⁻", "Cu⁺"], e: "மிகை Cl⁻ அயன்கள் நீர் இணைவிகளைப் பிரதியிடுகின்றன: [Cu(H₂O)₆]²⁺ + 4Cl⁻ ⇌ [CuCl₄]²⁻ + 6H₂O. நான்முகி [CuCl₄]²⁻ மஞ்சள் நிறமானது, நீல அயனுடன் கலந்து மஞ்சள்-பச்சையாகத் தெரிகிறது." },
+    { q: "நீர் சேர்க்கும்போது மஞ்சள்-பச்சைக் கரைசல் ஏன் மீண்டும் நீலமாகிறது?", o: ["நீர் செப்பை ஒட்சியேற்றுகிறது", "இணைவிப் பரிமாற்றம் மீளக்கூடியது; [Cl⁻] குறைவதால் சமநிலை [Cu(H₂O)₆]²⁺ பக்கம் நகர்கிறது", "நீர் வீழ்படிவை அகற்றுகிறது", "நீர் சேர்க்கும்போது HCl ஆவியாகிறது"], e: "ஐதாக்கல் [Cl⁻] ஐக் குறைத்து நீரின் விகிதத்தை அதிகரிக்கிறது. லீ சட்டலியேயின் தத்துவப்படி சமநிலை மீண்டும் நீல நீரேற்ற அயன் பக்கம் நகர்கிறது. இடையில் காணும் பச்சை இரண்டினதும் கலவையாகும்." },
+  ],
+},
+};
+const QUIZ_ANS = [1, 1, 2, 1];
+let LANG = "en";
+try { const s = localStorage.getItem("svl-lang") || localStorage.getItem("kmno4-lang"); if (s && I18N[s]) LANG = s; else { const n = (navigator.language || "").slice(0, 2); if (I18N[n]) LANG = n; } } catch (e) {}
+function t(key, p) {
+  let s = I18N[LANG][key]; if (s === undefined) s = I18N.en[key]; if (s === undefined) return key;
+  if (p && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (_, k) => p[k] ?? "");
+  return s;
+}
+
+// =====================================================================
+// COLOURS (palette from the lab style guide) and chemistry
+// =====================================================================
+const HEX = { blue: "#4BA3E3", deep: "#1F3FB4", yg: "#B5C94A", ppt: "#A9D3F2", base: [252, 252, 250] };
+const hexRGB = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const absOf = h => hexRGB(h).map((v, i) => -Math.log10(Math.max(3, v) / HEX.base[i]));
+const A_BLUE = absOf(HEX.blue), A_DEEP = absOf(HEX.deep), A_YG = absOf(HEX.yg);
+const css = (c, a = 1) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`;
+const clamp01 = x => Math.max(0, Math.min(1, x));
+const MIX_GREEN = (() => { const a = [0, 1, 2].map(i => 0.5 * A_BLUE[i] + 0.5 * A_YG[i]); return a.map((v, i) => HEX.base[i] * 10 ** -v); })();
+
+// model: 2 cm³ of 0.10 M Cu²⁺ = 0.20 mmol. NH₃ 2 M (0.10 mmol per drop). Conc. HCl 12 M (0.60 mmol Cl⁻ per drop).
+function chem(tb) {
+  if (tb.V <= 0) return null;
+  const s = Math.sqrt(2 / tb.V);
+  let fb = 1, fc = 0, fy = 0, ppt = 0, p = 0, d = 0, x = 0;
+  if (tb.id === "A") { p = clamp01(tb.nh3 / 0.4); d = clamp01((tb.nh3 - 0.4) / 1.0); ppt = p * (1 - d); fb = 1 - p; fc = p * d; }
+  if (tb.id === "B") { const c = tb.cl / tb.V, c4 = c ** 4; x = c4 / (c4 + 81); fb = 1 - x; fy = x; }
+  const rgb = [0, 1, 2].map(i => HEX.base[i] * 10 ** -(s * (fb * A_BLUE[i] + fc * A_DEEP[i] + fy * A_YG[i])));
+  let name = "nBlue";
+  if (tb.id === "A") name = fc >= 0.55 ? "nDeepBlue" : (ppt > 0.05 && fb < 0.5) ? "nPaleBlue" : "nBlue";
+  if (tb.id === "B") name = x < 0.25 ? "nBlue" : x < 0.72 ? "nGreen" : "nYG";
+  const pptName = ppt > 0.03 ? (d > 0.04 ? "nPptDissolving" : "nPalePpt") : null;
+  return { rgb, ppt, p, d, x, name, pptName };
+}
+
+// =====================================================================
+// STATE
+// =====================================================================
+const TX = { A: 255, B: 365, C: 475 };
+const G = { top: 118, bot: 455, r: 19, pxv: 20 }; G.cy = G.bot - G.r;
+const BOT_X = { nh3: 612, hcl: 686, water: 760 };
+const MAXP = 150;
+let S;
+function newTube(id) { return { id, x: TX[id], V: 0, nh3: 0, cl: 0, disp: HEX.base.slice(), parts: [], plumes: [], hist: [], pending: 0, lastHcl: -9 }; }
+function freshState() {
+  return {
+    goggles: false, fume: false, filled: false, fillT: -1, tubes: { A: newTube("A"), B: newTube("B"), C: newTube("C") },
+    sel: "A", reagent: "nh3", holding: false, holdAcc: 0, falling: [], dropper: null, stream: null, wisps: [], confetti: [],
+    ev: {}, logs: [], results: [], answered: {}, done: false, histT: 0,
+    seg: { c1: { tube: "A", start: null, end: null, endAt: null }, c2: { tube: "A", start: null, end: null, endAt: null }, c3: { tube: "B", start: null, end: null, endAt: null }, c4: { tube: "B", start: null, end: null, endAt: null } },
+  };
+}
+
+// =====================================================================
+// CANVAS
+// =====================================================================
+const W = 800, H = 560;
+const cv = $("cv"), ctx = cv.getContext("2d"), vp = $("viewport");
+let dpr = 1, cw = 0, ch = 0, sc = 1, ox = 0, oy = 0, T = {};
+function resize() { const r = vp.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2.5); cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); sc = Math.min(cw / W, ch / H); ox = (cw - W * sc) / 2; oy = (ch - H * sc) / 2; }
+function readTokens() { const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim(); T = { wallTop: g("--wall-top"), wallBot: g("--wall-bot"), bench: g("--bench"), benchEdge: g("--bench-edge"), glass: g("--glass"), ink: g("--ink"), muted: g("--muted"), accent: g("--accent"), current: g("--current"), warn: g("--warn") }; }
+new ResizeObserver(resize).observe(vp);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTokens);
+new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const FONT = (w, s) => `${w} ${s}px 'IBM Plex Sans', 'Noto Sans Sinhala', 'Noto Sans Tamil', sans-serif`;
+const MONO = (w, s) => `${w} ${s}px 'IBM Plex Mono', monospace`;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+let hatch;
+function makeHatch(c) { const h = document.createElement("canvas"); h.width = h.height = 8; const x = h.getContext("2d"); x.strokeStyle = "rgba(60,80,90,.28)"; x.lineWidth = 1; x.beginPath(); x.moveTo(0, 8); x.lineTo(8, 0); x.stroke(); return c.createPattern(h, "repeat"); }
+function rr(c, x, y, w, h, r) { c.beginPath(); c.roundRect(x, y, w, h, r); }
+function tubePath(c, x, r) { c.beginPath(); c.moveTo(x - r, G.top); c.lineTo(x - r, G.cy); c.arc(x, G.cy, r, Math.PI, 0, true); c.lineTo(x + r, G.top); }
+function halfW(y) { return y <= G.cy ? G.r - 2.5 : Math.max(0, Math.sqrt(Math.max(0, G.r * G.r - (y - G.cy) ** 2)) - 2.5); }
+function levelY(V) { return Math.max(G.top + 12, G.bot - V * G.pxv); }
+
+// draws one tube (used by the bench and the replay)
+function drawTube(c, x, V, rgb, parts, haze, plumes) {
+  c.save();
+  tubePath(c, x, G.r); c.closePath(); c.fillStyle = "rgba(235,245,250,.18)"; c.fill();
+  c.save(); tubePath(c, x, G.r - 1); c.closePath(); c.clip();
+  if (V > 0.01) {
+    const ly = levelY(V);
+    const lg = c.createLinearGradient(x - G.r, 0, x + G.r, 0);
+    const dark = rgb.map(v => v * 0.82);
+    lg.addColorStop(0, css(dark, .96)); lg.addColorStop(0.35, css(rgb, .94)); lg.addColorStop(0.7, css(rgb.map(v => Math.min(255, v * 1.04)), .94)); lg.addColorStop(1, css(dark, .96));
+    c.fillStyle = lg; c.fillRect(x - G.r, ly, 2 * G.r, G.bot - ly + 2);
+    if (haze > 0.01) { c.fillStyle = css(hexRGB(HEX.ppt), Math.min(0.75, haze)); c.fillRect(x - G.r, ly, 2 * G.r, G.bot - ly + 2); }
+    (plumes || []).forEach(p => { const g = c.createRadialGradient(x + p.dx, p.y, 0, x + p.dx, p.y, p.r); g.addColorStop(0, css(p.c, p.a)); g.addColorStop(1, css(p.c, 0)); c.fillStyle = g; c.beginPath(); c.arc(x + p.dx, p.y, p.r, 0, 7); c.fill(); });
+    const pc = hexRGB(HEX.ppt), pe = [110, 165, 210];
+    parts.forEach(p => { c.fillStyle = css(pc, p.a); c.strokeStyle = css(pe, p.a * 0.8); c.lineWidth = 0.6; c.beginPath(); c.arc(x + p.x, p.y, p.s, 0, 7); c.fill(); c.stroke(); });
+    c.fillStyle = css(rgb.map(v => v * 0.75), .9); c.beginPath(); c.ellipse(x, ly, G.r - 1, 3, 0, 0, Math.PI); c.fill();
+    c.strokeStyle = "rgba(255,255,255,.6)"; c.lineWidth = 0.8; c.beginPath(); c.ellipse(x, ly, G.r - 1, 3, 0, Math.PI, 0); c.stroke();
+  }
+  c.restore();
+  tubePath(c, x, G.r); c.strokeStyle = T.glass; c.lineWidth = 1.6; c.stroke();
+  c.beginPath(); c.ellipse(x, G.top, G.r + 2.5, 3, 0, 0, 7); c.stroke();
+  c.strokeStyle = "rgba(255,255,255,.7)"; c.lineWidth = 3; c.lineCap = "round"; c.beginPath(); c.moveTo(x - G.r + 6, G.top + 10); c.lineTo(x - G.r + 6, G.cy); c.stroke();
+  c.restore();
+}
+
+function draw() {
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const g = ctx.createLinearGradient(0, 0, 0, ch); g.addColorStop(0, T.wallTop); g.addColorStop(1, T.wallBot); ctx.fillStyle = g; ctx.fillRect(0, 0, cw, ch);
+  ctx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, dpr * oy);
+  if (!hatch) hatch = makeHatch(ctx);
+  const L = -ox / sc, R = (cw - ox) / sc, BOT = (ch - oy) / sc;
+  // fume cupboard
+  if (S.fume) {
+    ctx.fillStyle = "rgba(255,255,255,.08)"; ctx.fillRect(L, -oy / sc, R - L, 82 + oy / sc);
+    ctx.fillStyle = "#33424a"; ctx.fillRect(L, 72, R - L, 6);
+    ctx.strokeStyle = "rgba(120,150,165,.35)"; ctx.lineWidth = 1.2;
+    for (let i = 0; i < 9; i++) { const x = 60 + i * 85, y = 70 - ((time * 40 + i * 23) % 60); ctx.beginPath(); ctx.moveTo(x, y + 14); ctx.lineTo(x, y); ctx.lineTo(x - 4, y + 5); ctx.moveTo(x, y); ctx.lineTo(x + 4, y + 5); ctx.stroke(); }
+    ctx.fillStyle = T.ink; ctx.font = FONT(600, 12); ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText(t("cvFume"), 14, 16);
+  }
+  // bench
+  ctx.fillStyle = T.bench; ctx.fillRect(L, 478, R - L, BOT - 478); ctx.fillStyle = T.benchEdge; ctx.fillRect(L, 478, R - L, 4);
+  // white card
+  ctx.fillStyle = "rgba(0,0,0,.12)"; rr(ctx, 175, 102, 372, 370, 6); ctx.fill();
+  ctx.fillStyle = "#ffffff"; rr(ctx, 170, 96, 372, 370, 6); ctx.fill();
+  // tubes
+  ["A", "B", "C"].forEach(id => { const tb = S.tubes[id]; const info = chem(tb); const susp = tb.parts.filter(p => !p.settled && !p.dying).length;
+    drawTube(ctx, tb.x, tb.V, tb.disp, tb.parts, info ? (susp / MAXP) * 0.9 : 0, tb.plumes); });
+  // rack (front)
+  ctx.fillStyle = "#cfd6d9"; ctx.strokeStyle = "rgba(0,0,0,.25)"; ctx.lineWidth = 1;
+  rr(ctx, 186, 466, 340, 10, 2); ctx.fill(); ctx.stroke();
+  [190, 516].forEach(x => { ctx.fillStyle = "#b8c1c5"; ctx.fillRect(x, 300, 7, 168); });
+  const xs = [190, TX.A - G.r - 3, TX.A + G.r + 3, TX.B - G.r - 3, TX.B + G.r + 3, TX.C - G.r - 3, TX.C + G.r + 3, 523];
+  ctx.fillStyle = "#dfe5e7";
+  for (let i = 0; i < xs.length; i += 2) { ctx.fillRect(xs[i], 298, xs[i + 1] - xs[i], 14); ctx.strokeRect(xs[i], 298, xs[i + 1] - xs[i], 14); }
+  ["A", "B", "C"].forEach(id => { const x = TX[id]; ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.beginPath(); ctx.ellipse(x, 312, G.r + 3, 2.5, 0, 0, Math.PI); ctx.stroke();
+    ctx.fillStyle = "#1c2a31"; ctx.font = FONT(700, 12); ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(id, x, 290 - 0 + 0 > 0 ? 330 : 330); });
+  // tube letters under rack bar
+  // precipitate labels
+  ["A"].forEach(id => { const tb = S.tubes[id]; const settled = tb.parts.filter(p => p.settled && !p.dying).length; if (settled > 12) {
+    const y = G.bot - 5; ctx.strokeStyle = T.ink; ctx.lineWidth = 0.9; ctx.beginPath(); ctx.moveTo(tb.x + G.r - 2, y); ctx.lineTo(tb.x + G.r + 14, y - 14); ctx.stroke();
+    ctx.fillStyle = "#1c2a31"; ctx.font = FONT(600, 10); ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText(t("cvPrecip"), tb.x + G.r + 16, y - 15); } });
+  // selection outline
+  const sx = TX[S.sel]; ctx.setLineDash([5, 4]); ctx.strokeStyle = T.accent; ctx.lineWidth = 1.6; rr(ctx, sx - G.r - 9, G.top - 14, 2 * G.r + 18, G.bot - G.top + 24, 10); ctx.stroke(); ctx.setLineDash([]);
+  // bottles
+  drawBottle(95, "CuSO₄(aq)", "0.10 mol dm⁻³", HEX.blue, null, false);
+  drawBottle(BOT_X.nh3, "NH₃(aq)", "2 mol dm⁻³", null, "cvIrritant", S.reagent === "nh3");
+  drawBottle(BOT_X.hcl, "conc. HCl", "12 mol dm⁻³", null, "cvCorrosive", S.reagent === "hcl");
+  drawBottle(BOT_X.water, "H₂O", "distilled", null, null, S.reagent === "water", true);
+  // dropper / stream
+  if (S.dropper && S.dropper.t > 0) { const x = TX[S.dropper.tube]; ctx.globalAlpha = Math.min(1, S.dropper.t * 3);
+    ctx.fillStyle = "rgba(235,245,250,.7)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(x - 3, 62); ctx.lineTo(x - 3, 98); ctx.lineTo(x - 1, 108); ctx.lineTo(x + 1, 108); ctx.lineTo(x + 3, 98); ctx.lineTo(x + 3, 62); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = hatch; ctx.fillRect(x - 2.5, 80, 5, 18);
+    ctx.fillStyle = "#3b3434"; ctx.beginPath(); ctx.ellipse(x, 52, 7, 12, 0, 0, 7); ctx.fill(); ctx.globalAlpha = 1; }
+  if (S.stream && S.stream.t > 0) { const x = TX[S.stream.tube]; const ly = levelY(S.tubes[S.stream.tube].V);
+    ctx.strokeStyle = T.glass; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x + 60, 40); ctx.quadraticCurveTo(x + 10, 50, x + 4, 92); ctx.stroke();
+    ctx.strokeStyle = "rgba(190,215,230,.85)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x + 4, 94); ctx.lineTo(x + 2, ly); ctx.stroke(); }
+  // falling drops
+  S.falling.forEach(d => { ctx.fillStyle = "rgba(225,238,245,.95)"; ctx.strokeStyle = "rgba(60,90,110,.6)"; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.arc(d.x, d.y, 2.4, 0, Math.PI); ctx.lineTo(d.x, d.y - 5.5); ctx.closePath(); ctx.fill(); ctx.stroke(); });
+  // HCl fumes
+  if (S.wisps.length) { S.wisps.forEach(w => { const gg = ctx.createRadialGradient(w.x, w.y, 0, w.x, w.y, w.r); gg.addColorStop(0, `rgba(235,240,242,${w.a})`); gg.addColorStop(1, "rgba(235,240,242,0)"); ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(w.x, w.y, w.r, 0, 7); ctx.fill(); });
+    ctx.fillStyle = T.muted; ctx.font = FONT(600, 10); ctx.textAlign = "left"; ctx.fillText(t("cvFumes"), TX.B + 26, 92); }
+  // confetti
+  S.confetti.forEach(p => { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-3, -1.5, 6, 3); ctx.restore(); });
+}
+function drawBottle(x, l1, l2, liquid, hazardKey, selected, wash) {
+  const w = 48, h = 82, y = 478 - h;
+  if (selected) { ctx.fillStyle = T.accent; rr(ctx, x - w / 2 - 6, 478 + 6, w + 12, 4, 2); ctx.fill(); }
+  ctx.fillStyle = "rgba(235,245,250,.35)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 1.4;
+  rr(ctx, x - w / 2, y + 16, w, h - 16, 6); ctx.fill(); ctx.stroke();
+  ctx.save(); rr(ctx, x - w / 2 + 2, y + 30, w - 4, h - 32, 5); ctx.clip();
+  if (liquid) { ctx.fillStyle = liquid; ctx.fillRect(x - w / 2, y + 30, w, h); }
+  else { ctx.fillStyle = "rgba(240,246,250,.75)"; ctx.fillRect(x - w / 2, y + 30, w, h); ctx.fillStyle = hatch; ctx.fillRect(x - w / 2, y + 30, w, h); }
+  ctx.restore();
+  if (wash) { ctx.strokeStyle = T.glass; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(x, y + 16); ctx.lineTo(x, y); ctx.quadraticCurveTo(x, y - 12, x - 18, y - 14); ctx.stroke(); }
+  else { ctx.fillStyle = "#3b4a52"; rr(ctx, x - 8, y + 4, 16, 13, 3); ctx.fill(); ctx.fillStyle = "#2a2222"; ctx.beginPath(); ctx.ellipse(x, y, 6, 8, 0, 0, 7); ctx.fill(); }
+  ctx.fillStyle = "#ffffff"; rr(ctx, x - w / 2 + 4, y + 36, w - 8, 26, 3); ctx.fill();
+  ctx.fillStyle = "#1c2a31"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.font = MONO(600, 8.5); ctx.fillText(l1, x, y + 44); ctx.font = MONO(500, 6.5); ctx.fillText(l2, x, y + 55);
+  if (hazardKey) { ctx.save(); ctx.translate(x + w / 2 - 6, y + 22); ctx.rotate(Math.PI / 4); ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#c0392b"; ctx.lineWidth = 1.6; ctx.fillRect(-6, -6, 12, 12); ctx.strokeRect(-6, -6, 12, 12); ctx.restore(); ctx.fillStyle = "#c0392b"; ctx.font = FONT(700, 8); ctx.fillText("!", x + w / 2 - 6, y + 22); }
+  ctx.fillStyle = "#dfe6e8"; ctx.font = FONT(500, 9); ctx.textAlign = "center";
+  const bottom = [liquid ? null : t("cvColourless"), hazardKey ? t(hazardKey) : null].filter(Boolean).join(" · ");
+  if (bottom) ctx.fillText(bottom, x, 478 + 20);
+}
+
+// =====================================================================
+// SIMULATION
+// =====================================================================
+let time = 0, last = performance.now();
+function frame(now) { const dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt; step(dt); draw(); requestAnimationFrame(frame); }
+
+function step(dt) {
+  // fill animation
+  if (S.fillT >= 0) { S.fillT += dt; const p = Math.min(1, S.fillT / 1.4); ["A", "B", "C"].forEach(id => S.tubes[id].V = 2 * p);
+    if (p >= 1) { S.fillT = -1; S.filled = true; ["A", "B", "C"].forEach(id => S.tubes[id].disp = chem(S.tubes[id]).rgb.slice()); log("lFill"); render(); } }
+  // hold to add
+  if (S.holding) { S.holdAcc += dt; const iv = S.reagent === "water" ? 0.45 : 0.3; while (S.holdAcc >= iv) { S.holdAcc -= iv; if (!addOne(true)) { stopHold(); break; } } }
+  if (S.dropper) S.dropper.t -= dt;
+  if (S.stream) S.stream.t -= dt;
+  // drops
+  for (let i = S.falling.length - 1; i >= 0; i--) { const d = S.falling[i]; d.vy += 1200 * dt; d.y += d.vy * dt; const tb = S.tubes[d.tube];
+    if (d.y >= levelY(tb.V)) { S.falling.splice(i, 1); tb.pending -= d.vol; apply(tb, d.reagent, d.vol); } }
+  // tubes
+  ["A", "B", "C"].forEach(id => {
+    const tb = S.tubes[id], info = chem(tb); if (!info) return;
+    const k = 1 - Math.exp(-dt / 0.55);
+    if (S.fillT < 0) tb.disp = tb.disp.map((v, i) => v + (info.rgb[i] - v) * k);
+    else tb.disp = info.rgb.slice();
+    // particles
+    const alive = tb.parts.filter(p => !p.dying), target = Math.round(info.ppt * MAXP), ly = levelY(tb.V);
+    if (alive.length < target) { const n = Math.min(target - alive.length, 5); for (let j = 0; j < n; j++) tb.parts.push({ x: (Math.random() - 0.5) * 14, y: ly + 4 + Math.random() * 10, vy: 6 + Math.random() * 8, s: 0.9 + Math.random() * 1.1, a: 0, settled: false, dying: false }); }
+    else if (alive.length > target) { let n = alive.length - target; const order = alive.slice().sort((a, b) => (a.settled - b.settled) || (Math.random() - 0.5)); for (const p of order) { if (n-- <= 0) break; p.dying = true; } }
+    let settledN = 0;
+    tb.parts.forEach(p => {
+      if (p.dying) { p.a -= dt * 1.6; return; }
+      p.a = Math.min(0.95, p.a + dt * 2.5);
+      if (!p.settled) { p.vy += (18 + p.s * 10 - p.vy) * dt * 0.8; p.y += p.vy * dt; p.x += (Math.random() - 0.5) * 9 * dt * 4 + Math.sin(time * 2 + p.s * 9) * 3 * dt;
+        const hw = halfW(p.y); p.x = Math.max(-hw, Math.min(hw, p.x));
+        const bed = G.bot - 3 - settledN * 0.07 - Math.random() * 3; if (p.y >= bed) { p.settled = true; p.y = G.bot - 2.5 - Math.random() * (3 + tb.parts.filter(q => q.settled).length * 0.09); const hw2 = halfW(p.y); p.x = (Math.random() * 2 - 1) * hw2; } }
+      else settledN++;
+    });
+    tb.parts = tb.parts.filter(p => p.a > 0 || !p.dying);
+    tb.plumes.forEach(p => { p.r += 26 * dt; p.y += 16 * dt; p.a *= Math.exp(-1.6 * dt); });
+    tb.plumes = tb.plumes.filter(p => p.a > 0.02);
+  });
+  // fumes
+  if (time - S.tubes.B.lastHcl < 3 && Math.random() < 0.25) S.wisps.push({ x: TX.B + (Math.random() - 0.5) * 10, y: G.top - 2, r: 6, a: 0.45, vx: (Math.random() - 0.5) * 8 });
+  S.wisps.forEach(w => { w.y -= 22 * dt; w.x += w.vx * dt; w.r += 9 * dt; w.a *= Math.exp(-0.9 * dt); }); S.wisps = S.wisps.filter(w => w.a > 0.03 && w.y > -20);
+  S.confetti.forEach(p => { p.vy += 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; }); S.confetti = S.confetti.filter(p => p.y < 600);
+  checkEvents();
+  // history for replay
+  S.histT += dt; if (S.histT >= 0.08) { S.histT = 0; ["A", "B"].forEach(id => { const tb = S.tubes[id]; const info = chem(tb); if (!info) return;
+    tb.hist.push({ c: tb.disp.slice(), s: tb.parts.filter(p => !p.settled && !p.dying).length, d: tb.parts.filter(p => p.settled && !p.dying).length, V: tb.V, n: nameFromDisp(tb, info), pn: info.pptName }); });
+    Object.values(S.seg).forEach(sg => { if (sg.endAt !== null && sg.end === null && time >= sg.endAt) { sg.end = S.tubes[sg.tube].hist.length - 1; renderCards(); renderReplay(); } }); }
+  uiT += dt; if (uiT > 0.15) { uiT = 0; renderLive(); }
+}
+let uiT = 0;
+function nameFromDisp(tb, info) { return info.name; }
+function apply(tb, reagent, vol) {
+  tb.V += vol;
+  if (reagent === "nh3") { tb.nh3 += 2 * vol; if (S.seg.c1.start === null) S.seg.c1.start = tb.hist.length;
+    const info = chem(tb); if (info.p >= 1) tb.plumes.push({ dx: (Math.random() - .5) * 6, y: levelY(tb.V) + 4, r: 4, a: 0.85, c: hexRGB(HEX.deep) }); }
+  if (reagent === "hcl") { tb.cl += 12 * vol; tb.lastHcl = time; if (S.seg.c3.start === null) S.seg.c3.start = tb.hist.length; tb.plumes.push({ dx: (Math.random() - .5) * 6, y: levelY(tb.V) + 4, r: 4, a: 0.8, c: hexRGB(HEX.yg) }); }
+  if (reagent === "water") { if (S.seg.c4.start === null) S.seg.c4.start = tb.hist.length; }
+}
+function checkEvents() {
+  const ev = S.ev, A = chem(S.tubes.A), B = chem(S.tubes.B), hA = S.tubes.A.hist.length, hB = S.tubes.B.hist.length;
+  if (A && S.filled) {
+    if (A.p > 0.2 && !ev.pptSeen) { ev.pptSeen = 1; log("lPpt"); render(); }
+    if (A.p >= 1 && !ev.ppt) { ev.ppt = 1; addResult("r1"); S.seg.c1.endAt = time + 1.6; S.seg.c2.start = hA; render(); }
+    if (A.d >= 0.98 && !ev.dissolve) { ev.dissolve = 1; log("lDissolve"); addResult("r2"); S.seg.c2.endAt = time + 2; render(); }
+  }
+  if (B && S.filled) {
+    if (B.x >= 0.35 && !ev.green) { ev.green = 1; log("lGreen"); render(); }
+    if (B.x >= 0.8 && !ev.yg) { ev.yg = 1; log("lYG"); addResult("r3"); S.seg.c3.endAt = time + 1.8; render(); }
+    if (ev.yg && B.x <= 0.6 && !ev.backGreen) { ev.backGreen = 1; log("lBackGreen"); }
+    if (ev.yg && B.x <= 0.2 && !ev.blue) { ev.blue = 1; log("lBlue"); addResult("r4"); S.seg.c4.endAt = time + 1.8; render(); }
+  }
+  if (!S.done && stepsDone().every(Boolean)) { S.done = true; celebrate(); }
+}
+function stepsDone() { return [S.goggles, S.filled, !!S.ev.ppt, !!S.ev.dissolve, !!S.ev.yg, !!S.ev.blue]; }
+function celebrate() {
+  toast("tDone", "party", 5000); $("quizTab").classList.add("ping");
+  if (!reduceMotion) { const cols = [HEX.blue, HEX.deep, HEX.yg, "#e7a1b5", "#f2c81f"]; for (let i = 0; i < 90; i++) S.confetti.push({ x: 360 + (Math.random() - .5) * 200, y: 120, vx: (Math.random() - .5) * 320, vy: -150 - Math.random() * 220, rot: Math.random() * 6, vr: (Math.random() - .5) * 10, c: cols[i % cols.length] }); }
+  render();
+}
+
+// =====================================================================
+// ACTIONS
+// =====================================================================
+function problem(reagent, tube) {
+  if (!S.goggles) return "tGoggles";
+  if (!S.filled) return "tFill";
+  if (tube === "C") return "tControl";
+  if (reagent === "nh3" && tube !== "A") return "tNH3B";
+  if (reagent === "hcl") { if (tube !== "B") return "tHClA"; if (!S.fume) return "tFume"; if (!S.ev.dissolve) return "tOrder"; }
+  if (reagent === "water") { if (tube !== "B") return "tWaterB"; if (!S.ev.yg) return "tWaterEarly"; }
+  const tb = S.tubes[tube], vol = reagent === "water" ? 0.5 : 0.05;
+  if (tb.V + tb.pending + vol > 14) return "tFull";
+  return null;
+}
+function addOne(quietRepeat) {
+  if (S.fillT >= 0) return false;
+  const pr = problem(S.reagent, S.sel); if (pr) { toast(pr, "warn"); return false; }
+  const tb = S.tubes[S.sel];
+  if (S.reagent === "water") { apply(tb, "water", 0.5); S.stream = { tube: S.sel, t: 0.45 }; }
+  else { tb.pending += 0.05; S.falling.push({ tube: S.sel, reagent: S.reagent, x: tb.x, y: 110, vy: 0, vol: 0.05 }); S.dropper = { tube: S.sel, t: 0.9 }; }
+  return true;
+}
+function stopHold() { S.holding = false; $("holdBtn").classList.remove("active"); }
+function toggleGoggles() { S.goggles = !S.goggles; if (S.goggles && !S.ev.gog) { S.ev.gog = 1; log("lGoggles"); } render(); }
+function toggleFume() { S.fume = !S.fume; if (S.fume && !S.ev.fume) { S.ev.fume = 1; log("lFume"); } render(); }
+function fillTubes() { if (!S.goggles) return toast("tGoggles", "warn"); if (S.filled || S.fillT >= 0) return toast("tFilled", "warn"); S.fillT = 0; ["A", "B", "C"].forEach(id => { const tb = S.tubes[id]; tb.disp = hexRGB(HEX.blue); }); render(); }
+function selectTube(id) { S.sel = id; $("tubeSel").value = id; render(); }
+function selectReagent(r) { S.reagent = r; render(); }
+function reset() { stopHoldSafe(); const ans = S ? S.answered : {}; S = freshState(); S.answered = {}; $("quizTab").classList.remove("ping"); renderAll(); }
+function stopHoldSafe() { if (S) stopHold(); }
+
+// =====================================================================
+// UI
+// =====================================================================
+let toastT;
+function toast(k, kind = "", ms = 3600) { const el = $("toast"); el.textContent = t(k); el.className = "toast show " + kind; clearTimeout(toastT); toastT = setTimeout(() => el.className = "toast " + kind, ms); }
+function log(k) { S.logs.unshift({ time: new Date().toTimeString().slice(0, 8), k }); renderLog(); }
+function renderLog() { const box = $("log"); box.innerHTML = ""; S.logs.forEach(e => { const d = document.createElement("div"), s = document.createElement("span"), m = document.createElement("div"); s.textContent = e.time; m.textContent = t(e.k); d.append(s, m); box.append(d); }); }
+const RES = { r1: ["A", "tR1"], r2: ["A", "tR2"], r3: ["B", "tR3"], r4: ["B", "tR4"] };
+function addResult(id) { if (!S.results.includes(id)) S.results.push(id); renderTable(); renderCards(); renderReplay(); }
+function renderTable() {
+  const tb = $("tbody");
+  if (!S.results.length) { tb.innerHTML = ""; const tr = document.createElement("tr"), td = document.createElement("td"); td.colSpan = 4; td.className = "muted"; td.style.fontFamily = "var(--f-body)"; td.style.fontWeight = "400"; td.textContent = t("noRes"); tr.append(td); tb.append(tr); return; }
+  tb.innerHTML = S.results.map(id => `<tr><td>${RES[id][0]}</td><td>${t(RES[id][1])}</td><td>${t(id + "o")}</td><td>${t(id + "i")}</td></tr>`).join("");
+}
+function phase() { const d = stepsDone(); const i = d.indexOf(false); return i < 0 ? 6 : i; }
+function promptText(p) {
+  if (p === 2 && S.ev.pptSeen) return t("p2b");
+  if (p === 4 && S.ev.green) return t("p4b");
+  return t(["p0", "p1", "p2", "p3", "p4", "p5", "pDone"][p]);
+}
+function render() {
+  const p = phase(), done = stepsDone();
+  $("prompt").textContent = promptText(p);
+  $("steps").innerHTML = t("steps").map((s, i) => `<li class="${done[i] ? "done" : i === p ? "now" : ""}"><span class="tick">${done[i] ? "✓" : i + 1}</span><span>${s}</span></li>`).join("");
+  const n = done.filter(Boolean).length; $("ringTxt").textContent = `${n}/6`; $("ringArc").style.strokeDashoffset = String(113.1 * (1 - n / 6));
+  $("gogglesBtn").textContent = t(S.goggles ? "gogglesOn" : "goggles"); $("gogglesBtn").setAttribute("aria-pressed", String(S.goggles));
+  $("fumeBtn").textContent = t(S.fume ? "fumeOn" : "fume"); $("fumeBtn").setAttribute("aria-pressed", String(S.fume));
+  $("fillBtn").disabled = S.filled || S.fillT >= 0;
+  ["gogglesBtn", "fumeBtn", "fillBtn", "dropBtn", "holdBtn"].forEach(id => $(id).classList.remove("next"));
+  const hl = p === 0 ? "gogglesBtn" : p === 1 ? "fillBtn" : (p === 4 && !S.fume) ? "fumeBtn" : null; if (hl) $(hl).classList.add("next");
+  document.querySelectorAll("#reagSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.r === S.reagent)));
+  $("tubeSel").value = S.sel;
+  $("dropBtn").textContent = t(S.reagent === "water" ? "dropWater" : "drop");
+  renderLive();
+}
+function renderLive() {
+  const chips = [];
+  if (S.goggles) chips.push(`<span class="chip ok">✓ ${t("chipGoggles")}</span>`);
+  if (S.fume) chips.push(`<span class="chip ok">✓ ${t("chipFume")}</span>`);
+  if (S.tubes.A.nh3 > 0) chips.push(`<span class="chip">${t("chipNH3", { n: Math.round(S.tubes.A.nh3 / 0.1) })}</span>`);
+  if (S.tubes.B.cl > 0) chips.push(`<span class="chip">${t("chipCl", { c: (S.tubes.B.cl / S.tubes.B.V).toFixed(1) })}</span>`);
+  const html = chips.join(""); if ($("chips").innerHTML !== html) $("chips").innerHTML = html;
+  const tb = S.tubes[S.sel], info = chem(tb);
+  let h;
+  if (!info) h = `<span class="sw" style="background:transparent"></span><span class="txt"><b>${t("selTube", { t: S.sel, v: "0.0" })}</b><span>${t("emptyTube")}</span></span>`;
+  else h = `<span class="sw" style="background:${css(tb.disp)}"></span><span class="txt"><b>${t("selTube", { t: S.sel, v: tb.V.toFixed(1) })}</b><span>${t("solution", { c: t(info.name) })}</span></span>`
+    + (info.pptName ? `<span class="sw ppt" style="background-color:${HEX.ppt}"></span><span class="txt"><span>${t("ppt", { c: t(info.pptName) })}</span></span>` : `<span class="txt muted"><span>${t("noPpt")}</span></span>`);
+  if ($("selinfo").innerHTML !== h) $("selinfo").innerHTML = h;
+  const p = phase(); const pt = promptText(p); if ($("prompt").textContent !== pt) render();
+}
+
+// colour cards
+const CARDS = [
+  { id: "c1", tube: "A", b: ["nBlue", HEX.blue, false], r: "tR1", a: ["nPalePpt", HEX.ppt, true], via: null },
+  { id: "c2", tube: "A", b: ["nPalePpt", HEX.ppt, true], r: "tR2", a: ["nDeepBlue", HEX.deep, false], via: ["nPptDissolving", "#7fa6d8"] },
+  { id: "c3", tube: "B", b: ["nBlue", HEX.blue, false], r: "tR3", a: ["nYG", HEX.yg, false], via: ["nGreen", css(MIX_GREEN)] },
+  { id: "c4", tube: "B", b: ["nYG", HEX.yg, false], r: "tR4", a: ["nBlue", HEX.blue, false], via: ["nGreen", css(MIX_GREEN)] },
+];
+function renderCards() {
+  $("cards").innerHTML = CARDS.map(c => { const rec = S.seg[c.id].end !== null;
+    const st = (lab, [k, col, ppt]) => `<div class="st"><small>${t(lab)}</small><span class="sw${ppt ? " ppt" : ""}" style="background-color:${col}"></span><span>${t(k)}</span></div>`;
+    return `<div class="cc"><div class="ttl"><span>${t("tubeL")} ${c.tube}</span><em class="${rec ? "ok" : ""}">${rec ? "✓ " + t("seen") : t("notYet")}</em></div>
+      <div class="flow">${st("before", c.b)}<div class="arrow"><b>→</b><span>${t(c.r)}</span></div>${st("after", c.a)}</div>
+      ${c.via ? `<div class="via"><i style="background:${c.via[1]}"></i>${t("via", { c: t(c.via[0]) })}</div>` : ""}</div>`; }).join("");
+}
+// replay
+const mini = $("mini"), mctx = mini.getContext("2d");
+let playing = false;
+function renderReplaySel() { const v = $("replaySel").value || "c1"; $("replaySel").innerHTML = CARDS.map(c => `<option value="${c.id}">${t("tubeL")} ${c.tube}: ${t(c.b[0])} → ${t(c.a[0])}</option>`).join(""); $("replaySel").value = v; }
+function seeded(i) { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); }
+function renderReplay() {
+  const id = $("replaySel").value || "c1", sg = S.seg[id], tb = S.tubes[sg.tube];
+  const ok = sg.start !== null && sg.end !== null && sg.end > sg.start;
+  $("replay").disabled = !ok; $("playBtn").disabled = !ok; $("playBtn").textContent = t(playing ? "pause" : "play");
+  $("rhint").textContent = ok ? t("replayHint") : t("replayNone");
+  mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.fillStyle = "#ffffff"; mctx.fillRect(0, 0, mini.width, mini.height);
+  const s = 1.25; mctx.setTransform(s, 0, 0, s, mini.width / 2 - TX.A * s, -G.top * s + 40);
+  if (!ok) { drawTube(mctx, TX.A, 0, HEX.base, [], 0, []); $("rname").textContent = ""; return; }
+  const idx = Math.round(sg.start + (+$("replay").value / 1000) * (sg.end - sg.start)), h = tb.hist[Math.max(0, Math.min(tb.hist.length - 1, idx))];
+  const parts = []; const ly = levelY(h.V);
+  for (let i = 0; i < h.s; i++) { const y = ly + 6 + seeded(i) * (G.bot - ly - 12); const hw = halfW(y); parts.push({ x: (seeded(i + 500) * 2 - 1) * hw, y, s: 1.3, a: 0.9 }); }
+  for (let i = 0; i < h.d; i++) { const y = G.bot - 2.5 - seeded(i + 900) * (3 + h.d * 0.09); const hw = halfW(y); parts.push({ x: (seeded(i + 1300) * 2 - 1) * hw, y, s: 1.3, a: 0.95 }); }
+  drawTube(mctx, TX.A, h.V, h.c, parts, (h.s / MAXP) * 0.9, []);
+  $("rname").textContent = t("solution", { c: t(h.n) }) + (h.pn ? " · " + t("ppt", { c: t(h.pn) }) : "");
+}
+let playRAF = 0;
+function togglePlay() {
+  playing = !playing; renderReplay(); cancelAnimationFrame(playRAF);
+  if (!playing) return; if (+$("replay").value >= 1000) $("replay").value = 0;
+  let lt = performance.now(); const id = $("replaySel").value, sg = S.seg[id], dur = Math.max(3, (sg.end - sg.start) * 0.08 * 2);
+  const tick = now => { const dt = (now - lt) / 1000; lt = now; const v = Math.min(1000, +$("replay").value + dt / dur * 1000); $("replay").value = v; renderReplay(); if (v < 1000 && playing) playRAF = requestAnimationFrame(tick); else { playing = false; renderReplay(); } };
+  playRAF = requestAnimationFrame(tick);
+}
+
+// quiz + scores
+function readScores() { try { return JSON.parse(localStorage.getItem("svl-scores") || "{}") || {}; } catch (e) { return {}; } }
+function saveScore(pct) { try { const s = readScores(); if (!(s[SIM_ID] >= pct)) { s[SIM_ID] = pct; localStorage.setItem("svl-scores", JSON.stringify(s)); } } catch (e) {} }
+function renderQuiz() {
+  const Q = t("quiz");
+  $("quiz").innerHTML = Q.map((q, i) => `<div class="q" id="q${i}"><p>${i + 1}. ${q.q}</p>${q.o.map((o, j) => `<button data-q="${i}" data-o="${j}">${o}</button>`).join("")}<div class="exp"></div></div>`).join("");
+  Object.entries(S.answered).forEach(([i, j]) => markAnswer(+i, j)); score();
+}
+function markAnswer(i, j) {
+  const ok = j === QUIZ_ANS[i];
+  $("q" + i).querySelectorAll("button").forEach((x, k) => { x.disabled = true; if (k === QUIZ_ANS[i]) x.classList.add("right"); else if (k === j) x.classList.add("wrong"); });
+  const d = document.createElement("div"); d.className = "note " + (ok ? "ok" : "bad"); d.textContent = t(ok ? "correct" : "notQuite") + t("quiz")[i].e;
+  const ex = $("q" + i).querySelector(".exp"); ex.innerHTML = ""; ex.append(d);
+}
+$("quiz").onclick = e => { const b = e.target.closest("button[data-q]"); if (!b) return; const i = +b.dataset.q, j = +b.dataset.o; if (i in S.answered) return; S.answered[i] = j; markAnswer(i, j); score(); };
+function score() {
+  const n = Object.keys(S.answered).length, s = Object.entries(S.answered).filter(([i, j]) => j === QUIZ_ANS[+i]).length, N = QUIZ_ANS.length;
+  if (n === N) saveScore(Math.round(s / N * 100));
+  const best = readScores()[SIM_ID];
+  $("score").textContent = `${s} / ${N}` + (n < N ? " · " + t("scoreLeft", { n: N - n }) : "") + (best !== undefined ? " · " + t("best", { p: best }) : "");
+}
+$("retryBtn").onclick = () => { S.answered = {}; renderQuiz(); };
+
+// static text + language
+function applyStatic() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("#langSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  $("appList").innerHTML = t("app").map(a => `<span>${a}</span>`).join("");
+  $("safeList").innerHTML = t("safe").map(a => `<li>${a}</li>`).join("");
+  try { const st = JSON.parse(localStorage.getItem("svl-student") || "null"); if (st && st.name) { $("student").hidden = false; $("student").textContent = t("student", { name: st.name, cls: st.cls ? " · " + st.cls : "" }); } } catch (e) {}
+}
+function renderAll() { applyStatic(); render(); renderLog(); renderTable(); renderCards(); renderReplaySel(); renderReplay(); renderQuiz(); }
+function applyLang(l) { LANG = l; try { localStorage.setItem("svl-lang", l); } catch (e) {} renderAll(); }
+document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+
+// tabs
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  ["guide", "obs", "colours", "quiz"].forEach(id => $("pane-" + id).hidden = id !== b.dataset.tab);
+  if (b.dataset.tab === "quiz") b.classList.remove("ping");
+  if (b.dataset.tab === "colours") renderReplay();
+});
+
+// wiring
+$("gogglesBtn").onclick = toggleGoggles; $("fumeBtn").onclick = toggleFume; $("fillBtn").onclick = fillTubes; $("resetBtn").onclick = reset;
+$("tubeSel").onchange = e => selectTube(e.target.value);
+document.querySelectorAll("#reagSeg button").forEach(b => b.onclick = () => selectReagent(b.dataset.r));
+$("dropBtn").onclick = () => addOne();
+const hb = $("holdBtn");
+hb.addEventListener("pointerdown", e => { e.preventDefault(); try { hb.setPointerCapture(e.pointerId); } catch (_) {} if (addOne()) { S.holding = true; S.holdAcc = 0; hb.classList.add("active"); } });
+["pointerup", "pointercancel", "lostpointercapture"].forEach(ev => hb.addEventListener(ev, stopHold));
+hb.addEventListener("keydown", e => { if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); if (addOne()) { S.holding = true; S.holdAcc = 0; hb.classList.add("active"); } } });
+hb.addEventListener("keyup", e => { if (e.key === " " || e.key === "Enter") stopHold(); });
+cv.addEventListener("pointerdown", e => {
+  const r = cv.getBoundingClientRect(), x = (e.clientX - r.left - ox) / sc, y = (e.clientY - r.top - oy) / sc;
+  for (const id of ["A", "B", "C"]) if (Math.abs(x - TX[id]) < 32 && y > G.top - 25 && y < G.bot + 20) return selectTube(id);
+  for (const k of Object.keys(BOT_X)) if (Math.abs(x - BOT_X[k]) < 30 && y > 370 && y < 500) return selectReagent(k);
+});
+$("replaySel").onchange = () => { playing = false; $("replay").value = 0; renderReplay(); };
+$("replay").oninput = () => { playing = false; renderReplay(); };
+$("playBtn").onclick = togglePlay;
+document.addEventListener("keydown", e => {
+  if (e.target.matches("input,textarea,select") || e.ctrlKey || e.metaKey) return;
+  const k = e.key.toLowerCase();
+  if (k === "a" || k === "b" || k === "c") selectTube(k.toUpperCase());
+  else if (k === "1") selectReagent("nh3"); else if (k === "2") selectReagent("hcl"); else if (k === "3") selectReagent("water");
+  else if (k === "d") addOne();
+});
+
+readTokens(); resize(); S = freshState(); renderAll();
+requestAnimationFrame(frame);
+})();
+</script>

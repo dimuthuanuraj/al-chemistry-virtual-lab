@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Compare the reactions of Na, Mg and Ca with air, water and dilute acid and identify trends in groups 1 and 2.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+.svlnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:#0E1A2B;background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:28px 28px;color:#F4F1EA;font:500 14px/1.2 "IBM Plex Sans","Noto Sans Sinhala","Noto Sans Tamil",system-ui,sans-serif}
+.svlnav .in{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.svlnav a{color:#F4F1EA;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1.5px solid rgba(212,196,255,.45);border-radius:999px}
+.svlnav a:hover{background:rgba(212,196,255,.14)}
+.svlnav a:focus-visible{outline:3px solid #FFC857;outline-offset:2px}
+.svlnav .pos{color:#D4C4FF;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;margin-left:auto}
+.svlnav .pn{display:flex;gap:8px}
+@media (max-width:560px){.svlnav .lbl{display:none}.svlnav .pos{margin-left:0}}
+</style>
+<title>s-Block Metals Bench</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap">
+<style>
+
+/* Layout: bench stage (balance / volumetric flask / pipette views) with a step-by-step action dock, working notebook on the right. Same system as the KMnO₄ bench. */
+:root{
+  --bg:#e7eceb; --surface:#f8faf9; --surface-2:#eef2f1; --ink:#162127; --muted:#56666c; --line:#cbd5d4;
+  --accent:#8b1d6f; --accent-soft:#f3dcea; --on-accent:#ffffff; --current:#b7791f;
+  --ok:#2c7a4d; --ok-soft:#dcefe3; --warn:#9a520a; --warn-soft:#f8e8d5; --bad:#a3302b; --bad-soft:#f6dedc;
+  --wall-top:#dde5e4; --wall-bot:#c5d0cf; --bench:#2a3236; --bench-edge:#1b2124; --glass:rgba(40,60,70,.55);
+  --f-display:"Bricolage Grotesque", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", "Noto Sans Sinhala", "Noto Sans Tamil", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 28px}
+:lang(si) body,:lang(ta) body{line-height:1.65}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.top > div:first-child{min-width:0}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+:lang(si) .eyebrow,:lang(ta) .eyebrow{letter-spacing:.02em;font-size:12.5px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 6px;text-wrap:balance;letter-spacing:-.01em}
+:lang(si) h1,:lang(ta) h1{letter-spacing:0;font-size:clamp(22px,2.6vw,32px);line-height:1.3}
+.sub{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.top-actions{display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap}
+.student{font-size:13px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;min-height:44px;font-weight:500;font-size:14px;transition:background .15s,border-color .15s,transform .05s;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.next{border-color:var(--current);box-shadow:0 0 0 3px color-mix(in srgb,var(--current) 30%,transparent)}
+.btn.sm{min-height:40px;padding:6px 10px}
+.btn[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.btn.hold{touch-action:none;user-select:none;-webkit-user-select:none}
+.btn.hold.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface-2)}
+.seg button{border:0;background:transparent;padding:8px 12px;min-height:42px;font-size:14px;font-weight:500;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.lang button{min-height:36px}
+.lang button[lang="si"]{font-family:"Noto Sans Sinhala",var(--f-body)}
+.lang button[lang="ta"]{font-family:"Noto Sans Tamil",var(--f-body)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.modebar{display:flex;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.prompt{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.prompt .dot{width:9px;height:9px;border-radius:50%;background:var(--current);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--current) 25%,transparent)}
+.prompt p{margin:0;font-weight:500;min-width:0}
+.viewport{position:relative;height:clamp(320px,calc(100vh - 470px),560px);background:var(--wall-bot);user-select:none;-webkit-user-select:none}
+@media (max-width:980px){.viewport{height:clamp(260px,62vw,520px)}}
+canvas#cv{display:block;width:100%;height:100%;touch-action:none}
+.chips{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;max-width:60%}
+.chip{font-family:var(--f-mono);font-size:12.5px;background:#0E1A2B;color:#D4C4FF;border:1px solid rgba(212,196,255,.25);padding:3px 10px;border-radius:999px}
+.chip.ok{color:#9fe6b8;border-color:#2c7a4d}
+.chip.bad{color:#ffb4ab;border-color:#a3302b}
+.toast{position:absolute;left:50%;bottom:14px;transform:translate(-50%,10px);opacity:0;transition:opacity .25s,transform .25s;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 28px);width:max-content;pointer-events:none;text-align:center;z-index:5}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.toast.good{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.toast.party{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);font-weight:600}
+.dock{display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.panelbox{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:10px}
+.panelbox > p{margin:0;font-weight:500}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-right:2px}
+:lang(si) .label,:lang(ta) .label{letter-spacing:0;font-size:12.5px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.fields label{display:flex;flex-direction:column;gap:4px;font-size:13px;min-width:0}
+input[type=number]{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:15px;font-family:var(--f-mono);max-width:100%}
+input.ok{border-color:var(--ok);background:var(--ok-soft)}
+input.bad{border-color:var(--bad);background:var(--bad-soft)}
+.slider{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-width:0;max-width:420px}
+.slider input{flex:1;min-width:0}
+input[type=range]{accent-color:var(--accent);min-height:30px}
+.beamctl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.beamctl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.beamctl div{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:9px;padding:4px;background:var(--surface);min-width:0}
+.beamctl span{flex:1;text-align:center;font-family:var(--f-mono);font-size:12.5px;min-width:0}
+.note{font-size:13.5px;padding:8px 10px;border-radius:8px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.note.info{background:var(--surface);border:1px solid var(--line)}
+.calcline{font-family:var(--f-mono);font-size:13px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.tabs button{flex:1;min-width:0;border:0;background:transparent;padding:12px 4px;min-height:46px;font-weight:600;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;line-height:1.3;position:relative}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs button.ping::after{content:"";position:absolute;top:8px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--current)}
+.pane{padding:16px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:980px){.pane{max-height:none}}
+h2{font-family:var(--f-display);font-size:18px;font-weight:700;margin:0}
+h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+:lang(si) h3,:lang(ta) h3{letter-spacing:0;font-size:13px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2)}
+.box.safety{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.box.safety h3{color:var(--warn)}
+.box.safety ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ring{position:relative;width:46px;height:46px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;font-weight:500}
+.chiplist{display:flex;flex-wrap:wrap;gap:6px}
+.chiplist span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;background:var(--surface)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid transparent}
+.steps li .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-family:var(--f-mono);color:var(--muted);margin-top:2px}
+.steps li.done{color:var(--muted)}
+.steps li.done .tick{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.steps li.now{background:var(--surface);border-color:var(--current)}
+.steps li.now .tick{border-color:var(--current);color:var(--current)}
+.log{font-size:13.5px;display:flex;flex-direction:column;gap:5px;max-height:240px;overflow:auto}
+.log > div{display:grid;grid-template-columns:58px 1fr;gap:6px}
+.log span{font-family:var(--f-mono);color:var(--muted);font-size:11.5px;padding-top:2px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:7px 8px;background:var(--surface-2);font-weight:600}
+:lang(si) th,:lang(ta) th{letter-spacing:0;font-size:12px}
+td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+td.num{font-family:var(--f-mono);white-space:nowrap;text-align:right}
+.cc{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px}
+.cc .ttl{display:flex;justify-content:flex-end}
+.cc .ttl em{font-style:normal;font-weight:500;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.cc .ttl em.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.cc .flow{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start}
+.cc .st{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:13px;min-width:0}
+.cc .st small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+:lang(si) .cc .st small,:lang(ta) .cc .st small{letter-spacing:0}
+.cc .arrow{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);padding-top:14px;max-width:110px;text-align:center}
+.cc .arrow b{font-size:20px;color:var(--ink);line-height:1}
+.cc svg{width:90px;height:60px;border-radius:8px;border:1px solid var(--line);background:#ffffff}
+.cc .via{font-size:12.5px;color:var(--muted);text-align:center}
+.replaycv{width:100%;max-width:100%;aspect-ratio:3/2;border-radius:10px;border:1px solid var(--line);display:block;background:#ffffff}
+.q{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}
+.q p{margin:0 0 4px;font-weight:600}
+.q button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px}
+.q button:hover:not(:disabled){border-color:var(--accent)}
+.q button.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.q button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.q button:disabled{cursor:default}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--accent);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px;max-width:100%}
+.trend{font-size:13.5px}
+#stSeg button{font-size:13px}
+</style>
+</head>
+<body>
+<nav class="svlnav" aria-label="Practicals">
+<div class="in"><a href="../index.html#practicals">← <span data-svlnav="home">A/L labs</span></a>
+<span class="pos">Exp 9 · 9 / 22</span>
+<span class="pn"><a href="hess-law.html" rel="prev">‹ <span class="lbl" data-svlnav="prev">Previous</span></a><a href="flame-tests.html" rel="next"><span class="lbl" data-svlnav="next">Next</span> ›</a></span></div>
+</nav>
+<script>
+(function(){var L={en:{home:"All practicals",prev:"Previous",next:"Next"},si:{home:"සියලු ප්‍රායෝගික",prev:"පෙර",next:"ඊළඟ"},ta:{home:"எல்லாச் செய்முறைகளும்",prev:"முந்தையது",next:"அடுத்தது"}};
+function lang(){try{var l=localStorage.getItem("svl-lang");if(L[l])return l;}catch(e){}return "en";}
+function apply(){var l=lang();document.querySelectorAll("[data-svlnav]").forEach(function(e){e.textContent=L[l][e.getAttribute("data-svlnav")];});}
+apply();document.addEventListener("click",function(){setTimeout(apply,60);});})();
+</script>
+
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1 data-i18n="title"></h1>
+      <div class="sub">NIE Practical Handbook (2018) · al-exp-09 · Na · Mg · Ca</div>
+    </div>
+    <div class="top-actions">
+      <span class="student" id="student" hidden></span>
+      <div class="seg lang" role="group" aria-label="Language / භාෂාව / மொழி" id="langSeg">
+        <button data-lang="si" lang="si" aria-pressed="false">සිංහල</button>
+        <button data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button data-lang="ta" lang="ta" aria-pressed="false">தமிழ்</button>
+      </div>
+      <button class="btn" id="resetBtn" data-i18n="reset"></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="modebar">
+        <div class="seg" role="group" id="stSeg" data-i18n-aria="stationsL">
+          <button data-st="store" data-i18n="stStore"></button>
+          <button data-st="mg" data-i18n="stMg"></button>
+          <button data-st="water" data-i18n="stWater"></button>
+          <button data-st="acid" data-i18n="stAcid"></button>
+        </div>
+        <span style="flex:1"></span>
+        <button class="btn" id="gogBtn" aria-pressed="false"></button>
+      </div>
+      <div class="prompt"><span class="dot"></span><p id="prompt" aria-live="polite"></p></div>
+      <div class="viewport" id="viewport">
+        <canvas id="cv" role="img" tabindex="0"></canvas>
+        <div class="chips" id="chips"></div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+      <div class="dock"><div class="panelbox" id="panel" aria-live="polite"></div></div>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="guide" data-i18n="tabGuide"></button>
+        <button role="tab" aria-selected="false" data-tab="obs" data-i18n="tabObs"></button>
+        <button role="tab" aria-selected="false" data-tab="colours" data-i18n="tabColours"></button>
+        <button role="tab" aria-selected="false" data-tab="quiz" data-i18n="tabQuiz" id="quizTab"></button>
+      </div>
+      <div class="pane" id="pane-guide">
+        <div class="headrow">
+          <div><h3 data-i18n="aimH"></h3><p class="small" data-i18n="aim"></p></div>
+          <div class="ring" aria-hidden="true"><svg width="46" height="46"><circle cx="23" cy="23" r="18" fill="none" stroke="var(--line)" stroke-width="4"/><circle id="ringArc" cx="23" cy="23" r="18" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><span id="ringTxt">0/6</span></div>
+        </div>
+        <div><h3 data-i18n="appH"></h3><div class="chiplist" id="appList"></div></div>
+        <div><h3 data-i18n="procH"></h3><ul class="steps" id="steps"></ul></div>
+        <div class="box safety"><h3 data-i18n="safeH"></h3><ul id="safeList"></ul></div>
+      </div>
+      <div class="pane" id="pane-obs" hidden>
+        <div><h3 data-i18n="logH"></h3><div class="log" id="log"></div></div>
+        <div><h3 data-i18n="resH"></h3><div class="tablewrap"><table><thead><tr><th data-i18n="thMetal"></th><th data-i18n="thAir"></th><th data-i18n="thWater"></th><th data-i18n="thAcid"></th></tr></thead><tbody id="tbR"></tbody></table></div></div>
+        <p class="trend" id="trend"></p>
+      </div>
+      <div class="pane" id="pane-colours" hidden>
+        <h2 data-i18n="coloursH"></h2>
+        <div id="cards" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div class="box" style="display:flex;flex-direction:column;gap:8px">
+          <h3 data-i18n="replayH" style="margin:0"></h3>
+          <select id="rsel" data-i18n-aria="replayH"></select>
+          <canvas id="mini" class="replaycv" width="600" height="400" aria-hidden="true"></canvas>
+          <input type="range" id="replay" min="0" max="1000" value="1000" data-i18n-aria="replayH">
+          <div class="row"><button class="btn" id="playBtn"></button><span class="small" id="rname"></span></div>
+        </div>
+      </div>
+      <div class="pane" id="pane-quiz" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <h2 data-i18n="quizH"></h2><span class="score" id="score"></span>
+        </div>
+        <div id="quiz" style="display:flex;flex-direction:column;gap:12px"></div>
+        <button class="btn" id="retryBtn" data-i18n="tryAgain" style="align-self:flex-start"></button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const SIM_ID = "al-exp-09";
+
+// =====================================================================
+// LANGUAGES
+// =====================================================================
+const I18N = {
+en: {
+  eyebrow: "A/L Chemistry · Unit 06 · s, p and d block · Experiment 9", title: "s-block metals with air, water and acids", student: "Student: {name}{cls}", reset: "Reset bench",
+  gog: "Put on goggles", gogOn: "Goggles on", stationsL: "Bench stations",
+  stStore: "1–2 · Storage & cutting", stMg: "3 · Mg in air", stWater: "4–5 · Water", stAcid: "6 · Dilute acid",
+  p_store0: "Look at how the three metals are stored.", p_store1: "Take a piece of sodium out of the kerosene with tongs and put it on the white tile.", p_store2: "Drag the knife across the sodium to cut it (or use the Cut button).", p_store3: "Move the time-lapse slider to watch the cut surface in air for 5 minutes.", p_storeDone: "Sodium tarnishes within minutes. Go to 3 · Mg in air.",
+  bInspect: "Inspect the storage", bTongs: "Take out Na with tongs", bCut: "Cut with knife", tlL: "Time in air: {m} min",
+  p_mg0: "Rub the magnesium ribbon with sandpaper to remove the dull oxide layer.", p_mg1: "Leave the clean ribbon in air and compare it with sodium.", p_mg2: "Light the burner, then hold the ribbon in the flame with tongs.", p_mgBurn: "Magnesium is burning. Do not look directly at the flame.", p_mgDone: "Magnesium has burned. Go to 4–5 · Water.",
+  bSand: "Rub with sandpaper", bAir: "Leave in air (time-lapse)", bBurner: "Light burner", bBurn: "Hold Mg in flame",
+  p_w0: "Add phenolphthalein to the water in the trough and the test tubes, and put up the safety screen.", p_w1: "Dry the small piece of sodium on filter paper, then drag it into the trough.", p_w2: "Watch the sodium react.", p_w3: "Drag Ca into the first tube, and Mg into the cold-water and hot-water tubes.", p_w4: "Watch the tubes.", p_wDone: "Done. Go to 6 · Dilute acid.",
+  bPhph: "Add phenolphthalein", bScreen: "Put up safety screen", bDry: "Dry Na on filter paper",
+  p_a0: "Drag the Mg ribbon and the Ca granule into the tubes of dilute HCl. Never sodium!", p_a1: "Watch the reactions.", p_a2: "Test the gas with a burning splint.", p_aDone: "All steps done. Now try the Questions tab.", bPop: "Burning splint at the mouth",
+  tGog: "Put on safety goggles first. Sodium and calcium react violently, and burning magnesium is very bright.", tOrder: "Do the steps in order. Finish step {n} first: {s}",
+  tPhFirst: "Add phenolphthalein first, so you can see whether an alkali forms.", tScreen: "Put up the safety screen first: sodium can spit and pop on water.", tDry: "Dry the sodium on filter paper first, to remove the kerosene.",
+  tNaAcid: "STOP! Never add sodium to acid. The reaction is violent and can explode.", tLook: "Do not look directly at burning magnesium: the white light is very intense and can hurt your eyes.",
+  tClean: "Clean the ribbon with sandpaper first: the oxide layer stops it lighting easily.", tBurner: "Light the burner first.", tAirFirst: "Leave the clean ribbon in air first and compare it with sodium.", tTongs: "Never touch sodium with your fingers: it reacts with the moisture on your skin. Use tongs.",
+  tNaWait: "Wait for the sodium reaction to finish first.", tWrongTube: "Put Ca in the first tube, and Mg in the cold-water and hot-water tubes.", tInspect: "Look at the storage first.",
+  lStore: "Sodium is stored under kerosene (paraffin oil) to keep out air and moisture. Magnesium ribbon is kept in a dry, closed bottle; calcium in an airtight bottle.",
+  lCut: "Sodium is soft and is easily cut with a knife. The freshly cut surface is shiny and silvery.", lTarnish: "Within minutes the shiny surface tarnishes to dull grey-white (Na₂O, then NaOH and Na₂CO₃).",
+  lClean: "After rubbing with sandpaper, the magnesium ribbon has a shiny silvery surface.", lAir: "Magnesium tarnishes only slowly in air: a thin protective layer of MgO forms. It stays shiny much longer than sodium.",
+  lBurn: "Magnesium burns with a dazzling white flame, leaving a white ash (MgO, with some Mg₃N₂). 2Mg + O₂ → 2MgO",
+  lNa: "Sodium floats, melts into a silvery ball and darts about on the surface with a hissing sound until it disappears. Pink streaks spread from it: NaOH is formed. 2Na + 2H₂O → 2NaOH + H₂",
+  lCa: "Calcium sinks and reacts steadily with effervescence. The solution turns pink and slightly milky (Ca(OH)₂ is only slightly soluble). Ca + 2H₂O → Ca(OH)₂ + H₂",
+  lMgC: "Magnesium shows almost no reaction with cold water: only a few tiny bubbles after a long time.", lMgH: "With hot water, magnesium gives slow bubbles and a faint pink colour. Mg + 2H₂O → Mg(OH)₂ + H₂",
+  lMgA: "Magnesium reacts vigorously with dilute HCl, with rapid effervescence. The ribbon dissolves to give a colourless solution and the tube gets warm. Mg + 2HCl → MgCl₂ + H₂",
+  lCaA: "Calcium reacts very vigorously with dilute HCl, with rapid effervescence, giving a colourless solution. Ca + 2HCl → CaCl₂ + H₂", lPop: "The gas burns with a squeaky pop: it is hydrogen.",
+  chipTL: "Time-lapse {m} min", chipBurner: "Burner {s}", chipPh: "Phenolphthalein added", chipScreen: "Safety screen up", on: "on", off: "off",
+  cvKero: "kerosene", cvNa: "Na", cvMg: "Mg", cvCa: "Ca", cvMgR: "Mg ribbon", cvCaG: "Ca granules", cvTile: "white tile", cvKnife: "knife", cvShiny: "shiny silver", cvTarn: "tarnishing", cvDull: "dull grey-white",
+  cvSand: "sandpaper", cvBurner: "burner", cvAsh: "white ash (MgO)", cvLook: "⚠ Do not look directly at the flame", cvTrough: "trough", cvColourless: "colourless", cvPink: "pink", cvFaint: "faint pink", cvMilky: "pink, slightly milky",
+  cvCold: "cold water", cvHot: "hot water", cvHCl: "dil. HCl", cvScreen: "safety screen", cvFilter: "filter paper", cvNoChange: "almost no change", cvFizz: "fizzing (H₂)", cvAirtight: "airtight", cvDryB: "dry bottle", cvShinyMg: "shiny", cvDullMg: "dull grey", cvBall: "molten ball", cvDrag: "drag ↑", cvMat: "heat-proof mat", cvTongs: "tongs", cvWarm: "warm", cvNaLock: "NOT into acid",
+  tabGuide: "Guide", tabObs: "Observations", tabColours: "Colours", tabQuiz: "Questions",
+  aimH: "Aim", aim: "Compare the reactions of Na, Mg and Ca with air, water and dilute acid and identify trends in groups 1 and 2.",
+  appH: "Apparatus and chemicals", app: ["Na (under kerosene)", "Mg ribbon", "Ca granules", "Trough", "Test tubes", "Filter paper", "Sandpaper", "Burner", "Dilute HCl", "Phenolphthalein"],
+  procH: "Procedure", steps: ["Note how Na and Mg are stored (Na under kerosene)", "Cut Na: observe the shiny surface tarnish within minutes", "Clean Mg and leave in air; then burn Mg in air (brilliant white flame, white ash)", "Add a small piece of Na to water containing phenolphthalein (trough)", "Add Ca to water; Mg to cold and to hot water with phenolphthalein", "Add Mg and Ca to dilute HCl (never Na)"],
+  safeH: "Safety", safe: ["Wear safety goggles throughout.", "Handle sodium only with tongs and a knife; use a piece no bigger than a grain of rice, behind a safety screen.", "Never add sodium to acid: the reaction is explosive.", "Do not look directly at burning magnesium.", "Dilute HCl is corrosive; wash any spill with plenty of water."],
+  logH: "Observation log", resH: "Results", thMetal: "Metal", thAir: "Air", thWater: "Water", thAcid: "Dilute HCl",
+  rNaAir: "tarnishes within minutes", rNaW: "very vigorous: floats, melts, darts; pink", rNaA: "never done (explosive)", rMgAir: "tarnishes slowly; burns with dazzling white flame", rMgW: "cold: almost none; hot: slow bubbles, faint pink", rMgA: "vigorous fizzing", rCaAir: "kept in airtight bottle", rCaW: "steady fizzing; pink, slightly milky", rCaA: "very vigorous fizzing",
+  trend: "Reactivity with water: Na > Ca > Mg. Group 1 metals are more reactive than group 2 metals, and reactivity increases down a group (Ca > Mg).",
+  coloursH: "Colour changes",
+  k1b: "colourless water + phenolphthalein", k1r: "Na / Ca / Mg (hot water)", k1a: "pink (alkali formed)", k2b: "shiny cut Na surface", k2r: "air, 5 min", k2a: "dull grey-white", k3b: "grey Mg ribbon", k3r: "burn in air", k3a: "dazzling white flame → white ash MgO",
+  before: "Before", after: "After", seen: "Seen", notYet: "Not seen yet",
+  replayH: "Replay a recorded change", play: "Play slowly", pause: "Pause", rNone: "Do the experiment to record this change.",
+  sColourless: "colourless", sStreaks: "pink streaks spreading", sPink: "pink", sFaint: "faint pink", sMilky: "pink, slightly milky", sShiny: "shiny silver", sTarn: "tarnishing", sDull: "dull grey-white", sGrey: "grey ribbon", sFlame: "dazzling white flame", sAsh: "white ash (MgO)",
+  rcNa: "Na in water + phenolphthalein", rcCa: "Ca in water + phenolphthalein", rcMgH: "Mg in hot water + phenolphthalein", rcCut: "cut Na in air", rcBurn: "burning Mg",
+  quizH: "Knowledge check", tryAgain: "Try again", best: "best {p}%", scoreLeft: "{n} left", correct: "Correct. ", notQuite: "Not quite. ", tDone: "Practical complete! Now answer the questions in the Questions tab.",
+  canvasAria: "Lab bench station for the s-block metals: storage jars, white tile and knife, magnesium and burner, water trough and test tubes, or tubes of dilute acid. Metal pieces can be dragged into the vessels.",
+  quiz: [
+    { q: "Why is sodium stored under kerosene?", o: ["It reacts with air and water", "It is light", "It dissolves", "It is a liquid"], e: "Highly reactive." },
+    { q: "The water turns pink with Na because…", o: ["NaOH is formed", "Na is pink", "H₂ is pink", "phenolphthalein reacts with Na"], e: "Alkaline solution." },
+    { q: "Reactivity with water:", o: ["Mg > Ca > Na", "Na > Ca > Mg", "Ca > Na > Mg", "all equal"], e: "Group 1 > group 2; down a group increases." },
+    { q: "Burning Mg forms…", o: ["MgO only", "MgO and some Mg₃N₂", "MgCO₃", "Mg(OH)₂"], e: "Mg also reacts with N₂." },
+  ],
+},
+si: {
+  eyebrow: "උ.පෙ. රසායන විද්‍යාව · ඒකකය 06 · s, p සහ d ගොනුව · පරීක්ෂණය 9", title: "s-ගොනුවේ ලෝහ වාතය, ජලය සහ අම්ල සමඟ", student: "ශිෂ්‍යයා: {name}{cls}", reset: "නැවත අරඹන්න",
+  gog: "ආරක්ෂිත කණ්ණාඩි පළඳින්න", gogOn: "කණ්ණාඩි පැළඳ ඇත", stationsL: "මේස ස්ථාන",
+  stStore: "1–2 · ගබඩාව සහ කැපීම", stMg: "3 · වාතයේ Mg", stWater: "4–5 · ජලය", stAcid: "6 · තනුක අම්ලය",
+  p_store0: "ලෝහ තුන ගබඩා කර ඇති ආකාරය බලන්න.", p_store1: "අඬුවකින් භූමිතෙල් තුළින් සෝඩියම් කැබැල්ලක් ගෙන සුදු ටයිලය මත තබන්න.", p_store2: "සෝඩියම් කැපීමට පිහිය හරහා අදින්න (නැතහොත් කපන්න බොත්තම භාවිත කරන්න).", p_store3: "කැපූ පෘෂ්ඨය මිනිත්තු 5 ක් වාතයේ තිබීම බැලීමට කාල-පරාස ස්ලයිඩරය චලනය කරන්න.", p_storeDone: "සෝඩියම් මිනිත්තු කිහිපයකින් අඳුරු වේ. 3 · වාතයේ Mg වෙත යන්න.",
+  bInspect: "ගබඩාව පරීක්ෂා කරන්න", bTongs: "අඬුවෙන් Na ගන්න", bCut: "පිහියෙන් කපන්න", tlL: "වාතයේ කාලය: මිනිත්තු {m}",
+  p_mg0: "අඳුරු ඔක්සයිඩ ස්තරය ඉවත් කිරීමට මැග්නීසියම් පටිය වැලි කඩදාසියෙන් අතුල්ලන්න.", p_mg1: "පිරිසිදු පටිය වාතයේ තබා සෝඩියම් සමඟ සසඳන්න.", p_mg2: "දාහකය දල්වා, පසුව අඬුවෙන් පටිය දැල්ලේ අල්ලන්න.", p_mgBurn: "මැග්නීසියම් දැවෙමින් පවතී. දැල්ල දෙස කෙලින්ම නොබලන්න.", p_mgDone: "මැග්නීසියම් දැවී ඇත. 4–5 · ජලය වෙත යන්න.",
+  bSand: "වැලි කඩදාසියෙන් අතුල්ලන්න", bAir: "වාතයේ තබන්න (කාල-පරාස)", bBurner: "දාහකය දල්වන්න", bBurn: "Mg දැල්ලේ අල්ලන්න",
+  p_w0: "තැටියේ සහ පරීක්ෂණ නළවල ජලයට ෆීනෝල්ප්තලීන් එක් කර, ආරක්ෂක තිරය තබන්න.", p_w1: "කුඩා සෝඩියම් කැබැල්ල පෙරහන් කඩදාසියෙන් වියළා, පසුව තැටියට අදින්න.", p_w2: "සෝඩියම් ප්‍රතික්‍රියා කරන අයුරු බලන්න.", p_w3: "Ca පළමු නළයට ද, Mg සීතල ජල සහ උණු ජල නළවලට ද අදින්න.", p_w4: "නළ නිරීක්ෂණය කරන්න.", p_wDone: "අවසන්. 6 · තනුක අම්ලය වෙත යන්න.",
+  bPhph: "ෆීනෝල්ප්තලීන් එක් කරන්න", bScreen: "ආරක්ෂක තිරය තබන්න", bDry: "Na පෙරහන් කඩදාසියෙන් වියළන්න",
+  p_a0: "Mg පටිය සහ Ca කැටය තනුක HCl නළවලට අදින්න. කිසිවිටෙක සෝඩියම් නොවේ!", p_a1: "ප්‍රතික්‍රියා බලන්න.", p_a2: "දැවෙන ඉරටුවකින් වායුව පරීක්ෂා කරන්න.", p_aDone: "සියලු පියවර අවසන්. දැන් ප්‍රශ්න ටැබය උත්සාහ කරන්න.", bPop: "නළ කටට දැවෙන ඉරටුව",
+  tGog: "පළමුව ආරක්ෂිත කණ්ණාඩි පළඳින්න. සෝඩියම් සහ කැල්සියම් ප්‍රචණ්ඩ ලෙස ප්‍රතික්‍රියා කරන අතර දැවෙන මැග්නීසියම් ඉතා දීප්තිමත්ය.", tOrder: "පියවර පිළිවෙළට කරන්න. පළමුව පියවර {n} අවසන් කරන්න: {s}",
+  tPhFirst: "ක්ෂාරයක් සෑදේදැයි දැකීමට පළමුව ෆීනෝල්ප්තලීන් එක් කරන්න.", tScreen: "පළමුව ආරක්ෂක තිරය තබන්න: ජලය මත සෝඩියම් විසිරී පිපිරිය හැක.", tDry: "භූමිතෙල් ඉවත් කිරීමට පළමුව සෝඩියම් පෙරහන් කඩදාසියෙන් වියළන්න.",
+  tNaAcid: "නවතින්න! කිසිවිටෙක සෝඩියම් අම්ලයට එක් නොකරන්න. ප්‍රතික්‍රියාව ප්‍රචණ්ඩ වන අතර පිපිරිය හැක.", tLook: "දැවෙන මැග්නීසියම් දෙස කෙලින්ම නොබලන්න: සුදු ආලෝකය ඉතා තීව්‍ර වන අතර ඇස්වලට හානි කළ හැක.",
+  tClean: "පළමුව පටිය වැලි කඩදාසියෙන් පිරිසිදු කරන්න: ඔක්සයිඩ ස්තරය නිසා එය පහසුවෙන් දැල්වෙන්නේ නැත.", tBurner: "පළමුව දාහකය දල්වන්න.", tAirFirst: "පළමුව පිරිසිදු පටිය වාතයේ තබා සෝඩියම් සමඟ සසඳන්න.", tTongs: "කිසිවිටෙක සෝඩියම් ඇඟිලිවලින් අල්ලන්න එපා: එය සමේ තෙතමනය සමඟ ප්‍රතික්‍රියා කරයි. අඬුවක් භාවිත කරන්න.",
+  tNaWait: "පළමුව සෝඩියම් ප්‍රතික්‍රියාව අවසන් වන තුරු රැඳී සිටින්න.", tWrongTube: "Ca පළමු නළයට ද, Mg සීතල ජල සහ උණු ජල නළවලට ද දමන්න.", tInspect: "පළමුව ගබඩාව බලන්න.",
+  lStore: "වාතය සහ තෙතමනය වැළැක්වීමට සෝඩියම් භූමිතෙල් (පැරෆින් තෙල්) යට ගබඩා කෙරේ. මැග්නීසියම් පටිය වියළි, වසා ඇති බෝතලයක ද, කැල්සියම් වාතය නොරිංගන බෝතලයක ද තබයි.",
+  lCut: "සෝඩියම් මෘදු වන අතර පිහියෙන් පහසුවෙන් කැපිය හැක. අලුතින් කැපූ පෘෂ්ඨය දිලිසෙන, රිදී පැහැයි.", lTarnish: "මිනිත්තු කිහිපයක් තුළ දිලිසෙන පෘෂ්ඨය අඳුරු අළු-සුදු පැහැයට පත් වේ (Na₂O, පසුව NaOH සහ Na₂CO₃).",
+  lClean: "වැලි කඩදාසියෙන් අතුල්ලූ පසු මැග්නීසියම් පටියට දිලිසෙන රිදී පෘෂ්ඨයක් ඇත.", lAir: "මැග්නීසියම් වාතයේ අඳුරු වන්නේ සෙමිනි: තුනී ආරක්ෂක MgO ස්තරයක් සෑදේ. එය සෝඩියම්ට වඩා බොහෝ කාලයක් දිලිසෙයි.",
+  lBurn: "මැග්නීසියම් දීප්තිමත් සුදු දැල්ලකින් දැවී සුදු අළු (MgO, Mg₃N₂ ස්වල්පයක් සමඟ) ඉතිරි කරයි. 2Mg + O₂ → 2MgO",
+  lNa: "සෝඩියම් පාවී, රිදී පැහැති බෝලයක් ලෙස දිය වී, හිස් හඬක් සමඟ අතුරුදහන් වන තුරු පෘෂ්ඨය මත ඉක්මනින් ගමන් කරයි. එයින් රෝස ඉරි පැතිරේ: NaOH සෑදේ. 2Na + 2H₂O → 2NaOH + H₂",
+  lCa: "කැල්සියම් ගිලී බුබුලු සමඟ ස්ථාවරව ප්‍රතික්‍රියා කරයි. ද්‍රාවණය රෝස සහ මඳක් කිරි පැහැ වේ (Ca(OH)₂ ස්වල්ප වශයෙන් පමණක් ද්‍රාව්‍යයි). Ca + 2H₂O → Ca(OH)₂ + H₂",
+  lMgC: "මැග්නීසියම් සීතල ජලය සමඟ කිසිදු ප්‍රතික්‍රියාවක් නොපෙන්වයි: දිගු කාලයකට පසු ඉතා කුඩා බුබුලු කිහිපයක් පමණි.", lMgH: "උණු ජලය සමඟ මැග්නීසියම් සෙමින් බුබුලු සහ ලා රෝස පැහැයක් ලබා දෙයි. Mg + 2H₂O → Mg(OH)₂ + H₂",
+  lMgA: "මැග්නීසියම් තනුක HCl සමඟ වේගවත් බුබුලු නැංවීමක් සමඟ ප්‍රබල ලෙස ප්‍රතික්‍රියා කරයි. පටිය දිය වී අවර්ණ ද්‍රාවණයක් සාදන අතර නළය උණුසුම් වේ. Mg + 2HCl → MgCl₂ + H₂",
+  lCaA: "කැල්සියම් තනුක HCl සමඟ වේගවත් බුබුලු නැංවීමක් සමඟ ඉතා ප්‍රබල ලෙස ප්‍රතික්‍රියා කර අවර්ණ ද්‍රාවණයක් ලබා දෙයි. Ca + 2HCl → CaCl₂ + H₂", lPop: "වායුව 'පොප්' හඬකින් දැවේ: එය හයිඩ්‍රජන් ය.",
+  chipTL: "කාල-පරාස මිනිත්තු {m}", chipBurner: "දාහකය {s}", chipPh: "ෆීනෝල්ප්තලීන් එක් කළා", chipScreen: "ආරක්ෂක තිරය ඇත", on: "දල්වා ඇත", off: "නිවා ඇත",
+  cvKero: "භූමිතෙල්", cvNa: "Na", cvMg: "Mg", cvCa: "Ca", cvMgR: "Mg පටිය", cvCaG: "Ca කැට", cvTile: "සුදු ටයිලය", cvKnife: "පිහිය", cvShiny: "දිලිසෙන රිදී", cvTarn: "අඳුරු වෙමින්", cvDull: "අඳුරු අළු-සුදු",
+  cvSand: "වැලි කඩදාසිය", cvBurner: "දාහකය", cvAsh: "සුදු අළු (MgO)", cvLook: "⚠ දැල්ල දෙස කෙලින්ම නොබලන්න", cvTrough: "තැටිය", cvColourless: "අවර්ණ", cvPink: "රෝස", cvFaint: "ලා රෝස", cvMilky: "රෝස, මඳක් කිරි පැහැ",
+  cvCold: "සීතල ජලය", cvHot: "උණු ජලය", cvHCl: "තනුක HCl", cvScreen: "ආරක්ෂක තිරය", cvFilter: "පෙරහන් කඩදාසිය", cvNoChange: "කිසිදු වෙනසක් නැති තරම්", cvFizz: "බුබුලු (H₂)", cvAirtight: "වාත රහිත", cvDryB: "වියළි බෝතලය", cvShinyMg: "දිලිසෙන", cvDullMg: "අඳුරු අළු", cvBall: "දියවූ බෝලය", cvDrag: "අදින්න ↑", cvMat: "තාප-ප්‍රතිරෝධී පැදුර", cvTongs: "අඬුව", cvWarm: "උණුසුම්", cvNaLock: "අම්ලයට නොවේ",
+  tabGuide: "මාර්ගෝපදේශය", tabObs: "නිරීක්ෂණ", tabColours: "වර්ණ", tabQuiz: "ප්‍රශ්න",
+  aimH: "අරමුණ", aim: "Na, Mg සහ Ca වාතය, ජලය සහ තනුක අම්ලය සමඟ දක්වන ප්‍රතික්‍රියා සසඳා 1 සහ 2 කාණ්ඩවල ප්‍රවණතා හඳුනා ගැනීම.",
+  appH: "උපකරණ සහ රසායන ද්‍රව්‍ය", app: ["Na (භූමිතෙල් යට)", "Mg පටිය", "Ca කැට", "තැටිය", "පරීක්ෂණ නළ", "පෙරහන් කඩදාසිය", "වැලි කඩදාසිය", "දාහකය", "තනුක HCl", "ෆීනෝල්ප්තලීන්"],
+  procH: "ක්‍රියා පිළිවෙළ", steps: ["Na සහ Mg ගබඩා කර ඇති ආකාරය සටහන් කරන්න (Na භූමිතෙල් යට)", "Na කපන්න: දිලිසෙන පෘෂ්ඨය මිනිත්තු කිහිපයකින් අඳුරු වන අයුරු නිරීක්ෂණය කරන්න", "Mg පිරිසිදු කර වාතයේ තබන්න; පසුව Mg වාතයේ දහනය කරන්න (දීප්තිමත් සුදු දැල්ල, සුදු අළු)", "ෆීනෝල්ප්තලීන් සහිත ජලයට (තැටිය) Na කුඩා කැබැල්ලක් එක් කරන්න", "ෆීනෝල්ප්තලීන් සහිතව Ca ජලයට ද, Mg සීතල සහ උණු ජලයට ද එක් කරන්න", "Mg සහ Ca තනුක HCl වලට එක් කරන්න (කිසිවිටෙක Na නොවේ)"],
+  safeH: "ආරක්ෂාව", safe: ["සෑම විටම ආරක්ෂිත කණ්ණාඩි පළඳින්න.", "සෝඩියම් අඬුවකින් සහ පිහියකින් පමණක් හසුරුවන්න; සහල් ඇටයකට වඩා විශාල නොවන කැබැල්ලක් ආරක්ෂක තිරයක් පිටුපස භාවිත කරන්න.", "කිසිවිටෙක සෝඩියම් අම්ලයට එක් නොකරන්න: ප්‍රතික්‍රියාව පුපුරන සුළුය.", "දැවෙන මැග්නීසියම් දෙස කෙලින්ම නොබලන්න.", "තනුක HCl විඛාදකයි; ඉසුණු දෑ ජලය බහුලව යොදා සෝදන්න."],
+  logH: "නිරීක්ෂණ සටහන", resH: "ප්‍රතිඵල", thMetal: "ලෝහය", thAir: "වාතය", thWater: "ජලය", thAcid: "තනුක HCl",
+  rNaAir: "මිනිත්තු කිහිපයකින් අඳුරු වේ", rNaW: "ඉතා ප්‍රබලයි: පාවේ, දිය වේ, ඉක්මනින් ගමන් කරයි; රෝස", rNaA: "කිසිවිටෙක නොකරයි (පුපුරන සුළුය)", rMgAir: "සෙමින් අඳුරු වේ; දීප්තිමත් සුදු දැල්ලකින් දැවේ", rMgW: "සීතල: නැති තරම්; උණු: සෙමින් බුබුලු, ලා රෝස", rMgA: "ප්‍රබල බුබුලු නැංවීම", rCaAir: "වාත රහිත බෝතලයක තබයි", rCaW: "ස්ථාවර බුබුලු; රෝස, මඳක් කිරි පැහැ", rCaA: "ඉතා ප්‍රබල බුබුලු නැංවීම",
+  trend: "ජලය සමඟ ප්‍රතික්‍රියාශීලීතාව: Na > Ca > Mg. 1 කාණ්ඩයේ ලෝහ 2 කාණ්ඩයේ ලෝහවලට වඩා ප්‍රතික්‍රියාශීලී වන අතර කාණ්ඩයක පහළට ප්‍රතික්‍රියාශීලීතාව වැඩි වේ (Ca > Mg).",
+  coloursH: "වර්ණ වෙනස්කම්",
+  k1b: "අවර්ණ ජලය + ෆීනෝල්ප්තලීන්", k1r: "Na / Ca / Mg (උණු ජලය)", k1a: "රෝස (ක්ෂාරය සෑදේ)", k2b: "දිලිසෙන කැපූ Na පෘෂ්ඨය", k2r: "වාතය, මිනිත්තු 5", k2a: "අඳුරු අළු-සුදු", k3b: "අළු පැහැ Mg පටිය", k3r: "වාතයේ දහනය", k3a: "දීප්තිමත් සුදු දැල්ල → සුදු අළු MgO",
+  before: "පෙර", after: "පසු", seen: "දුටුවා", notYet: "තවම දැක නැත",
+  replayH: "සටහන් කළ වෙනසක් නැවත බලන්න", play: "සෙමින් ධාවනය", pause: "නවතන්න", rNone: "මෙම වෙනස සටහන් කිරීමට පරීක්ෂණය කරන්න.",
+  sColourless: "අවර්ණ", sStreaks: "රෝස ඉරි පැතිරෙමින්", sPink: "රෝස", sFaint: "ලා රෝස", sMilky: "රෝස, මඳක් කිරි පැහැ", sShiny: "දිලිසෙන රිදී", sTarn: "අඳුරු වෙමින්", sDull: "අඳුරු අළු-සුදු", sGrey: "අළු පැහැ පටිය", sFlame: "දීප්තිමත් සුදු දැල්ල", sAsh: "සුදු අළු (MgO)",
+  rcNa: "ජලය + ෆීනෝල්ප්තලීන් තුළ Na", rcCa: "ජලය + ෆීනෝල්ප්තලීන් තුළ Ca", rcMgH: "උණු ජලය + ෆීනෝල්ප්තලීන් තුළ Mg", rcCut: "වාතයේ කැපූ Na", rcBurn: "දැවෙන Mg",
+  quizH: "දැනුම පරීක්ෂාව", tryAgain: "නැවත උත්සාහ කරන්න", best: "උපරිම {p}%", scoreLeft: "ඉතිරි {n}", correct: "නිවැරදියි. ", notQuite: "තවම නිවැරදි නැත. ", tDone: "ප්‍රායෝගිකය අවසන්! දැන් ප්‍රශ්න ටැබයේ ප්‍රශ්නවලට පිළිතුරු දෙන්න.",
+  canvasAria: "s-ගොනුවේ ලෝහ සඳහා රසායනාගාර මේස ස්ථානය: ගබඩා භාජන, සුදු ටයිලය සහ පිහිය, මැග්නීසියම් සහ දාහකය, ජල තැටිය සහ පරීක්ෂණ නළ, හෝ තනුක අම්ල නළ. ලෝහ කැබලි භාජනවලට ඇදිය හැක.",
+  quiz: [
+    { q: "සෝඩියම් භූමිතෙල් යට ගබඩා කරන්නේ ඇයි?", o: ["එය වාතය සහ ජලය සමඟ ප්‍රතික්‍රියා කරයි", "එය සැහැල්ලුයි", "එය දිය වේ", "එය ද්‍රවයකි"], e: "ඉතා ප්‍රතික්‍රියාශීලීයි." },
+    { q: "Na සමඟ ජලය රෝස පැහැ වන්නේ…", o: ["NaOH සෑදෙන නිසා", "Na රෝස නිසා", "H₂ රෝස නිසා", "ෆීනෝල්ප්තලීන් Na සමඟ ප්‍රතික්‍රියා කරන නිසා"], e: "ක්ෂාරීය ද්‍රාවණය." },
+    { q: "ජලය සමඟ ප්‍රතික්‍රියාශීලීතාව:", o: ["Mg > Ca > Na", "Na > Ca > Mg", "Ca > Na > Mg", "සියල්ල සමානයි"], e: "1 කාණ්ඩය > 2 කාණ්ඩය; කාණ්ඩයක පහළට වැඩි වේ." },
+    { q: "Mg දහනය කිරීමෙන් සෑදෙන්නේ…", o: ["MgO පමණි", "MgO සහ Mg₃N₂ ස්වල්පයක්", "MgCO₃", "Mg(OH)₂"], e: "Mg, N₂ සමඟ ද ප්‍රතික්‍රියා කරයි." },
+  ],
+},
+ta: {
+  eyebrow: "க.பொ.த (உ/த) இரசாயனவியல் · அலகு 06 · s, p, d தொகுதி · பரிசோதனை 9", title: "s-தொகுதி உலோகங்கள் வளி, நீர், அமிலங்களுடன்", student: "மாணவர்: {name}{cls}", reset: "மீண்டும் தொடங்கு",
+  gog: "பாதுகாப்புக் கண்ணாடி அணி", gogOn: "கண்ணாடி அணிந்துள்ளீர்", stationsL: "மேசை நிலையங்கள்",
+  stStore: "1–2 · சேமிப்பும் வெட்டலும்", stMg: "3 · வளியில் Mg", stWater: "4–5 · நீர்", stAcid: "6 · ஐதான அமிலம்",
+  p_store0: "மூன்று உலோகங்களும் எவ்வாறு சேமிக்கப்பட்டுள்ளன எனப் பார்க்க.", p_store1: "இடுக்கியால் மண்ணெண்ணெயிலிருந்து ஒரு சோடியம் துண்டை எடுத்து வெள்ளை ஓட்டில் வைக்க.", p_store2: "சோடியத்தை வெட்டக் கத்தியை அதன் குறுக்கே இழுக்க (அல்லது வெட்டு பொத்தானைப் பயன்படுத்துக).", p_store3: "வெட்டிய மேற்பரப்பை 5 நிமிடம் வளியில் பார்க்க நேரச்சுருக்க வழுக்கியை நகர்த்துக.", p_storeDone: "சோடியம் சில நிமிடங்களில் மங்குகிறது. 3 · வளியில் Mg இற்குச் செல்க.",
+  bInspect: "சேமிப்பைப் பரிசோதி", bTongs: "இடுக்கியால் Na ஐ எடு", bCut: "கத்தியால் வெட்டு", tlL: "வளியில் நேரம்: {m} நிமிடம்",
+  p_mg0: "மங்கிய ஒட்சைட்டுப் படையை அகற்ற மக்னீசியம் நாடாவை உப்புத்தாளால் தேய்க்க.", p_mg1: "சுத்தமான நாடாவை வளியில் வைத்துச் சோடியத்துடன் ஒப்பிடுக.", p_mg2: "சுவாலையைப் பற்றவைத்து, பின் இடுக்கியால் நாடாவைச் சுவாலையில் பிடிக்க.", p_mgBurn: "மக்னீசியம் எரிகிறது. சுவாலையை நேரடியாகப் பார்க்க வேண்டாம்.", p_mgDone: "மக்னீசியம் எரிந்துவிட்டது. 4–5 · நீர் இற்குச் செல்க.",
+  bSand: "உப்புத்தாளால் தேய்", bAir: "வளியில் வை (நேரச்சுருக்கம்)", bBurner: "சுவாலையைப் பற்றவை", bBurn: "Mg ஐச் சுவாலையில் பிடி",
+  p_w0: "தொட்டியிலும் சோதனைக் குழாய்களிலும் உள்ள நீருக்குப் பினோல்ப்தலீன் சேர்த்து, பாதுகாப்புத் திரையை வைக்க.", p_w1: "சிறிய சோடியம் துண்டை வடிதாளில் உலர்த்தி, பின் தொட்டிக்குள் இழுக்க.", p_w2: "சோடியம் தாக்கமடைவதைப் பார்க்க.", p_w3: "Ca ஐ முதல் குழாய்க்கும், Mg ஐக் குளிர்நீர், சுடுநீர்க் குழாய்களுக்கும் இழுக்க.", p_w4: "குழாய்களைக் கவனிக்க.", p_wDone: "முடிந்தது. 6 · ஐதான அமிலம் இற்குச் செல்க.",
+  bPhph: "பினோல்ப்தலீன் சேர்", bScreen: "பாதுகாப்புத் திரையை வை", bDry: "Na ஐ வடிதாளில் உலர்த்து",
+  p_a0: "Mg நாடாவையும் Ca சிறுமணியையும் ஐதான HCl குழாய்களுக்குள் இழுக்க. சோடியத்தை ஒருபோதும் இல்லை!", p_a1: "தாக்கங்களைப் பார்க்க.", p_a2: "எரியும் குச்சியால் வாயுவைச் சோதிக்க.", p_aDone: "எல்லாப் படிகளும் முடிந்தன. இப்போது வினாக்கள் தாவலை முயல்க.", bPop: "வாயருகே எரியும் குச்சி",
+  tGog: "முதலில் பாதுகாப்புக் கண்ணாடி அணிக. சோடியமும் கல்சியமும் தீவிரமாகத் தாக்கமடையும்; எரியும் மக்னீசியம் மிகப் பிரகாசமானது.", tOrder: "படிகளை வரிசையாகச் செய்க. முதலில் படி {n} ஐ முடிக்க: {s}",
+  tPhFirst: "காரம் உருவாகிறதா எனக் காண முதலில் பினோல்ப்தலீன் சேர்க்க.", tScreen: "முதலில் பாதுகாப்புத் திரையை வைக்க: நீரில் சோடியம் தெறித்து வெடிக்கலாம்.", tDry: "மண்ணெண்ணெயை அகற்ற முதலில் சோடியத்தை வடிதாளில் உலர்த்துக.",
+  tNaAcid: "நிறுத்து! சோடியத்தை ஒருபோதும் அமிலத்துக்குள் இடவேண்டாம். தாக்கம் தீவிரமானது, வெடிக்கக்கூடும்.", tLook: "எரியும் மக்னீசியத்தை நேரடியாகப் பார்க்க வேண்டாம்: வெள்ளை ஒளி மிகச் செறிவானது, கண்களைப் பாதிக்கலாம்.",
+  tClean: "முதலில் நாடாவை உப்புத்தாளால் சுத்தம் செய்க: ஒட்சைட்டுப் படை அது எளிதில் பற்றுவதைத் தடுக்கிறது.", tBurner: "முதலில் சுவாலையைப் பற்றவைக்க.", tAirFirst: "முதலில் சுத்தமான நாடாவை வளியில் வைத்துச் சோடியத்துடன் ஒப்பிடுக.", tTongs: "சோடியத்தை ஒருபோதும் விரல்களால் தொட வேண்டாம்: அது தோலின் ஈரத்துடன் தாக்கமடையும். இடுக்கியைப் பயன்படுத்துக.",
+  tNaWait: "முதலில் சோடியத் தாக்கம் முடியும் வரை காத்திருக்க.", tWrongTube: "Ca ஐ முதல் குழாயிலும், Mg ஐக் குளிர்நீர், சுடுநீர்க் குழாய்களிலும் இடுக.", tInspect: "முதலில் சேமிப்பைப் பார்க்க.",
+  lStore: "வளியையும் ஈரத்தையும் தவிர்க்கச் சோடியம் மண்ணெண்ணெயின் (பரபின் எண்ணெய்) கீழ் சேமிக்கப்படுகிறது. மக்னீசியம் நாடா உலர்ந்த மூடிய போத்தலிலும், கல்சியம் வளி புகாப் போத்தலிலும் வைக்கப்படுகின்றன.",
+  lCut: "சோடியம் மென்மையானது, கத்தியால் எளிதில் வெட்டலாம். புதிதாக வெட்டிய மேற்பரப்பு பளபளப்பான வெள்ளி நிறமானது.", lTarnish: "சில நிமிடங்களில் பளபளப்பான மேற்பரப்பு மங்கிய சாம்பல்-வெள்ளையாக மாறுகிறது (Na₂O, பின் NaOH, Na₂CO₃).",
+  lClean: "உப்புத்தாளால் தேய்த்த பின் மக்னீசியம் நாடா பளபளப்பான வெள்ளி மேற்பரப்பைக் கொண்டுள்ளது.", lAir: "மக்னீசியம் வளியில் மெதுவாகவே மங்குகிறது: மெல்லிய பாதுகாப்பான MgO படை உருவாகிறது. சோடியத்தை விட நீண்ட நேரம் பளபளப்பாக இருக்கும்.",
+  lBurn: "மக்னீசியம் கண்கூசும் வெள்ளைச் சுவாலையுடன் எரிந்து வெள்ளைச் சாம்பலை (MgO, சிறிது Mg₃N₂ உடன்) விட்டுச் செல்கிறது. 2Mg + O₂ → 2MgO",
+  lNa: "சோடியம் மிதந்து, வெள்ளி நிறக் கோளமாக உருகி, சீறும் ஒலியுடன் மறையும் வரை மேற்பரப்பில் அங்குமிங்கும் ஓடுகிறது. அதிலிருந்து இளஞ்சிவப்புக் கோடுகள் பரவுகின்றன: NaOH உருவாகிறது. 2Na + 2H₂O → 2NaOH + H₂",
+  lCa: "கல்சியம் அமிழ்ந்து நுரைத்தலுடன் சீராகத் தாக்கமடைகிறது. கரைசல் இளஞ்சிவப்பாகவும் சற்றுப் பால் நிறமாகவும் மாறுகிறது (Ca(OH)₂ சிறிதளவே கரையும்). Ca + 2H₂O → Ca(OH)₂ + H₂",
+  lMgC: "மக்னீசியம் குளிர்நீருடன் ஏறத்தாழத் தாக்கமடைவதில்லை: நீண்ட நேரத்தின் பின் சில சிறு குமிழ்கள் மட்டுமே.", lMgH: "சுடுநீருடன் மக்னீசியம் மெதுவான குமிழ்களையும் மங்கிய இளஞ்சிவப்பையும் தருகிறது. Mg + 2H₂O → Mg(OH)₂ + H₂",
+  lMgA: "மக்னீசியம் ஐதான HCl உடன் விரைவான நுரைத்தலுடன் தீவிரமாகத் தாக்கமடைகிறது. நாடா கரைந்து நிறமற்ற கரைசலைத் தருகிறது; குழாய் சூடாகிறது. Mg + 2HCl → MgCl₂ + H₂",
+  lCaA: "கல்சியம் ஐதான HCl உடன் விரைவான நுரைத்தலுடன் மிகத் தீவிரமாகத் தாக்கமடைந்து நிறமற்ற கரைசலைத் தருகிறது. Ca + 2HCl → CaCl₂ + H₂", lPop: "வாயு 'பொப்' ஒலியுடன் எரிகிறது: அது ஐதரசன்.",
+  chipTL: "நேரச்சுருக்கம் {m} நிமிடம்", chipBurner: "சுவாலை {s}", chipPh: "பினோல்ப்தலீன் சேர்க்கப்பட்டது", chipScreen: "பாதுகாப்புத் திரை உண்டு", on: "எரிகிறது", off: "அணைந்துள்ளது",
+  cvKero: "மண்ணெண்ணெய்", cvNa: "Na", cvMg: "Mg", cvCa: "Ca", cvMgR: "Mg நாடா", cvCaG: "Ca சிறுமணிகள்", cvTile: "வெள்ளை ஓடு", cvKnife: "கத்தி", cvShiny: "பளபளப்பான வெள்ளி", cvTarn: "மங்குகிறது", cvDull: "மங்கிய சாம்பல்-வெள்ளை",
+  cvSand: "உப்புத்தாள்", cvBurner: "சுவாலை", cvAsh: "வெள்ளைச் சாம்பல் (MgO)", cvLook: "⚠ சுவாலையை நேரடியாகப் பார்க்க வேண்டாம்", cvTrough: "தொட்டி", cvColourless: "நிறமற்றது", cvPink: "இளஞ்சிவப்பு", cvFaint: "மங்கிய இளஞ்சிவப்பு", cvMilky: "இளஞ்சிவப்பு, சற்றுப் பால் நிறம்",
+  cvCold: "குளிர்நீர்", cvHot: "சுடுநீர்", cvHCl: "ஐதான HCl", cvScreen: "பாதுகாப்புத் திரை", cvFilter: "வடிதாள்", cvNoChange: "ஏறத்தாழ மாற்றமில்லை", cvFizz: "நுரைத்தல் (H₂)", cvAirtight: "வளி புகாதது", cvDryB: "உலர்ந்த போத்தல்", cvShinyMg: "பளபளப்பு", cvDullMg: "மங்கிய சாம்பல்", cvBall: "உருகிய கோளம்", cvDrag: "இழு ↑", cvMat: "வெப்பத் தடுப்புப் பாய்", cvTongs: "இடுக்கி", cvWarm: "சூடு", cvNaLock: "அமிலத்துக்குள் இல்லை",
+  tabGuide: "வழிகாட்டி", tabObs: "அவதானிப்புகள்", tabColours: "நிறங்கள்", tabQuiz: "வினாக்கள்",
+  aimH: "நோக்கம்", aim: "Na, Mg, Ca ஆகியன வளி, நீர், ஐதான அமிலம் ஆகியவற்றுடன் காட்டும் தாக்கங்களை ஒப்பிட்டு 1, 2 ஆம் கூட்டங்களின் போக்குகளை இனங்காணல்.",
+  appH: "உபகரணங்களும் இரசாயனங்களும்", app: ["Na (மண்ணெண்ணெயின் கீழ்)", "Mg நாடா", "Ca சிறுமணிகள்", "தொட்டி", "சோதனைக் குழாய்கள்", "வடிதாள்", "உப்புத்தாள்", "சுவாலை", "ஐதான HCl", "பினோல்ப்தலீன்"],
+  procH: "செய்முறை", steps: ["Na, Mg எவ்வாறு சேமிக்கப்படுகின்றன எனக் குறிக்க (Na மண்ணெண்ணெயின் கீழ்)", "Na ஐ வெட்டுக: பளபளப்பான மேற்பரப்பு சில நிமிடங்களில் மங்குவதை அவதானிக்க", "Mg ஐச் சுத்தம் செய்து வளியில் வைக்க; பின் Mg ஐ வளியில் எரிக்க (பிரகாசமான வெள்ளைச் சுவாலை, வெள்ளைச் சாம்பல்)", "பினோல்ப்தலீன் உள்ள நீருக்கு (தொட்டி) Na இன் சிறு துண்டைச் சேர்க்க", "பினோல்ப்தலீனுடன் Ca ஐ நீருக்கும், Mg ஐக் குளிர், சுடு நீருக்கும் சேர்க்க", "Mg, Ca ஐ ஐதான HCl இற்குச் சேர்க்க (Na ஐ ஒருபோதும் இல்லை)"],
+  safeH: "பாதுகாப்பு", safe: ["எப்போதும் பாதுகாப்புக் கண்ணாடி அணிக.", "சோடியத்தை இடுக்கியாலும் கத்தியாலும் மட்டும் கையாள்க; அரிசி மணியை விடப் பெரிதல்லாத துண்டைப் பாதுகாப்புத் திரைக்குப் பின் பயன்படுத்துக.", "சோடியத்தை ஒருபோதும் அமிலத்துக்குள் இட வேண்டாம்: தாக்கம் வெடிக்கும்.", "எரியும் மக்னீசியத்தை நேரடியாகப் பார்க்க வேண்டாம்.", "ஐதான HCl அரிக்கும்; சிந்தினால் அதிக நீரால் கழுவுக."],
+  logH: "அவதானிப்புப் பதிவு", resH: "முடிவுகள்", thMetal: "உலோகம்", thAir: "வளி", thWater: "நீர்", thAcid: "ஐதான HCl",
+  rNaAir: "சில நிமிடங்களில் மங்கும்", rNaW: "மிகத் தீவிரம்: மிதக்கும், உருகும், ஓடும்; இளஞ்சிவப்பு", rNaA: "ஒருபோதும் செய்யப்படாது (வெடிக்கும்)", rMgAir: "மெதுவாக மங்கும்; கண்கூசும் வெள்ளைச் சுவாலையுடன் எரியும்", rMgW: "குளிர்: ஏறத்தாழ இல்லை; சுடு: மெதுவான குமிழ்கள், மங்கிய இளஞ்சிவப்பு", rMgA: "தீவிர நுரைத்தல்", rCaAir: "வளி புகாப் போத்தலில் வைக்கப்படும்", rCaW: "சீரான நுரைத்தல்; இளஞ்சிவப்பு, சற்றுப் பால் நிறம்", rCaA: "மிகத் தீவிர நுரைத்தல்",
+  trend: "நீருடனான தாக்குதிறன்: Na > Ca > Mg. 1 ஆம் கூட்ட உலோகங்கள் 2 ஆம் கூட்ட உலோகங்களை விடத் தாக்குதிறன் கூடியவை; கூட்டத்தில் கீழே செல்லத் தாக்குதிறன் கூடுகிறது (Ca > Mg).",
+  coloursH: "நிற மாற்றங்கள்",
+  k1b: "நிறமற்ற நீர் + பினோல்ப்தலீன்", k1r: "Na / Ca / Mg (சுடுநீர்)", k1a: "இளஞ்சிவப்பு (காரம் உருவாகிறது)", k2b: "பளபளப்பான வெட்டிய Na மேற்பரப்பு", k2r: "வளி, 5 நிமிடம்", k2a: "மங்கிய சாம்பல்-வெள்ளை", k3b: "சாம்பல் Mg நாடா", k3r: "வளியில் எரித்தல்", k3a: "கண்கூசும் வெள்ளைச் சுவாலை → வெள்ளைச் சாம்பல் MgO",
+  before: "முன்", after: "பின்", seen: "காணப்பட்டது", notYet: "இன்னும் காணவில்லை",
+  replayH: "பதியப்பட்ட மாற்றத்தை மீண்டும் பார்", play: "மெதுவாக இயக்கு", pause: "நிறுத்து", rNone: "இம்மாற்றத்தைப் பதிய பரிசோதனையைச் செய்க.",
+  sColourless: "நிறமற்றது", sStreaks: "இளஞ்சிவப்புக் கோடுகள் பரவுகின்றன", sPink: "இளஞ்சிவப்பு", sFaint: "மங்கிய இளஞ்சிவப்பு", sMilky: "இளஞ்சிவப்பு, சற்றுப் பால் நிறம்", sShiny: "பளபளப்பான வெள்ளி", sTarn: "மங்குகிறது", sDull: "மங்கிய சாம்பல்-வெள்ளை", sGrey: "சாம்பல் நாடா", sFlame: "கண்கூசும் வெள்ளைச் சுவாலை", sAsh: "வெள்ளைச் சாம்பல் (MgO)",
+  rcNa: "நீர் + பினோல்ப்தலீனில் Na", rcCa: "நீர் + பினோல்ப்தலீனில் Ca", rcMgH: "சுடுநீர் + பினோல்ப்தலீனில் Mg", rcCut: "வளியில் வெட்டிய Na", rcBurn: "எரியும் Mg",
+  quizH: "அறிவுச் சோதனை", tryAgain: "மீண்டும் முயல்க", best: "அதிகூடியது {p}%", scoreLeft: "{n} மீதம்", correct: "சரி. ", notQuite: "சரியில்லை. ", tDone: "செய்முறை முடிந்தது! இப்போது வினாக்கள் தாவலில் உள்ள வினாக்களுக்கு விடையளிக்க.",
+  canvasAria: "s-தொகுதி உலோகங்களுக்கான ஆய்வுகூட மேசை நிலையம்: சேமிப்புப் போத்தல்கள், வெள்ளை ஓடும் கத்தியும், மக்னீசியமும் சுவாலையும், நீர்த் தொட்டியும் சோதனைக் குழாய்களும், அல்லது ஐதான அமிலக் குழாய்கள். உலோகத் துண்டுகளைப் பாத்திரங்களுக்குள் இழுக்கலாம்.",
+  quiz: [
+    { q: "சோடியம் ஏன் மண்ணெண்ணெயின் கீழ் சேமிக்கப்படுகிறது?", o: ["அது வளியுடனும் நீருடனும் தாக்கமடையும்", "அது இலேசானது", "அது கரையும்", "அது திரவம்"], e: "மிகத் தாக்குதிறன் கூடியது." },
+    { q: "Na உடன் நீர் இளஞ்சிவப்பாவதற்குக் காரணம்…", o: ["NaOH உருவாவது", "Na இளஞ்சிவப்பு", "H₂ இளஞ்சிவப்பு", "பினோல்ப்தலீன் Na உடன் தாக்கமடைவது"], e: "காரக் கரைசல்." },
+    { q: "நீருடனான தாக்குதிறன்:", o: ["Mg > Ca > Na", "Na > Ca > Mg", "Ca > Na > Mg", "எல்லாம் சமம்"], e: "கூட்டம் 1 > கூட்டம் 2; கூட்டத்தில் கீழே கூடும்." },
+    { q: "Mg எரியும்போது உருவாவது…", o: ["MgO மட்டும்", "MgO உம் சிறிது Mg₃N₂ உம்", "MgCO₃", "Mg(OH)₂"], e: "Mg, N₂ உடனும் தாக்கமடைகிறது." },
+  ],
+},
+};
+const QUIZ_ANS = [0, 0, 1, 1];
+let LANG = "en";
+try { const s = localStorage.getItem("svl-lang") || localStorage.getItem("kmno4-lang"); if (s && I18N[s]) LANG = s; else { const n = (navigator.language || "").slice(0, 2); if (I18N[n]) LANG = n; } } catch (e) {}
+function t(key, p) { let s = I18N[LANG][key]; if (s === undefined) s = I18N.en[key]; if (s === undefined) return key; if (p && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (_, k) => p[k] ?? ""); return s; }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// =====================================================================
+// STATE
+// =====================================================================
+const STEP_ST = ["store", "store", "mg", "water", "water", "acid"];
+const ST_FIRST = { store: 0, mg: 2, water: 3, acid: 5 };
+function freshState() {
+  return { gog: false, st: "store", ev: {}, logs: [], answered: {}, done: false, confetti: [], rec: {}, res: {},
+    store: { inspected: false, onTile: false, cut: false, cutA: 0, knife: { x: 860, y: 330 }, tl: 0 },
+    mg: { clean: 0, cleaning: false, aired: false, burner: false, burn: -1, ash: false },
+    water: { phph: false, screen: false, dried: false, na: null, trail: [], pink: 0, naDone: false,
+      tubes: [{ want: "ca", x: 560, hot: false, metal: null, t: 0, pink: 0, milky: 0, done: false }, { want: "mg", x: 660, hot: false, metal: null, t: 0, pink: 0, milky: 0, done: false }, { want: "mg", x: 790, hot: true, metal: null, t: 0, pink: 0, milky: 0, done: false }] },
+    acid: { tubes: [{ x: 520, metal: null, t: 0, done: false }, { x: 640, metal: null, t: 0, done: false }], pop: false },
+    pieces: [] };
+}
+let S;
+function piecesFor(st) {
+  if (st === "water") return [{ k: "na", x: 150, y: 497, home: [150, 497], used: false }, { k: "ca", x: 540, y: 497, home: [540, 497], used: false }, { k: "mg", x: 620, y: 497, home: [620, 497], used: false }, { k: "mg", x: 700, y: 497, home: [700, 497], used: false }];
+  if (st === "acid") return [{ k: "mg", x: 330, y: 497, home: [330, 497], used: false }, { k: "ca", x: 400, y: 497, home: [400, 497], used: false }, { k: "na", x: 860, y: 480, home: [860, 480], used: false, locked: true }];
+  return [];
+}
+const stepDone = i => !!S.ev["s" + (i + 1)];
+
+// =====================================================================
+// CANVAS
+// =====================================================================
+const W = 960, H = 540;
+const cv = $("cv"), ctx = cv.getContext("2d"), vp = $("viewport");
+let dpr = 1, cw = 0, ch = 0, sc = 1, ox = 0, oy = 0, T = {};
+function resize() { const r = vp.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2.5); cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); sc = Math.min(cw / W, ch / H); ox = (cw - W * sc) / 2; oy = (ch - H * sc) / 2; }
+function readTokens() { const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim(); T = { wallTop: g("--wall-top"), wallBot: g("--wall-bot"), bench: g("--bench"), benchEdge: g("--bench-edge"), glass: g("--glass"), ink: g("--ink"), muted: g("--muted"), accent: g("--accent"), surface: g("--surface") }; }
+new ResizeObserver(resize).observe(vp);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTokens);
+new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const FONT = (w, s) => `${w} ${s}px 'IBM Plex Sans','Noto Sans Sinhala','Noto Sans Tamil',sans-serif`;
+function rr(c, x, y, w, h, r) { c.beginPath(); c.roundRect(x, y, w, h, r); }
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let hatch = null;
+function makeHatch(c) { const h = document.createElement("canvas"); h.width = h.height = 10; const x = h.getContext("2d"); x.strokeStyle = "rgba(60,90,110,.3)"; x.lineWidth = 1; x.beginPath(); x.moveTo(0, 10); x.lineTo(10, 0); x.stroke(); return c.createPattern(h, "repeat"); }
+const BENCH = 470;
+const hex = h => h[0] === "#" ? [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)] : h.match(/\d+/g).map(Number);
+const mix = (a, b, f) => { const A = hex(a), B = hex(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * Math.max(0, Math.min(1, f)))).join(",")})`; };
+const WATER = "#e1f0f7", PINK = "#e0559b", MILK = "#eef1f3", SHINY = "#e4e8ec", DULL = "#b9b6ab";
+function label(txt, x, y, al = "center", col, sz = 11) { ctx.fillStyle = col || T.ink; ctx.font = FONT(600, sz); ctx.textAlign = al; ctx.fillText(txt, x, y); }
+function bench(x0 = 0, x1 = W) { ctx.fillStyle = T.bench; ctx.fillRect(-ox / sc - 2, BENCH, W + 2 * ox / sc + 4, (ch - oy) / sc - BENCH + 4); ctx.fillStyle = T.benchEdge; ctx.fillRect(-ox / sc - 2, BENCH, W + 2 * ox / sc + 4, 4); }
+function liquidCol(pink, milky) { return mix(mix(WATER, PINK, pink), MILK, milky * .6); }
+function bubbles(x, y0, y1, w, n, sp) { if (reduceMotion) n = Math.min(n, 4); ctx.fillStyle = "rgba(255,255,255,.85)"; ctx.strokeStyle = "rgba(90,120,140,.55)"; ctx.lineWidth = .8;
+  for (let i = 0; i < n; i++) { const ph = (time * sp + i * 0.37) % 1, yy = y0 - (y0 - y1) * ph, xx = x + Math.sin(i * 7.3 + time * 3) * w; ctx.beginPath(); ctx.arc(xx, yy, 1.6 + (i % 3), 0, 7); ctx.fill(); ctx.stroke(); } }
+function testTube(x, top, bot, fillTop, col, labelTxt) {
+  ctx.save(); ctx.beginPath(); ctx.moveTo(x - 18, top); ctx.lineTo(x - 18, bot - 18); ctx.arc(x, bot - 18, 18, Math.PI, 0, true); ctx.lineTo(x + 18, top); ctx.closePath(); ctx.clip();
+  ctx.fillStyle = col; ctx.fillRect(x - 20, fillTop, 40, bot - fillTop); ctx.fillStyle = hatch; ctx.globalAlpha = .7; ctx.fillRect(x - 20, fillTop, 40, bot - fillTop); ctx.globalAlpha = 1;
+  ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.fillRect(x - 13, top, 4, bot - top); ctx.restore();
+  ctx.strokeStyle = T.glass; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - 18, top); ctx.lineTo(x - 18, bot - 18); ctx.arc(x, bot - 18, 18, Math.PI, 0, true); ctx.lineTo(x + 18, top); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(x, fillTop, 17, 3, 0, 0, 7); ctx.strokeStyle = "rgba(60,90,110,.4)"; ctx.lineWidth = 1; ctx.stroke();
+}
+function drawPiece(p, x, y, sz = 1) {
+  if (p.k === "na") { ctx.fillStyle = p.dried ? "#cfd3d6" : "#a9a69a"; rr(ctx, x - 9 * sz, y - 6 * sz, 18 * sz, 12 * sz, 3); ctx.fill(); ctx.strokeStyle = "#6f6c62"; ctx.lineWidth = 1; ctx.stroke(); }
+  if (p.k === "ca") { ctx.fillStyle = "#c9c6bd"; ctx.beginPath(); ctx.ellipse(x, y, 9 * sz, 7 * sz, .4, 0, 7); ctx.fill(); ctx.strokeStyle = "#7d7a70"; ctx.lineWidth = 1; ctx.stroke(); }
+  if (p.k === "mg") { ctx.fillStyle = "#d7dbde"; ctx.save(); ctx.translate(x, y); ctx.rotate(-.3); ctx.fillRect(-16 * sz, -2.5 * sz, 32 * sz, 5 * sz); ctx.strokeStyle = "#8a959b"; ctx.lineWidth = .8; ctx.strokeRect(-16 * sz, -2.5 * sz, 32 * sz, 5 * sz); ctx.restore(); }
+}
+// ---------- station: storage & cutting ----------
+function drawStore() {
+  bench(); const s = S.store;
+  // jars
+  const jar = (x, w, h, fill, lab, sub) => { ctx.fillStyle = "rgba(214,234,242,.35)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 2; rr(ctx, x - w / 2, BENCH - h, w, h, 8); ctx.fill(); ctx.stroke(); ctx.fillStyle = "#5b4a3a"; rr(ctx, x - w / 2 - 4, BENCH - h - 14, w + 8, 16, 4); ctx.fill(); fill(x, w, h); label(lab, x, BENCH - h - 22); label(sub, x, BENCH + 18, "center", T.ink, 10); };
+  jar(100, 100, 150, (x, w, h) => { ctx.fillStyle = "rgba(242,232,190,.75)"; ctx.fillRect(x - w / 2 + 3, BENCH - h + 30, w - 6, h - 33); ctx.fillStyle = hatch; ctx.fillRect(x - w / 2 + 3, BENCH - h + 30, w - 6, h - 33);
+    [[-22, 14], [6, 10], [24, 16]].forEach(([dx, dy]) => { if (s.onTile && dx === 6) return; ctx.fillStyle = "#a9a69a"; rr(ctx, x + dx - 12, BENCH - 12 - dy, 24, 14, 3); ctx.fill(); ctx.strokeStyle = "#6f6c62"; ctx.stroke(); }); label(t("cvKero"), x, BENCH - 70, "center", "#6b5a1a", 10); }, "Na", t("cvKero"));
+  jar(235, 80, 130, (x, w, h) => { ctx.strokeStyle = "#8a959b"; ctx.lineWidth = 4; for (let i = 0; i < 4; i++) { ctx.beginPath(); ctx.ellipse(x, BENCH - 40 - i * 14, 26, 8, 0, 0, 7); ctx.stroke(); } }, t("cvMgR"), t("cvDryB"));
+  jar(350, 80, 120, (x, w, h) => { for (let i = 0; i < 14; i++) { ctx.fillStyle = "#c9c6bd"; ctx.beginPath(); ctx.ellipse(x - 26 + (i * 13) % 52, BENCH - 10 - Math.floor(i / 4) * 9, 7, 5, i, 0, 7); ctx.fill(); ctx.strokeStyle = "#7d7a70"; ctx.lineWidth = .8; ctx.stroke(); } }, t("cvCaG"), t("cvAirtight"));
+  // tile
+  ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#cbd5d4"; ctx.lineWidth = 1.5; rr(ctx, 540, BENCH - 16, 320, 16, 3); ctx.fill(); ctx.stroke(); label(t("cvTile"), 700, BENCH + 18, "center", T.ink, 10);
+  if (s.onTile) { const cx = 700, y = BENCH - 16, gap = s.cut ? 26 * s.cutA : 0, face = mix(SHINY, DULL, s.tl / 300);
+    ctx.fillStyle = "#a9a69a"; ctx.strokeStyle = "#6f6c62"; ctx.lineWidth = 1.2;
+    rr(ctx, cx - 60 - gap, y - 44, 60, 44, 6); ctx.fill(); ctx.stroke(); rr(ctx, cx, y - 44, 60, 44, 6); ctx.fill(); ctx.stroke();
+    if (s.cut) { ctx.fillStyle = face; ctx.fillRect(cx - 8 - gap, y - 42, 8, 41); ctx.fillStyle = "rgba(255,255,255,.6)"; if (s.tl < 90) ctx.fillRect(cx - 6 - gap, y - 38, 2, 30);
+      ctx.fillStyle = face; ctx.fillRect(cx, y - 42, 8, 41);
+      // big swatch
+      ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#cbd5d4"; rr(ctx, 600, 150, 200, 110, 10); ctx.fill(); ctx.stroke(); ctx.fillStyle = face; rr(ctx, 615, 165, 70, 80, 6); ctx.fill(); ctx.strokeStyle = "#8a959b"; ctx.stroke();
+      if (s.tl < 90) { ctx.fillStyle = "rgba(255,255,255,.7)"; ctx.fillRect(625, 172, 6, 66); }
+      const nm = s.tl < 60 ? t("cvShiny") : s.tl < 240 ? t("cvTarn") : t("cvDull"); label(nm, 745, 205, "center", "#1c2a31", 11); label(Math.round(s.tl / 60) + " min", 745, 225, "center", "#1c2a31", 11);
+      ctx.strokeStyle = T.muted; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(700, 260); ctx.lineTo(cx, y - 44); ctx.stroke(); ctx.setLineDash([]); }
+  }
+  // knife
+  const k = s.knife; ctx.save(); ctx.translate(k.x, k.y); ctx.fillStyle = "#5b4a3a"; rr(ctx, 30, -6, 50, 12, 4); ctx.fill(); ctx.fillStyle = "#cfd6db"; ctx.beginPath(); ctx.moveTo(30, -6); ctx.lineTo(-40, -2); ctx.lineTo(-44, 6); ctx.lineTo(30, 6); ctx.closePath(); ctx.fill(); ctx.strokeStyle = "#8a959b"; ctx.stroke(); ctx.restore();
+  if (s.onTile && !s.cut) label(t("cvKnife") + " · " + t("cvDrag"), k.x + 10, k.y + 26, "center", "#9a520a", 10);
+}
+// ---------- station: Mg in air ----------
+function drawMg() {
+  bench(); const m = S.mg, bx = 480;
+  // burner
+  ctx.fillStyle = "#4a555b"; rr(ctx, bx - 40, BENCH - 14, 80, 14, 4); ctx.fill(); ctx.fillStyle = "#7d878c"; ctx.fillRect(bx - 9, BENCH - 120, 18, 108); label(t("cvBurner"), bx, BENCH + 18, "center", T.ink, 10);
+  if (m.burner) { const fl = reduceMotion ? 0 : Math.sin(time * 18) * 3; const g = ctx.createLinearGradient(0, BENCH - 210, 0, BENCH - 120); g.addColorStop(0, "rgba(90,130,255,0)"); g.addColorStop(1, "rgba(70,110,240,.85)");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(bx - 9, BENCH - 120); ctx.quadraticCurveTo(bx - 14, BENCH - 170, bx + fl, BENCH - 215); ctx.quadraticCurveTo(bx + 14, BENCH - 170, bx + 9, BENCH - 120); ctx.fill(); }
+  // heat mat & ash
+  ctx.fillStyle = "#6c6a64"; rr(ctx, 640, BENCH - 8, 200, 8, 2); ctx.fill(); label(t("cvMat"), 740, BENCH + 18, "center", T.ink, 10);
+  if (m.ash) { ctx.fillStyle = "#f7f7f4"; ctx.beginPath(); ctx.ellipse(740, BENCH - 10, 46, 8, 0, Math.PI, 0); ctx.fill(); ctx.strokeStyle = "#cfcbbf"; ctx.stroke(); label(t("cvAsh"), 740, BENCH - 26, "center", T.ink, 11); }
+  // sandpaper
+  ctx.fillStyle = "#c8a46a"; rr(ctx, 90, BENCH - 6, 160, 6, 2); ctx.fill(); label(t("cvSand"), 170, BENCH + 18, "center", T.ink, 10);
+  // ribbon
+  const burning = m.burn >= 0 && m.burn < 4.2, gone = m.burn >= 4.2 || m.ash;
+  if (!gone) { const col = mix("#8f9599", SHINY, m.clean); let x0, y0, ang;
+    if (m.burn >= 0) { x0 = bx - 150; y0 = BENCH - 220; ang = 0; } else { x0 = 110; y0 = BENCH - 30 + (m.cleaning && !reduceMotion ? Math.sin(time * 30) * 2 : 0); ang = 0; }
+    const len = m.burn >= 0 ? 150 * (1 - Math.max(0, m.burn - .6) / 3.6) : 120;
+    ctx.save(); ctx.translate(x0, y0); ctx.rotate(ang); ctx.fillStyle = col; ctx.fillRect(0, -3, len, 6); ctx.strokeStyle = "#6f777b"; ctx.lineWidth = .8; ctx.strokeRect(0, -3, len, 6); if (m.clean > .9 && m.burn < 0) { ctx.fillStyle = "rgba(255,255,255,.7)"; ctx.fillRect(4, -2, len - 8, 1.5); } ctx.restore();
+    if (m.burn >= 0) { ctx.strokeStyle = "#5c6166"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(x0 - 120, y0 + 40); ctx.lineTo(x0 + 6, y0 - 2); ctx.moveTo(x0 - 120, y0 + 46); ctx.lineTo(x0 + 6, y0 + 3); ctx.stroke(); label(t("cvTongs"), x0 - 80, y0 + 62, "center", T.ink, 10); }
+    else label(m.clean > .9 ? t("cvMgR") + " · " + t("cvShinyMg") : t("cvMgR") + " · " + t("cvDullMg"), 170, BENCH - 44, "center", T.ink, 11);
+    if (burning && m.burn > .5) { const fx = x0 + len, fy = y0, I = Math.min(1, (m.burn - .5) / .4) * (m.burn > 3.8 ? (4.2 - m.burn) / .4 : 1), fl = reduceMotion ? 1 : 1 + Math.sin(time * 40) * .06;
+      const g = ctx.createRadialGradient(fx, fy, 2, fx, fy, 220 * fl); g.addColorStop(0, `rgba(255,255,255,${I})`); g.addColorStop(.15, `rgba(255,255,250,${.95 * I})`); g.addColorStop(.45, `rgba(255,255,235,${.4 * I})`); g.addColorStop(1, "rgba(255,255,255,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(fx, fy, 220 * fl, 0, 7); ctx.fill();
+      ctx.fillStyle = `rgba(240,240,236,${.5 * I})`; for (let i = 0; i < 10; i++) { const ph = (time * .6 + i * .1) % 1; ctx.beginPath(); ctx.arc(fx + Math.sin(i * 3 + time) * 12, fy - ph * 90, 3 + ph * 10, 0, 7); ctx.fill(); }
+      ctx.fillStyle = "#b42318"; rr(ctx, 300, 40, 360, 30, 8); ctx.fill(); label(t("cvLook"), 480, 60, "center", "#ffffff", 13); }
+  }
+}
+// ---------- station: water ----------
+const TR = { x0: 50, x1: 420, top: 300, surf: 330, bot: 455 };
+function drawWater() {
+  bench(); const w = S.water;
+  // trough
+  ctx.save(); rr(ctx, TR.x0, TR.top, TR.x1 - TR.x0, TR.bot - TR.top, 10); ctx.clip();
+  ctx.fillStyle = liquidCol(w.pink * .85, 0); ctx.fillRect(TR.x0, TR.surf, TR.x1 - TR.x0, TR.bot - TR.surf); ctx.fillStyle = hatch; ctx.globalAlpha = .6; ctx.fillRect(TR.x0, TR.surf, TR.x1 - TR.x0, TR.bot - TR.surf); ctx.globalAlpha = 1;
+  w.trail.forEach(p => { const g = ctx.createRadialGradient(p.x, p.y, 1, p.x, p.y, p.r); g.addColorStop(0, `rgba(224,85,155,${p.a})`); g.addColorStop(1, "rgba(224,85,155,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill(); });
+  ctx.restore();
+  ctx.strokeStyle = T.glass; ctx.lineWidth = 2.5; rr(ctx, TR.x0, TR.top, TR.x1 - TR.x0, TR.bot - TR.top, 10); ctx.stroke(); ctx.strokeStyle = "rgba(60,90,110,.45)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(TR.x0 + 2, TR.surf); ctx.lineTo(TR.x1 - 2, TR.surf); ctx.stroke();
+  label(t("cvTrough") + " · " + (w.pink > .5 ? t("cvPink") : w.pink > .08 ? t("sStreaks") : t("cvColourless")), (TR.x0 + TR.x1) / 2, TR.bot - 10, "center", T.ink, 11);
+  if (w.na) { const n = w.na, r = 8 * n.size; if (r > .5) { ctx.fillStyle = "#e9ecef"; ctx.strokeStyle = "#8a959b"; ctx.lineWidth = 1; if (n.t < .8) { rr(ctx, n.x - r, n.y - r * .8, 2 * r, 1.6 * r, 2); } else { ctx.beginPath(); ctx.arc(n.x, n.y - 2, r, 0, 7); } ctx.fill(); ctx.stroke(); ctx.fillStyle = "rgba(255,255,255,.9)"; ctx.beginPath(); ctx.arc(n.x - r * .35, n.y - 2 - r * .35, r * .3, 0, 7); ctx.fill();
+      ctx.fillStyle = "rgba(255,255,255,.8)"; for (let i = 0; i < 8; i++) { const a = time * 9 + i * .8, d = r + 4 + ((time * 30 + i * 5) % 10); ctx.beginPath(); ctx.arc(n.x + Math.cos(a) * d, n.y - 3 + Math.sin(a) * d * .4 - ((time * 20 + i * 3) % 8), 1.4, 0, 7); ctx.fill(); }
+      if (n.t > .8 && n.t < 6) label(t("cvBall"), n.x, n.y - r - 10, "center", T.ink, 10); } }
+  if (w.screen) { ctx.fillStyle = "rgba(200,225,240,.22)"; ctx.strokeStyle = "rgba(90,130,160,.7)"; ctx.lineWidth = 2; rr(ctx, 30, 120, 410, 175, 6); ctx.fill(); ctx.stroke(); label(t("cvScreen"), 235, 140, "center", "#2c5a74", 11); }
+  // filter paper with Na
+  ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#d4d0c6"; ctx.beginPath(); ctx.arc(150, 497, 22, 0, 7); ctx.fill(); ctx.stroke(); label(t("cvFilter"), 150, 532, "center", T.ink, 10);
+  // tubes
+  const top = 250, bot = 420;
+  ctx.fillStyle = "#6c5a46"; ctx.fillRect(520, 330, 190, 10); label(t("cvCold"), 610, 352, "center", T.ink, 10);
+  // hot water beaker
+  ctx.save(); rr(ctx, 740, 300, 100, 160, 8); ctx.clip(); ctx.fillStyle = "rgba(225,240,247,.9)"; ctx.fillRect(740, 330, 100, 130); ctx.restore(); ctx.strokeStyle = T.glass; ctx.lineWidth = 2; rr(ctx, 740, 300, 100, 160, 8); ctx.stroke();
+  if (!reduceMotion) { ctx.strokeStyle = "rgba(150,160,170,.45)"; ctx.lineWidth = 2; for (let i = 0; i < 3; i++) { ctx.beginPath(); const sx = 760 + i * 28, ph = (time * .5 + i * .3) % 1; ctx.moveTo(sx, 296 - ph * 40); ctx.bezierCurveTo(sx - 8, 280 - ph * 40, sx + 8, 270 - ph * 40, sx, 256 - ph * 40); ctx.stroke(); } }
+  label(t("cvHot") + " ~80 °C", 790, 475, "center", "#9a520a", 10);
+  w.tubes.forEach((tb, i) => {
+    const fillTop = 300, col = liquidCol(tb.pink, tb.milky); testTube(tb.x, top, bot, fillTop, col);
+    if (tb.metal) { const p = tb.metal, f = tb.t; let py;
+      if (p.k === "ca") py = Math.min(bot - 12, fillTop + 10 + f * 80); else py = bot - 10; drawPiece(p, tb.x, py, p.k === "ca" ? Math.max(.4, 1 - f / 30) : .7);
+      if (p.k === "ca") bubbles(tb.x, py - 6, fillTop + 4, 8, 12, .9); else if (tb.hot) bubbles(tb.x, py - 4, fillTop + 4, 6, 4, .35); else if (f > 6) bubbles(tb.x, py - 4, py - 30, 5, 1, .15); }
+    const nm = !tb.metal ? (w.phph ? t("cvColourless") + " + phph" : t("cvColourless")) : tb.done ? (tb.milky > .3 ? t("cvMilky") : tb.pink > .1 ? t("cvFaint") : t("cvNoChange")) : t("cvFizz");
+    const lines = [tb.want === "ca" ? "Ca" : "Mg", nm]; label(lines[0], tb.x, top - 22, "center", T.ink, 12);
+    ctx.save(); ctx.translate(tb.x + 26, bot - 10); ctx.rotate(-Math.PI / 2); label(lines[1], 0, 0, "left", T.ink, 10); ctx.restore();
+  });
+  ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#cbd5d4"; rr(ctx, 500, 482, 240, 30, 6); ctx.fill(); ctx.stroke();
+  drawPieces();
+}
+// ---------- station: acid ----------
+function drawAcid() {
+  bench(); const a = S.acid, top = 220, bot = 420;
+  ctx.fillStyle = "#6c5a46"; ctx.fillRect(470, 320, 230, 10);
+  a.tubes.forEach(tb => { testTube(tb.x, top, bot, 300, WATER); label(t("cvHCl"), tb.x, top - 12, "center", T.ink, 11);
+    if (tb.metal) { const p = tb.metal, f = Math.min(1, tb.t / (p.k === "mg" ? 5 : 6)); if (f < 1) { const py = p.k === "mg" ? 300 + 30 + Math.sin(time * 6) * 10 : bot - 12; drawPiece(p, tb.x, py, .8 * (1 - f) + .1); bubbles(tb.x, py, 302, 9, 22, 1.6); ctx.fillStyle = "rgba(255,255,255,.55)"; ctx.beginPath(); ctx.ellipse(tb.x, 300, 16, 5, 0, 0, 7); ctx.fill(); }
+      ctx.save(); ctx.translate(tb.x + 26, bot - 10); ctx.rotate(-Math.PI / 2); label((f < 1 ? t("cvFizz") : t("cvColourless")) + (tb.t > 1 ? " · " + t("cvWarm") : ""), 0, 0, "left", T.ink, 10); ctx.restore(); }
+    else { ctx.save(); ctx.translate(tb.x + 26, bot - 10); ctx.rotate(-Math.PI / 2); label(t("cvColourless"), 0, 0, "left", T.ink, 10); ctx.restore(); } });
+  if (a.pop) { const x = a.tubes[1].x; ctx.fillStyle = "#f2a63a"; ctx.beginPath(); ctx.arc(x, top - 40, 10, 0, 7); ctx.fill(); label("POP!", x + 40, top - 40, "left", "#b42318", 16); }
+  // kerosene tin with Na
+  ctx.fillStyle = "rgba(242,232,190,.8)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 2; rr(ctx, 820, 450, 80, 20, 4); ctx.fill(); ctx.stroke(); label("Na · " + t("cvKero"), 860, 488, "center", T.ink, 10);
+  ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#cbd5d4"; rr(ctx, 300, 482, 140, 30, 6); ctx.fill(); ctx.stroke();
+  if (flash > 0) { ctx.strokeStyle = `rgba(200,30,30,${flash})`; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(470, 180); ctx.lineTo(700, 180); ctx.lineTo(700, 440); ctx.lineTo(470, 440); ctx.closePath(); ctx.stroke(); label("✕ " + t("cvNaLock"), 585, 170, "center", `rgba(180,20,20,${flash})`, 14); }
+  drawPieces();
+}
+function drawPieces() { S.pieces.forEach(p => { if (p.used) return; drawPiece(p, p.x, p.y, 1.1); if (p.k === "na" && S.st === "water") label(p.dried ? "Na" : "Na · " + t("cvKero"), p.x, p.y - 12, "center", T.ink, 10); else label(t("cv" + p.k[0].toUpperCase() + p.k.slice(1)), p.x, p.y - 12, "center", T.ink, 10); }); }
+
+// =====================================================================
+// LOOP / UPDATE
+// =====================================================================
+let time = 0, last = performance.now(), uiT = 0, flash = 0;
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now; time += dt;
+  update(dt);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const g = ctx.createLinearGradient(0, 0, 0, ch); g.addColorStop(0, T.wallTop); g.addColorStop(1, T.wallBot); ctx.fillStyle = g; ctx.fillRect(0, 0, cw, ch);
+  ctx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, dpr * oy);
+  if (!hatch) hatch = makeHatch(ctx);
+  ({ store: drawStore, mg: drawMg, water: drawWater, acid: drawAcid })[S.st]();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  S.confetti.forEach(p => { p.vy += 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-3, -1.5, 6, 3); ctx.restore(); });
+  S.confetti = S.confetti.filter(p => p.y < ch + 20);
+  if (playing) { const v = Math.min(1000, +$("replay").value + dt / 6 * 1000); $("replay").value = v; if (v >= 1000) { playing = false; renderReplayCtl(); } }
+  uiT += dt; if (uiT > .15) { uiT = 0; renderLive(); if (!$("pane-colours").hidden) drawMini(); }
+  requestAnimationFrame(frame);
+}
+function update(dt) {
+  if (flash > 0) flash = Math.max(0, flash - dt * .8);
+  const s = S.store; if (s.cut && s.cutA < 1) s.cutA = Math.min(1, s.cutA + dt * 2);
+  const m = S.mg;
+  if (m.cleaning) { m.clean = Math.min(1, m.clean + dt * .9); if (m.clean >= 1) { m.cleaning = false; log("lClean"); render(); } }
+  if (m.burn >= 0 && !m.ash) { m.burn += dt; if (m.burn >= 4.6) { m.ash = true; m.burner = m.burner; S.rec.burn = 1; S.res.mgAir = 1; S.ev.s3 = 1; log("lBurn"); checkAll(); render(); } }
+  const w = S.water;
+  if (w.na) { const n = w.na; n.t += dt;
+    if (Math.random() < dt * 3) { const a = Math.random() * 7; n.vx = Math.cos(a) * 110; n.vy = Math.sin(a) * 18; }
+    n.x += n.vx * dt; n.y = TR.surf + Math.sin(time * 5) * 1.2; if (n.x < TR.x0 + 15 || n.x > TR.x1 - 15) { n.vx *= -1; n.x = Math.max(TR.x0 + 15, Math.min(TR.x1 - 15, n.x)); }
+    n.size = Math.max(0, 1 - n.t / 9);
+    n.tr = (n.tr || 0) + dt; if (n.tr > .07 && n.size > 0) { n.tr = 0; w.trail.push({ x: n.x, y: TR.surf + 6 + Math.random() * 8, r: 6, a: .55, vy: 8 + Math.random() * 14 }); }
+    w.pink = Math.min(1, n.t / 11);
+    if (n.t > 9.5 && !w.naDone) { w.naDone = true; S.rec.na = 1; S.res.naW = 1; S.ev.s4 = 1; log("lNa"); render(); }
+    if (n.t > 12) { w.na = null; } }
+  w.trail.forEach(p => { p.r = Math.min(70, p.r + dt * 9); p.y = Math.min(TR.bot - 10, p.y + p.vy * dt); p.a = Math.max(0, p.a - dt * .03); }); if (w.trail.length > 260) w.trail.splice(0, w.trail.length - 260);
+  w.tubes.forEach(tb => { if (!tb.metal || tb.done) { if (tb.metal) tb.t += dt; return; } tb.t += dt;
+    if (tb.metal.k === "ca") { tb.pink = Math.min(.8, tb.t / 8 * .8); tb.milky = Math.min(.5, tb.t / 8 * .5); if (tb.t > 8) { tb.done = true; S.rec.ca = 1; S.res.caW = 1; log("lCa"); afterTube(); } }
+    else if (tb.hot) { tb.pink = Math.min(.25, tb.t / 9 * .25); if (tb.t > 9) { tb.done = true; S.rec.mgh = 1; S.res.mgWh = 1; log("lMgH"); afterTube(); } }
+    else if (tb.t > 7) { tb.done = true; S.res.mgWc = 1; log("lMgC"); afterTube(); } });
+  S.acid.tubes.forEach(tb => { if (!tb.metal) return; tb.t += dt; const end = tb.metal.k === "mg" ? 5 : 6; if (!tb.done && tb.t > end) { tb.done = true; log(tb.metal.k === "mg" ? "lMgA" : "lCaA"); S.res[tb.metal.k + "A"] = 1; if (S.acid.tubes.every(x => x.done)) { S.ev.s6 = 1; checkAll(); } render(); } });
+}
+function afterTube() { if (S.water.tubes.every(x => x.done)) { S.ev.s5 = 1; checkAll(); } render(); }
+function checkAll() { if ([1, 2, 3, 4, 5, 6].every(i => S.ev["s" + i]) && !S.done) { S.done = true; celebrate(); } }
+
+// =====================================================================
+// ACTIONS
+// =====================================================================
+function needGog() { if (!S.gog) { toast("tGog", "warn", 4500); return true; } return false; }
+function inspect() { S.store.inspected = true; S.ev.s1 = 1; S.res.store = 1; log("lStore"); render(); }
+function tongs() { if (!S.store.inspected) return toast("tInspect", "warn"); if (needGog()) return; S.store.onTile = true; toast("tTongs", "warn", 4500); render(); }
+function doCut() { const s = S.store; if (!s.onTile || s.cut) return; if (needGog()) return; s.cut = true; s.cutA = 0; s.knife = { x: 860, y: 330 }; log("lCut"); render(); }
+function setTL(v) { const s = S.store; s.tl = v; if (v >= 300 && !S.ev.s2) { S.ev.s2 = 1; S.rec.cut = 1; S.res.naAir = 1; log("lTarnish"); render(); } else renderPanelSoft(); }
+function sand() { if (needGog()) return; S.mg.cleaning = true; render(); }
+function air() { if (S.mg.clean < 1) return toast("tClean", "warn"); S.mg.aired = true; log("lAir"); render(); }
+function burner() { if (needGog()) return; S.mg.burner = true; render(); }
+function burnMg() { const m = S.mg; if (needGog()) return; if (m.clean < 1) return toast("tClean", "warn"); if (!m.aired) return toast("tAirFirst", "warn"); if (!m.burner) return toast("tBurner", "warn"); m.burn = 0; toast("tLook", "warn", 5000); render(); }
+function phph() { if (needGog()) return; S.water.phph = true; render(); }
+function screen() { S.water.screen = true; render(); }
+function dry() { if (needGog()) return; S.water.dried = true; const p = S.pieces.find(p => p.k === "na"); if (p) p.dried = true; render(); }
+function pop() { S.acid.pop = true; log("lPop"); render(); }
+function switchSt(st) {
+  if (st === S.st) return; const need = ST_FIRST[st]; for (let i = 0; i < need; i++) if (!stepDone(i)) { toast("tOrder", "warn", 5000, { n: i + 1, s: t("steps")[i] }); return; }
+  S.st = st; S.pieces = piecesFor(st).map(p => ({ ...p, dried: S.water.dried, used: st === "water" ? (p.k === "na" ? !!S.water.na || S.water.naDone : false) : false }));
+  if (st === "water") { const used = S.water.tubes.filter(x => x.metal).map(x => x.metal.k); S.pieces.forEach(p => { if (p.k !== "na") { const i = used.indexOf(p.k); if (i >= 0) { p.used = true; used.splice(i, 1); } } }); }
+  if (st === "acid") { S.acid.tubes.forEach(tb => { if (tb.metal) { const p = S.pieces.find(q => q.k === tb.metal.k && !q.used); if (p) p.used = true; } }); }
+  render();
+}
+// drop handling
+function drop(p) {
+  const back = () => { p.x = p.home[0]; p.y = p.home[1]; };
+  if (S.st === "water") {
+    const inTrough = p.x > TR.x0 && p.x < TR.x1 && p.y > TR.top - 40 && p.y < TR.bot;
+    const tb = S.water.tubes.find(x => Math.abs(p.x - x.x) < 34 && p.y > 200 && p.y < 430);
+    if (p.k === "na") { if (!inTrough) { if (tb) toast("tWrongTube", "warn"); return back(); }
+      if (needGog()) return back(); if (!S.water.phph) { toast("tPhFirst", "warn"); return back(); } if (!S.water.screen) { toast("tScreen", "warn"); return back(); } if (!p.dried) { toast("tDry", "warn"); return back(); }
+      p.used = true; S.water.na = { x: p.x, y: TR.surf, vx: 80, vy: 0, size: 1, t: 0 }; render(); return; }
+    if (tb) { if (!S.water.naDone) { toast(stepDone(3) ? "tNaWait" : "tOrder", "warn", 5000, { n: 4, s: t("steps")[3] }); return back(); }
+      if (!S.water.phph) { toast("tPhFirst", "warn"); return back(); }
+      if (tb.metal || tb.want !== p.k) { toast("tWrongTube", "warn"); return back(); }
+      if (needGog()) return back(); p.used = true; tb.metal = { k: p.k }; tb.t = 0; render(); return; }
+    return back();
+  }
+  if (S.st === "acid") {
+    if (p.k === "na") { flash = 1; toast("tNaAcid", "warn", 5500); return back(); }
+    const tb = S.acid.tubes.find(x => Math.abs(p.x - x.x) < 34 && p.y > 180 && p.y < 430);
+    if (!tb || tb.metal) return back(); if (needGog()) return back(); p.used = true; tb.metal = { k: p.k }; tb.t = 0; render(); return;
+  }
+}
+// pointer
+let drag = null;
+function toLogical(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left - ox) / sc, y: (e.clientY - r.top - oy) / sc }; }
+cv.addEventListener("pointerdown", e => { const p = toLogical(e);
+  if (S.st === "store") { const k = S.store.knife; if (S.store.onTile && !S.store.cut && Math.hypot(p.x - k.x - 10, p.y - k.y) < 60) { drag = { knife: true, dx: p.x - k.x, dy: p.y - k.y }; cv.setPointerCapture(e.pointerId); } return; }
+  const pc = [...S.pieces].reverse().find(q => !q.used && Math.hypot(p.x - q.x, p.y - q.y) < 26); if (pc) { drag = { pc, dx: p.x - pc.x, dy: p.y - pc.y }; cv.setPointerCapture(e.pointerId); } });
+cv.addEventListener("pointermove", e => { if (!drag) return; const p = toLogical(e);
+  if (drag.knife) { const k = S.store.knife; k.x = Math.max(560, Math.min(900, p.x - drag.dx)); k.y = Math.max(120, Math.min(BENCH - 10, p.y - drag.dy)); if (k.y > BENCH - 70 && k.x < 690) { drag = null; doCut(); } return; }
+  const pc = drag.pc; pc.x = p.x - drag.dx; pc.y = p.y - drag.dy;
+  if (S.st === "acid" && pc.k === "na" && pc.x < 720 && pc.y < 450) { flash = 1; toast("tNaAcid", "warn", 5500); pc.x = pc.home[0]; pc.y = pc.home[1]; drag = null; } });
+["pointerup", "pointercancel"].forEach(ev => cv.addEventListener(ev, () => { if (drag && drag.pc) drop(drag.pc); drag = null; }));
+
+// =====================================================================
+// UI
+// =====================================================================
+let toastT;
+function toast(k, kind = "", ms = 3600, p) { const el = $("toast"); el.textContent = t(k, p); el.className = "toast show " + kind; clearTimeout(toastT); toastT = setTimeout(() => el.className = "toast " + kind, ms); }
+function log(k, p) { S.logs.unshift({ time: new Date().toTimeString().slice(0, 8), k, p }); renderLog(); }
+function renderLog() { const box = $("log"); box.innerHTML = ""; S.logs.forEach(e => { const d = document.createElement("div"), s = document.createElement("span"), m = document.createElement("div"); s.textContent = e.time; m.textContent = t(e.k, e.p); d.append(s, m); box.append(d); }); }
+function promptText() {
+  const st = S.st;
+  if (st === "store") { const s = S.store; return !s.inspected ? t("p_store0") : !s.onTile ? t("p_store1") : !s.cut ? t("p_store2") : !S.ev.s2 ? t("p_store3") : t("p_storeDone"); }
+  if (st === "mg") { const m = S.mg; return m.clean < 1 ? t("p_mg0") : !m.aired ? t("p_mg1") : m.burn < 0 ? t("p_mg2") : !m.ash ? t("p_mgBurn") : t("p_mgDone"); }
+  if (st === "water") { const w = S.water; return !(w.phph && w.screen) ? t("p_w0") : !w.na && !w.naDone ? t("p_w1") : !w.naDone ? t("p_w2") : !w.tubes.every(x => x.metal) ? t("p_w3") : !S.ev.s5 ? t("p_w4") : t("p_wDone"); }
+  const a = S.acid; return !a.tubes.every(x => x.metal) ? t("p_a0") : !S.ev.s6 ? t("p_a1") : !a.pop ? t("p_a2") : t("p_aDone");
+}
+function renderPanel() {
+  const P = $("panel"); let h = `<p>${esc(promptText())}</p>`;
+  const btn = (id, k, primary, dis) => `<button class="btn ${primary ? "primary" : ""}" id="${id}" ${dis ? "disabled" : ""}>${esc(t(k))}</button>`;
+  if (S.st === "store") { const s = S.store; h += `<div class="row">${btn("inspBtn", "bInspect", !s.inspected, s.inspected)}${btn("tgBtn", "bTongs", s.inspected && !s.onTile, s.onTile)}${btn("cutBtn", "bCut", s.onTile && !s.cut, !s.onTile || s.cut)}</div>`;
+    if (s.cut) h += `<div class="fields"><label class="label" for="tl" id="tlLab">${esc(t("tlL", { m: (s.tl / 60).toFixed(1) }))}</label><input type="range" class="slider" id="tl" min="0" max="300" step="5" value="${s.tl}"></div>`; }
+  if (S.st === "mg") { const m = S.mg; h += `<div class="row">${btn("sandBtn", "bSand", m.clean < 1, m.clean >= 1 || m.cleaning)}${btn("airBtn", "bAir", m.clean >= 1 && !m.aired, m.aired)}${btn("brBtn", "bBurner", !m.burner, m.burner)}${btn("burnBtn", "bBurn", m.aired && m.burner && m.burn < 0, m.burn >= 0)}</div>`; }
+  if (S.st === "water") { const w = S.water; h += `<div class="row">${btn("phBtn", "bPhph", !w.phph, w.phph)}${btn("scBtn", "bScreen", !w.screen, w.screen)}${btn("dryBtn", "bDry", w.phph && w.screen && !w.dried, w.dried)}</div>`; }
+  if (S.st === "acid") { const a = S.acid; if (S.ev.s6) h += `<div class="row">${btn("popBtn", "bPop", !a.pop, a.pop)}</div>`; }
+  P.innerHTML = h;
+  const on = (id, fn) => { const el = $(id); if (el) el.onclick = fn; };
+  on("inspBtn", inspect); on("tgBtn", tongs); on("cutBtn", doCut); on("sandBtn", sand); on("airBtn", air); on("brBtn", burner); on("burnBtn", burnMg);
+  on("phBtn", phph); on("scBtn", screen); on("dryBtn", dry); on("popBtn", pop);
+  if ($("tl")) $("tl").oninput = e => setTL(+e.target.value);
+}
+function renderPanelSoft() { const l = $("tlLab"); if (l) l.textContent = t("tlL", { m: (S.store.tl / 60).toFixed(1) }); }
+function renderGuide() { const d = [1, 2, 3, 4, 5, 6].map(i => !!S.ev["s" + i]), cur = d.indexOf(false), k = d.filter(Boolean).length;
+  $("steps").innerHTML = t("steps").map((s, i) => `<li class="${d[i] ? "done" : i === cur ? "now" : ""}"><span class="tick">${d[i] ? "✓" : i + 1}</span><span>${esc(s)}</span></li>`).join("");
+  $("ringTxt").textContent = `${k}/6`; $("ringArc").style.strokeDashoffset = String(113.1 * (1 - k / 6)); }
+function renderLive() {
+  const c = []; if (S.st === "store" && S.store.cut) c.push(t("chipTL", { m: (S.store.tl / 60).toFixed(1) }));
+  if (S.st === "mg") c.push(t("chipBurner", { s: t(S.mg.burner ? "on" : "off") }));
+  if (S.st === "water") { if (S.water.phph) c.push(t("chipPh")); if (S.water.screen) c.push(t("chipScreen")); }
+  const h = c.map(x => `<span class="chip">${esc(x)}</span>`).join(""); if ($("chips").innerHTML !== h) $("chips").innerHTML = h;
+  const pt = promptText(); if ($("prompt").textContent !== pt) $("prompt").textContent = pt;
+}
+function renderTables() { const r = S.res, c = (k, v) => r[k] ? esc(t(v)) : "…";
+  $("tbR").innerHTML = `<tr><td>Na</td><td>${c("naAir", "rNaAir")}</td><td>${c("naW", "rNaW")}</td><td>${S.ev.s6 ? esc(t("rNaA")) : "…"}</td></tr>` +
+    `<tr><td>Mg</td><td>${c("mgAir", "rMgAir")}</td><td>${r.mgWc && r.mgWh ? esc(t("rMgW")) : "…"}</td><td>${c("mgA", "rMgA")}</td></tr>` +
+    `<tr><td>Ca</td><td>${c("store", "rCaAir")}</td><td>${c("caW", "rCaW")}</td><td>${c("caA", "rCaA")}</td></tr>`;
+  $("trend").textContent = S.ev.s5 ? t("trend") : ""; }
+function render() { $("gogBtn").textContent = t(S.gog ? "gogOn" : "gog"); $("gogBtn").setAttribute("aria-pressed", String(S.gog));
+  document.querySelectorAll("#stSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.st === S.st)));
+  renderPanel(); renderGuide(); renderTables(); renderLive(); renderCards(); renderRsel(); }
+function celebrate() { toast("tDone", "party", 5200); $("quizTab").classList.add("ping");
+  if (!reduceMotion) { const cols = ["#8b1d6f", "#e07a10", "#4BA3E3", "#2c7a4d"]; for (let i = 0; i < 90; i++) S.confetti.push({ x: cw / 2 + (Math.random() - .5) * 200, y: ch * .3, vx: (Math.random() - .5) * 340, vy: -150 - Math.random() * 220, rot: Math.random() * 6, vr: (Math.random() - .5) * 10, c: cols[i % cols.length] }); } }
+// colour cards
+const hatchSvg = id => `<defs><pattern id="${id}" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="rgba(60,90,110,.35)"/></pattern></defs>`;
+const swBeaker = (col, id) => `<svg viewBox="0 0 90 60" aria-hidden="true">${hatchSvg(id)}<rect width="90" height="60" fill="#ffffff"/><path d="M24 10 L24 54 L66 54 L66 10" fill="none" stroke="#7a9aa8" stroke-width="2"/><rect x="25" y="22" width="40" height="31" fill="${col}"/>${col === WATER ? `<rect x="25" y="22" width="40" height="31" fill="url(#${id})"/>` : ""}</svg>`;
+const swBlock = col => `<svg viewBox="0 0 90 60" aria-hidden="true"><rect width="90" height="60" fill="#ffffff"/><rect x="20" y="14" width="50" height="34" rx="5" fill="${col}" stroke="#6f6c62"/></svg>`;
+const swRibbon = () => `<svg viewBox="0 0 90 60" aria-hidden="true"><rect width="90" height="60" fill="#ffffff"/><rect x="12" y="27" width="66" height="6" fill="#8f9599" stroke="#6f777b"/></svg>`;
+const swAsh = () => `<svg viewBox="0 0 90 60" aria-hidden="true"><defs><radialGradient id="fl"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#fffbe6"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></radialGradient></defs><rect width="90" height="60" fill="#1c2a31"/><circle cx="28" cy="28" r="22" fill="url(#fl)"/><path d="M52 50 Q68 34 84 50Z" fill="#f7f7f4" stroke="#cfcbbf"/></svg>`;
+function renderCards() {
+  const card = (ok, b, bs, r, a, as) => `<div class="cc"><div class="ttl"><em class="${ok ? "ok" : ""}">${ok ? "✓ " + esc(t("seen")) : esc(t("notYet"))}</em></div><div class="flow"><div class="st"><small>${esc(t("before"))}</small>${bs}<span>${esc(t(b))}</span></div><div class="arrow"><b>→</b><span>${esc(t(r))}</span></div><div class="st"><small>${esc(t("after"))}</small>${as}<span>${esc(t(a))}</span></div></div></div>`;
+  $("cards").innerHTML = card(!!(S.rec.na || S.rec.ca || S.rec.mgh), "k1b", swBeaker(WATER, "hw1"), "k1r", "k1a", swBeaker(PINK, "hw2")) + card(!!S.rec.cut, "k2b", swBlock(SHINY), "k2r", "k2a", swBlock(DULL)) + card(!!S.rec.burn, "k3b", swRibbon(), "k3r", "k3a", swAsh());
+}
+const RC = ["na", "ca", "mgh", "cut", "burn"], RCN = { na: "rcNa", ca: "rcCa", mgh: "rcMgH", cut: "rcCut", burn: "rcBurn" };
+let rsel = "na";
+function renderRsel() { const cur = rsel; $("rsel").innerHTML = RC.map(k => `<option value="${k}">${S.rec[k] ? "✓ " : ""}${esc(t(RCN[k]))}</option>`).join(""); $("rsel").value = cur; renderReplayCtl(); }
+const mini = $("mini"), mctx = mini.getContext("2d"); let playing = false;
+function drawMini() {
+  const w = mini.width, h = mini.height, f = +$("replay").value / 1000; mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.fillStyle = "#ffffff"; mctx.fillRect(0, 0, w, h);
+  if (!S.rec[rsel]) { $("rname").textContent = t("rNone"); return; }
+  let name = "";
+  const lab = (s, y = 370) => { mctx.fillStyle = "#1c2a31"; mctx.font = "600 22px 'IBM Plex Sans','Noto Sans Sinhala','Noto Sans Tamil',sans-serif"; mctx.textAlign = "center"; mctx.fillText(s, w / 2, y); };
+  if (["na", "ca", "mgh"].includes(rsel)) {
+    const max = rsel === "na" ? 1 : rsel === "ca" ? .8 : .25, milky = rsel === "ca" ? .5 * f : 0, pk = max * Math.min(1, f * 1.2);
+    mctx.strokeStyle = "#7a9aa8"; mctx.lineWidth = 4; mctx.fillStyle = liquidCol(pk, milky); mctx.fillRect(184, 110, 232, 210); mctx.fillStyle = mctx.createPattern(makeHatchCanvas(), "repeat"); if (pk < .1) mctx.fillRect(184, 110, 232, 210);
+    if (rsel === "na" && f > .05 && f < .7) { for (let i = 0; i < 8; i++) { const g = mctx.createRadialGradient(220 + i * 24, 140 + (i % 3) * 30, 2, 220 + i * 24, 140 + (i % 3) * 30, 20 + f * 60); g.addColorStop(0, "rgba(224,85,155,.6)"); g.addColorStop(1, "rgba(224,85,155,0)"); mctx.fillStyle = g; mctx.fillRect(184, 110, 232, 210); } }
+    mctx.beginPath(); mctx.moveTo(180, 60); mctx.lineTo(180, 322); mctx.lineTo(420, 322); mctx.lineTo(420, 60); mctx.stroke();
+    name = f < .08 ? t("sColourless") : rsel === "na" ? (f < .7 ? t("sStreaks") : t("sPink")) : rsel === "ca" ? t("sMilky") : t("sFaint");
+  } else if (rsel === "cut") { mctx.fillStyle = mix(SHINY, DULL, f); mctx.strokeStyle = "#6f6c62"; mctx.lineWidth = 3; mctx.beginPath(); mctx.roundRect(170, 100, 260, 200, 20); mctx.fill(); mctx.stroke(); if (f < .3) { mctx.fillStyle = "rgba(255,255,255,.7)"; mctx.fillRect(195, 120, 18, 160); }
+    name = (f < .2 ? t("sShiny") : f < .8 ? t("sTarn") : t("sDull")) + " · " + (f * 5).toFixed(1) + " min";
+  } else { if (f < .25) { mctx.fillStyle = "#8f9599"; mctx.fillRect(120, 190, 360, 18); name = t("sGrey"); }
+    else if (f < .7) { mctx.fillStyle = "#1c2a31"; mctx.fillRect(0, 0, w, h); mctx.fillStyle = "#8f9599"; mctx.fillRect(120, 190, 360 * (1 - (f - .25) / .45), 18); const g = mctx.createRadialGradient(120 + 360 * (1 - (f - .25) / .45), 199, 4, 300, 199, 260); g.addColorStop(0, "#ffffff"); g.addColorStop(.3, "rgba(255,255,240,.9)"); g.addColorStop(1, "rgba(255,255,255,0)"); mctx.fillStyle = g; mctx.fillRect(0, 0, w, h); name = t("sFlame"); }
+    else { mctx.fillStyle = "#f7f7f4"; mctx.strokeStyle = "#cfcbbf"; mctx.beginPath(); mctx.ellipse(300, 260, 140, 40, 0, Math.PI, 0); mctx.fill(); mctx.stroke(); mctx.fillStyle = "#6c6a64"; mctx.fillRect(140, 260, 320, 14); name = t("sAsh"); } }
+  lab(name); $("rname").textContent = name;
+}
+let hc = null; function makeHatchCanvas() { if (hc) return hc; hc = document.createElement("canvas"); hc.width = hc.height = 16; const x = hc.getContext("2d"); x.strokeStyle = "rgba(60,90,110,.35)"; x.lineWidth = 1.5; x.beginPath(); x.moveTo(0, 16); x.lineTo(16, 0); x.stroke(); return hc; }
+function renderReplayCtl() { const ok = !!S.rec[rsel]; $("replay").disabled = !ok; $("playBtn").disabled = !ok; $("playBtn").textContent = t(playing ? "pause" : "play"); }
+// quiz
+function readScores() { try { return JSON.parse(localStorage.getItem("svl-scores") || "{}") || {}; } catch (e) { return {}; } }
+function saveScore(pct) { try { const s = readScores(); if (!(s[SIM_ID] >= pct)) { s[SIM_ID] = pct; localStorage.setItem("svl-scores", JSON.stringify(s)); } } catch (e) {} }
+function renderQuiz() { const Q = t("quiz"), L = ["A", "B", "C", "D"];
+  $("quiz").innerHTML = Q.map((q, i) => `<div class="q" id="q${i}"><p>${i + 1}. ${esc(q.q)}</p>${q.o.map((o, j) => `<button data-q="${i}" data-o="${j}">${L[j]}) ${esc(o)}</button>`).join("")}<div class="exp"></div></div>`).join("");
+  Object.entries(S.answered).forEach(([i, j]) => markAnswer(+i, j)); score(); }
+function markAnswer(i, j) { const ok = j === QUIZ_ANS[i];
+  $("q" + i).querySelectorAll("button").forEach((x, k) => { x.disabled = true; if (k === QUIZ_ANS[i]) x.classList.add("right"); else if (k === j) x.classList.add("wrong"); });
+  const d = document.createElement("div"); d.className = "note " + (ok ? "ok" : "bad"); d.textContent = t(ok ? "correct" : "notQuite") + t("quiz")[i].e; const ex = $("q" + i).querySelector(".exp"); ex.innerHTML = ""; ex.append(d); }
+$("quiz").onclick = e => { const b = e.target.closest("button[data-q]"); if (!b) return; const i = +b.dataset.q, j = +b.dataset.o; if (i in S.answered) return; S.answered[i] = j; markAnswer(i, j); score(); };
+function score() { const n = Object.keys(S.answered).length, s = Object.entries(S.answered).filter(([i, j]) => j === QUIZ_ANS[+i]).length, N = QUIZ_ANS.length;
+  if (n === N) saveScore(Math.round(s / N * 100)); const best = readScores()[SIM_ID];
+  $("score").textContent = `${s} / ${N}` + (n < N ? " · " + t("scoreLeft", { n: N - n }) : "") + (best !== undefined ? " · " + t("best", { p: best }) : ""); }
+$("retryBtn").onclick = () => { S.answered = {}; renderQuiz(); };
+function applyStatic() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("#langSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  cv.setAttribute("aria-label", t("canvasAria"));
+  $("appList").innerHTML = t("app").map(a => `<span>${esc(a)}</span>`).join(""); $("safeList").innerHTML = t("safe").map(a => `<li>${esc(a)}</li>`).join("");
+  try { const st = JSON.parse(localStorage.getItem("svl-student") || "null"); if (st && st.name) { $("student").hidden = false; $("student").textContent = t("student", { name: st.name, cls: st.cls ? " · " + st.cls : "" }); } } catch (e) {}
+}
+function fullRender() { applyStatic(); render(); renderLog(); renderQuiz(); }
+function applyLang(l) { LANG = l; try { localStorage.setItem("svl-lang", l); } catch (e) {} fullRender(); }
+document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+document.querySelectorAll("#stSeg button").forEach(b => b.onclick = () => switchSt(b.dataset.st));
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  ["guide", "obs", "colours", "quiz"].forEach(id => $("pane-" + id).hidden = id !== b.dataset.tab);
+  if (b.dataset.tab === "quiz") b.classList.remove("ping"); if (b.dataset.tab === "colours") { renderReplayCtl(); drawMini(); } });
+$("gogBtn").onclick = () => { S.gog = !S.gog; render(); };
+$("rsel").onchange = e => { rsel = e.target.value; playing = false; $("replay").value = 1000; renderReplayCtl(); drawMini(); };
+$("resetBtn").onclick = () => { const ans = S.answered; S = freshState(); S.answered = ans; flash = 0; $("quizTab").classList.remove("ping"); fullRender(); };
+$("replay").oninput = () => { playing = false; renderReplayCtl(); drawMini(); };
+$("playBtn").onclick = () => { playing = !playing; if (playing && +$("replay").value >= 1000) $("replay").value = 0; renderReplayCtl(); };
+
+readTokens(); resize(); S = freshState(); fullRender();
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>

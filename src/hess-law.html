@@ -1,0 +1,818 @@
+<title>Hess's Law Bench</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap">
+<style>
+
+/* Layout: bench stage (balance / volumetric flask / pipette views) with a step-by-step action dock, working notebook on the right. Same system as the KMnO₄ bench. */
+:root{
+  --bg:#e7eceb; --surface:#f8faf9; --surface-2:#eef2f1; --ink:#162127; --muted:#56666c; --line:#cbd5d4;
+  --accent:#8b1d6f; --accent-soft:#f3dcea; --on-accent:#ffffff; --current:#b7791f;
+  --ok:#2c7a4d; --ok-soft:#dcefe3; --warn:#9a520a; --warn-soft:#f8e8d5; --bad:#a3302b; --bad-soft:#f6dedc;
+  --wall-top:#dde5e4; --wall-bot:#c5d0cf; --bench:#2a3236; --bench-edge:#1b2124; --glass:rgba(40,60,70,.55);
+  --f-display:"Bricolage Grotesque", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", "Noto Sans Sinhala", "Noto Sans Tamil", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 28px}
+:lang(si) body,:lang(ta) body{line-height:1.65}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.top > div:first-child{min-width:0}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+:lang(si) .eyebrow,:lang(ta) .eyebrow{letter-spacing:.02em;font-size:12.5px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 6px;text-wrap:balance;letter-spacing:-.01em}
+:lang(si) h1,:lang(ta) h1{letter-spacing:0;font-size:clamp(22px,2.6vw,32px);line-height:1.3}
+.sub{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.top-actions{display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap}
+.student{font-size:13px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;min-height:44px;font-weight:500;font-size:14px;transition:background .15s,border-color .15s,transform .05s;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.next{border-color:var(--current);box-shadow:0 0 0 3px color-mix(in srgb,var(--current) 30%,transparent)}
+.btn.sm{min-height:40px;padding:6px 10px}
+.btn[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.btn.hold{touch-action:none;user-select:none;-webkit-user-select:none}
+.btn.hold.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface-2)}
+.seg button{border:0;background:transparent;padding:8px 12px;min-height:42px;font-size:14px;font-weight:500;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.lang button{min-height:36px}
+.lang button[lang="si"]{font-family:"Noto Sans Sinhala",var(--f-body)}
+.lang button[lang="ta"]{font-family:"Noto Sans Tamil",var(--f-body)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.modebar{display:flex;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.prompt{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.prompt .dot{width:9px;height:9px;border-radius:50%;background:var(--current);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--current) 25%,transparent)}
+.prompt p{margin:0;font-weight:500;min-width:0}
+.viewport{position:relative;height:clamp(320px,calc(100vh - 470px),560px);background:var(--wall-bot);user-select:none;-webkit-user-select:none}
+@media (max-width:980px){.viewport{height:clamp(260px,62vw,520px)}}
+canvas#cv{display:block;width:100%;height:100%;touch-action:none}
+.chips{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;max-width:60%}
+.chip{font-family:var(--f-mono);font-size:12.5px;background:#0E1A2B;color:#D4C4FF;border:1px solid rgba(212,196,255,.25);padding:3px 10px;border-radius:999px}
+.chip.ok{color:#9fe6b8;border-color:#2c7a4d}
+.chip.bad{color:#ffb4ab;border-color:#a3302b}
+.toast{position:absolute;left:50%;bottom:14px;transform:translate(-50%,10px);opacity:0;transition:opacity .25s,transform .25s;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 28px);width:max-content;pointer-events:none;text-align:center;z-index:5}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.toast.good{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.toast.party{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);font-weight:600}
+.dock{display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.panelbox{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:10px}
+.panelbox > p{margin:0;font-weight:500}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-right:2px}
+:lang(si) .label,:lang(ta) .label{letter-spacing:0;font-size:12.5px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.fields label{display:flex;flex-direction:column;gap:4px;font-size:13px;min-width:0}
+input[type=number]{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:15px;font-family:var(--f-mono);max-width:100%}
+input.ok{border-color:var(--ok);background:var(--ok-soft)}
+input.bad{border-color:var(--bad);background:var(--bad-soft)}
+.slider{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-width:0;max-width:420px}
+.slider input{flex:1;min-width:0}
+input[type=range]{accent-color:var(--accent);min-height:30px}
+.beamctl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.beamctl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.beamctl div{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:9px;padding:4px;background:var(--surface);min-width:0}
+.beamctl span{flex:1;text-align:center;font-family:var(--f-mono);font-size:12.5px;min-width:0}
+.note{font-size:13.5px;padding:8px 10px;border-radius:8px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.note.info{background:var(--surface);border:1px solid var(--line)}
+.calcline{font-family:var(--f-mono);font-size:13px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.tabs button{flex:1;min-width:0;border:0;background:transparent;padding:12px 4px;min-height:46px;font-weight:600;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;line-height:1.3;position:relative}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs button.ping::after{content:"";position:absolute;top:8px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--current)}
+.pane{padding:16px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:980px){.pane{max-height:none}}
+h2{font-family:var(--f-display);font-size:18px;font-weight:700;margin:0}
+h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+:lang(si) h3,:lang(ta) h3{letter-spacing:0;font-size:13px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2)}
+.box.safety{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.box.safety h3{color:var(--warn)}
+.box.safety ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ring{position:relative;width:46px;height:46px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;font-weight:500}
+.chiplist{display:flex;flex-wrap:wrap;gap:6px}
+.chiplist span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;background:var(--surface)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid transparent}
+.steps li .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-family:var(--f-mono);color:var(--muted);margin-top:2px}
+.steps li.done{color:var(--muted)}
+.steps li.done .tick{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.steps li.now{background:var(--surface);border-color:var(--current)}
+.steps li.now .tick{border-color:var(--current);color:var(--current)}
+.log{font-size:13.5px;display:flex;flex-direction:column;gap:5px;max-height:240px;overflow:auto}
+.log > div{display:grid;grid-template-columns:58px 1fr;gap:6px}
+.log span{font-family:var(--f-mono);color:var(--muted);font-size:11.5px;padding-top:2px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:7px 8px;background:var(--surface-2);font-weight:600}
+:lang(si) th,:lang(ta) th{letter-spacing:0;font-size:12px}
+td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+td.num{font-family:var(--f-mono);white-space:nowrap;text-align:right}
+.cc{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px}
+.cc .ttl{display:flex;justify-content:flex-end}
+.cc .ttl em{font-style:normal;font-weight:500;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.cc .ttl em.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.cc .flow{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start}
+.cc .st{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:13px;min-width:0}
+.cc .st small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+:lang(si) .cc .st small,:lang(ta) .cc .st small{letter-spacing:0}
+.cc .arrow{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);padding-top:14px;max-width:110px;text-align:center}
+.cc .arrow b{font-size:20px;color:var(--ink);line-height:1}
+.cc svg{width:90px;height:60px;border-radius:8px;border:1px solid var(--line);background:#ffffff}
+.cc .via{font-size:12.5px;color:var(--muted);text-align:center}
+.replaycv{width:100%;max-width:100%;aspect-ratio:3/2;border-radius:10px;border:1px solid var(--line);display:block;background:#ffffff}
+.q{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}
+.q p{margin:0 0 4px;font-weight:600}
+.q button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px}
+.q button:hover:not(:disabled){border-color:var(--accent)}
+.q button.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.q button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.q button:disabled{cursor:default}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--accent);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+.cstep{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13.5px;padding:6px 0;border-top:1px solid var(--line)}
+.cstep:first-child{border-top:0}
+.cstep b{font-family:var(--f-mono);font-weight:500;color:var(--ok)}
+.cstep .row input{width:130px}
+select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px;max-width:100%}
+.readlist{display:flex;flex-wrap:wrap;gap:4px;font-family:var(--f-mono);font-size:12px}
+.readlist span{border:1px solid var(--line);border-radius:6px;padding:2px 6px;background:var(--surface)}
+.cmp{font-size:13.5px;display:flex;flex-direction:column;gap:6px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1 data-i18n="title"></h1>
+      <div class="sub">NIE Practical Handbook (2018) · al-exp-08 · NaOH(s) + HCl(aq) → NaCl(aq) + H₂O(l)</div>
+    </div>
+    <div class="top-actions">
+      <span class="student" id="student" hidden></span>
+      <div class="seg lang" role="group" aria-label="Language / භාෂාව / மொழி" id="langSeg">
+        <button data-lang="si" lang="si" aria-pressed="false">සිංහල</button>
+        <button data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button data-lang="ta" lang="ta" aria-pressed="false">தமிழ்</button>
+      </div>
+      <button class="btn" id="resetBtn" data-i18n="reset"></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="modebar">
+        <label class="label" for="rxSel" data-i18n="rxL"></label>
+        <select id="rxSel"></select>
+        <span style="flex:1"></span>
+        <button class="btn" id="gogBtn" aria-pressed="false"></button>
+      </div>
+      <div class="prompt"><span class="dot"></span><p id="prompt" aria-live="polite"></p></div>
+      <div class="viewport" id="viewport">
+        <canvas id="cv" role="img" tabindex="0"></canvas>
+        <div class="chips" id="chips"></div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+      <div class="dock"><div class="panelbox" id="panel" aria-live="polite"></div></div>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="guide" data-i18n="tabGuide"></button>
+        <button role="tab" aria-selected="false" data-tab="obs" data-i18n="tabObs"></button>
+        <button role="tab" aria-selected="false" data-tab="colours" data-i18n="tabColours"></button>
+        <button role="tab" aria-selected="false" data-tab="quiz" data-i18n="tabQuiz" id="quizTab"></button>
+      </div>
+      <div class="pane" id="pane-guide">
+        <div class="headrow">
+          <div><h3 data-i18n="aimH"></h3><p class="small" data-i18n="aim"></p></div>
+          <div class="ring" aria-hidden="true"><svg width="46" height="46"><circle cx="23" cy="23" r="18" fill="none" stroke="var(--line)" stroke-width="4"/><circle id="ringArc" cx="23" cy="23" r="18" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><span id="ringTxt">0/5</span></div>
+        </div>
+        <div><h3 data-i18n="appH"></h3><div class="chiplist" id="appList"></div></div>
+        <div><h3 data-i18n="procH"></h3><ul class="steps" id="steps"></ul></div>
+        <div class="box safety"><h3 data-i18n="safeH"></h3><ul id="safeList"></ul></div>
+      </div>
+      <div class="pane" id="pane-obs" hidden>
+        <div><h3 data-i18n="logH"></h3><div class="log" id="log"></div></div>
+        <div><h3 data-i18n="readH"></h3><div class="readlist" id="reads"></div></div>
+        <div><h3 data-i18n="resH"></h3><div class="tablewrap"><table><thead><tr><th data-i18n="thRx"></th><th>m / g</th><th>ΔT / °C</th><th>ΔH / kJ mol⁻¹</th></tr></thead><tbody id="tbR"></tbody></table></div></div>
+        <div><h3 data-i18n="hessH"></h3><div class="tablewrap"><table><tbody id="tbH"></tbody></table></div></div>
+      </div>
+      <div class="pane" id="pane-colours" hidden>
+        <div><h2 data-i18n="coloursH"></h2><p class="small muted" style="margin-top:4px" data-i18n="noColour"></p></div>
+        <div id="cards" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div class="box" style="display:flex;flex-direction:column;gap:8px">
+          <h3 data-i18n="replayH" style="margin:0"></h3>
+          <canvas id="mini" class="replaycv" width="600" height="400" aria-hidden="true"></canvas>
+          <input type="range" id="replay" min="0" max="1000" value="1000" data-i18n-aria="replayH">
+          <div class="row"><button class="btn" id="playBtn"></button><span class="small" id="rname"></span></div>
+        </div>
+      </div>
+      <div class="pane" id="pane-quiz" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <h2 data-i18n="quizH"></h2><span class="score" id="score"></span>
+        </div>
+        <div id="quiz" style="display:flex;flex-direction:column;gap:12px"></div>
+        <button class="btn" id="retryBtn" data-i18n="tryAgain" style="align-self:flex-start"></button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const SIM_ID = "al-exp-08";
+
+// =====================================================================
+// LANGUAGES
+// =====================================================================
+const I18N = {
+en: {
+  eyebrow: "A/L Chemistry · Unit 05 · Energetics · Experiment 8", title: "Validation of Hess's law", student: "Student: {name}{cls}", reset: "Reset bench",
+  rxL: "Reaction", gog: "Put on goggles", gogOn: "Goggles on", check: "Check",
+  rx: { A: "I-A · dissolve NaOH(s) in water", B: "I-B · NaOH(aq) + HCl(aq)", C: "II-C · dilute HCl with water", D: "II-D · NaOH(s) + HCl(aq, 1 M)" },
+  sWater: "distilled water",
+  p_setup: "Set up {rx}. Use the buttons below in order, then start the clock.",
+  bWeigh: "Weigh 10 g NaOH(s)", bCup: "Put {v} cm³ {s} in cup", bCyl: "Measure {v} cm³ {s}", mLid: "Lid and thermometer on", start: "Start the clock",
+  tGog: "Put on safety goggles first. Solid NaOH and the acid are corrosive.", tSetupFirst: "Get both reactants ready and put the lid and thermometer on first.",
+  tOrder: "Do the reactions in the handbook order. Next: {next}.", tBusy: "Finish this reaction first, or press Reset to start again.",
+  tWeighFast: "Weigh the NaOH pellets quickly: they absorb water and CO₂ from the air. Use a spatula, never your fingers.",
+  p_pre: "Read the temperature every 30 s before mixing, so you know the starting temperature.", p_mixwait: "At 2 min: {add}, put the lid back and stir.", p_post: "Keep reading the temperature every 30 s.",
+  addSolid: "add the NaOH pellets", addLiq: "pour in the {s}", bAddSolid: "Add NaOH pellets", bPour: "Pour in {s}",
+  read: "Record reading", auto: "Record automatically", speedL: "Clock speed", stir: "Stir",
+  tStir: "Stir now, so everything mixes (and the pellets dissolve) and the heat spreads evenly.", tLidOff: "With the lid off, more heat is lost to the air and the temperature falls faster.",
+  lidOn: "Lid on", lidOff: "Lid off",
+  p_graph: "Drag the two orange handles so the line runs through the cooling points after the peak. The line is extended back to the time of mixing (2 min).",
+  fitDone: "Use this line", tFitBad: "Not quite. The line should pass through the points after the peak (the slow cooling part), not through the peak itself.",
+  extInfo: "Starting temperature (before mixing): {a} °C · extrapolated temperature at mixing: {b} °C",
+  p_calc: "Work out ΔH for {rx}. Mass of solution {m} g, c = 4.2 J g⁻¹ °C⁻¹.",
+  c1: "ΔT = extrapolated temperature − starting temperature (°C)", c2: "Q = m c ΔT (J)", c3: "n(NaOH) = 10 ÷ 40 (mol)", c3C: "n(HCl) = 2 × 125 ÷ 1000 (mol)", c4: "ΔH = −Q ÷ n ÷ 1000 (kJ mol⁻¹)",
+  h1: "{b} − {a}.", h2: "{m} × 4.2 × {d}.", h3: "10 g ÷ 40 g mol⁻¹ = 0.25 mol.", h3C: "2 mol dm⁻³ × 0.125 dm³ = 0.25 mol.", h4: "−{q} ÷ 0.25 ÷ 1000. Heat is given out, so ΔH is negative.",
+  p_summary: "{rx}: ΔH = {h} kJ mol⁻¹. Next: {next}.", nextRx: "Next reaction →",
+  p_hess: "All four ΔH values are measured. Check Hess's law: add up each route.",
+  hI: "Route I: ΔH₁ + ΔH₂ (kJ mol⁻¹)", hII: "Route II: ΔH₃ + ΔH₄ (kJ mol⁻¹)", hPc: "% difference = |I − II| ÷ |I| × 100",
+  hintSum: "({a}) + ({b}).", hintPc: "|{a} − ({b})| ÷ {c} × 100.",
+  hessOK: "Route I = {a} and Route II = {b} kJ mol⁻¹, a difference of {p}%. Both routes start and end in the same states, so they give the same total within experimental error: Hess's law.",
+  pDone: "All steps done. Now try the Questions tab.",
+  chipT: "T = {t} °C", chipTime: "Time {m}:{s}", chipLid: "Lid {l}", on: "on", off: "off", chipBal: "Balance {m} g",
+  cvCup: "polystyrene cup", cvLid: "lid", cvColourless: "colourless", cvGraph: "Temperature against time", cvTime: "time / min", cvTemp: "T / °C", cvMixLine: "mixing", cvZoom: "thermometer ×5",
+  cvBal: "balance", cvPellets: "NaOH pellets (white)", cvDissolving: "white pellets dissolving", cvCycle: "Energy-level diagram (Hess cycle)",
+  cvStart: "NaOH(s) + HCl(aq) + H₂O", cvMidI: "NaOH(aq) + HCl(aq)", cvMidII: "NaOH(s) + HCl(aq, dilute)", cvEnd: "NaCl(aq)", cvRouteI: "Route I", cvRouteII: "Route II", cvSolution: "solution",
+  lWeigh: "{m} g of NaOH(s) weighed quickly on a watch glass.", lPre: "Temperature before mixing: {t} °C (steady).",
+  lMixS: "At 2 min the NaOH pellets were added and stirred. The white pellets dissolve to give a colourless solution and the temperature rises.",
+  lMixL: "At 2 min the {s} was poured in and stirred. No colour change: the solution stays colourless.",
+  lPeak: "Highest reading: {t} °C. The solution then cools slowly.", lFit: "Cooling line extrapolated back to 2 min: {t} °C. ΔT = {d} °C.", lCalc: "{rx}: Q = {q} J, ΔH = {h} kJ mol⁻¹.",
+  lHess: "Route I (ΔH₁ + ΔH₂) = {a} kJ mol⁻¹; Route II (ΔH₃ + ΔH₄) = {b} kJ mol⁻¹; difference {p}%. Hess's law is verified.",
+  tabGuide: "Guide", tabObs: "Observations", tabColours: "Colours", tabQuiz: "Questions",
+  aimH: "Aim", aim: "Measure ΔH for two different routes from NaOH(s) + HCl(aq) to NaCl(aq) and show that they are equal (Hess's law).",
+  appH: "Apparatus and chemicals", app: ["Polystyrene cups", "Thermometer", "Balance", "NaOH(s) (10 g)", "2 mol dm⁻³ HCl", "2 mol dm⁻³ NaOH", "Distilled water", "Measuring cylinders"],
+  procH: "Procedure", steps: ["Path I-A: dissolve 10 g NaOH(s) in 125 cm³ water → ΔH₁", "Path I-B: 125 cm³ 2 M NaOH + 125 cm³ 2 M HCl → ΔH₂", "Path II-C: dilute 125 cm³ 2 M HCl with 125 cm³ water → ΔH₃", "Path II-D: 10 g NaOH(s) + 250 cm³ 1 M HCl → ΔH₄", "Check ΔH₁ + ΔH₂ ≈ ΔH₃ + ΔH₄"],
+  safeH: "Safety", safe: ["Wear safety goggles. Solid NaOH and its solutions are very corrosive, especially to the eyes.", "Handle NaOH pellets with a spatula, never your fingers. Weigh them quickly and close the bottle.", "Dissolving NaOH gives out a lot of heat: the cup gets warm. Add the pellets carefully.", "HCl is corrosive. Wash any spill off your skin with plenty of water."],
+  logH: "Observation log", readH: "Temperature readings, current reaction (time, °C)", resH: "Results", thRx: "Reaction", none: "No results yet.", hessH: "Hess's law check",
+  hRowI: "Route I: ΔH₁ + ΔH₂", hRowII: "Route II: ΔH₃ + ΔH₄", hRowP: "% difference",
+  coloursH: "Colours and visible changes", noColour: "There is no colour change in this practical: every solution is colourless. The visible changes are the white NaOH pellets dissolving and the thermometer rising.",
+  k1b: "white NaOH pellets + colourless water", k1r: "add and stir", k1a: "pellets dissolve; colourless solution; cup gets warm", k2b: "colourless NaOH(aq) + colourless HCl(aq)", k2r: "mix and stir", k2a: "colourless solution; temperature rises",
+  before: "Before", after: "After", seen: "Recorded", notYet: "Not done yet",
+  replayH: "Replay: the thermometer during the last reaction", play: "Play slowly", pause: "Pause", rNone: "Complete a reaction to replay it.", rAt: "{m}:{s} · {t} °C",
+  quizH: "Knowledge check", tryAgain: "Try again", best: "best {p}%", scoreLeft: "{n} left", correct: "Correct. ", notQuite: "Not quite. ", tDone: "Practical complete! Now answer the questions in the Questions tab.",
+  canvasAria: "Polystyrene cup with lid and thermometer, a balance or measuring cylinder, a temperature against time graph with a draggable extrapolation line, and an energy-level diagram of the Hess cycle.",
+  quiz: [
+    { q: "Hess's law states that ΔH depends on…", o: ["the route", "only initial and final states", "the catalyst", "time"], e: "Enthalpy is a state function." },
+    { q: "Moles in 10 g NaOH:", o: ["0.25", "0.10", "2.5", "0.40"], e: "10 / 40." },
+    { q: "Dissolving NaOH(s) in water is…", o: ["endothermic", "exothermic", "thermoneutral", "impossible"], e: "Temperature rises." },
+    { q: "A source of error in this experiment:", o: ["Heat loss to surroundings", "Using a lid", "Stirring", "Using a thermometer"], e: "Cups are not perfect insulators." },
+  ],
+},
+si: {
+  eyebrow: "උ.පෙ. රසායන විද්‍යාව · ඒකකය 05 · ශක්ති විද්‍යාව · පරීක්ෂණය 8", title: "හෙස් නියමය සත්‍යාපනය", student: "ශිෂ්‍යයා: {name}{cls}", reset: "නැවත අරඹන්න",
+  rxL: "ප්‍රතික්‍රියාව", gog: "ආරක්ෂිත කණ්ණාඩි පළඳින්න", gogOn: "කණ්ණාඩි පැළඳ ඇත", check: "පරීක්ෂා කරන්න",
+  rx: { A: "I-A · NaOH(s) ජලයේ දියකිරීම", B: "I-B · NaOH(aq) + HCl(aq)", C: "II-C · HCl ජලයෙන් තනුක කිරීම", D: "II-D · NaOH(s) + HCl(aq, 1 M)" },
+  sWater: "ආසුත ජලය",
+  p_setup: "{rx} සකසන්න. පහත බොත්තම් පිළිවෙළින් භාවිත කර, ඉන්පසු ඔරලෝසුව අරඹන්න.",
+  bWeigh: "NaOH(s) 10 g කිරන්න", bCup: "{s} {v} cm³ කෝප්පයට දමන්න", bCyl: "{s} {v} cm³ මනින්න", mLid: "පියන සහ උෂ්ණත්වමානය සවි කරන්න", start: "ඔරලෝසුව අරඹන්න",
+  tGog: "පළමුව ආරක්ෂිත කණ්ණාඩි පළඳින්න. ඝන NaOH සහ අම්ලය විඛාදකයි.", tSetupFirst: "පළමුව ප්‍රතික්‍රියක දෙකම සූදානම් කර, පියන සහ උෂ්ණත්වමානය සවි කරන්න.",
+  tOrder: "අත්පොතේ පිළිවෙළට ප්‍රතික්‍රියා කරන්න. ඊළඟට: {next}.", tBusy: "පළමුව මෙම ප්‍රතික්‍රියාව අවසන් කරන්න, නැතහොත් නැවත ඇරඹීමට 'නැවත අරඹන්න' ඔබන්න.",
+  tWeighFast: "NaOH කැට ඉක්මනින් කිරන්න: ඒවා වාතයෙන් ජලය සහ CO₂ අවශෝෂණය කරයි. ඇඟිලිවලින් නොව හැන්දකින් ගන්න.",
+  p_pre: "ආරම්භක උෂ්ණත්වය දැන ගැනීමට, මිශ්‍ර කිරීමට පෙර සෑම තත්පර 30 කටම උෂ්ණත්වය කියවන්න.", p_mixwait: "මිනිත්තු 2 දී: {add}, පියන නැවත දමා කලවම් කරන්න.", p_post: "සෑම තත්පර 30 කටම දිගටම උෂ්ණත්වය කියවන්න.",
+  addSolid: "NaOH කැට එක් කර", addLiq: "{s} වත් කර", bAddSolid: "NaOH කැට එක් කරන්න", bPour: "{s} වත් කරන්න",
+  read: "පාඨාංකය සටහන් කරන්න", auto: "ස්වයංක්‍රීයව සටහන් කරන්න", speedL: "ඔරලෝසු වේගය", stir: "කලවම් කරන්න",
+  tStir: "සියල්ල මිශ්‍ර වී (කැට දිය වී) තාපය ඒකාකාරව පැතිරීමට දැන් කලවම් කරන්න.", tLidOff: "පියන නැතිව වාතයට වැඩි තාපයක් අහිමි වන අතර උෂ්ණත්වය වේගයෙන් අඩු වේ.",
+  lidOn: "පියන සහිතව", lidOff: "පියන රහිතව",
+  p_graph: "රේඛාව උපරිමයෙන් පසු සිසිලන ලක්ෂ්‍ය හරහා යන සේ තැඹිලි හැසිරවුම් දෙක අදින්න. රේඛාව මිශ්‍ර කළ කාලය (මිනිත්තු 2) දක්වා ආපසු දිගු කෙරේ.",
+  fitDone: "මෙම රේඛාව භාවිත කරන්න", tFitBad: "තවම නිවැරදි නැත. රේඛාව උපරිමය හරහා නොව, උපරිමයෙන් පසු ලක්ෂ්‍ය (සෙමින් සිසිල් වන කොටස) හරහා යා යුතුය.",
+  extInfo: "ආරම්භක උෂ්ණත්වය (මිශ්‍ර කිරීමට පෙර): {a} °C · මිශ්‍ර කළ මොහොතට බහිර්නිවේශිත උෂ්ණත්වය: {b} °C",
+  p_calc: "{rx} සඳහා ΔH ගණනය කරන්න. ද්‍රාවණයේ ස්කන්ධය {m} g, c = 4.2 J g⁻¹ °C⁻¹.",
+  c1: "ΔT = බහිර්නිවේශිත උෂ්ණත්වය − ආරම්භක උෂ්ණත්වය (°C)", c2: "Q = m c ΔT (J)", c3: "n(NaOH) = 10 ÷ 40 (mol)", c3C: "n(HCl) = 2 × 125 ÷ 1000 (mol)", c4: "ΔH = −Q ÷ n ÷ 1000 (kJ mol⁻¹)",
+  h1: "{b} − {a}.", h2: "{m} × 4.2 × {d}.", h3: "10 g ÷ 40 g mol⁻¹ = මවුල 0.25.", h3C: "2 mol dm⁻³ × 0.125 dm³ = මවුල 0.25.", h4: "−{q} ÷ 0.25 ÷ 1000. තාපය පිට වන නිසා ΔH සෘණ වේ.",
+  p_summary: "{rx}: ΔH = {h} kJ mol⁻¹. ඊළඟට: {next}.", nextRx: "ඊළඟ ප්‍රතික්‍රියාව →",
+  p_hess: "ΔH අගය හතරම මනින ලදී. හෙස් නියමය පරීක්ෂා කරන්න: එක් එක් මාර්ගය එකතු කරන්න.",
+  hI: "මාර්ගය I: ΔH₁ + ΔH₂ (kJ mol⁻¹)", hII: "මාර්ගය II: ΔH₃ + ΔH₄ (kJ mol⁻¹)", hPc: "ප්‍රතිශත වෙනස = |I − II| ÷ |I| × 100",
+  hintSum: "({a}) + ({b}).", hintPc: "|{a} − ({b})| ÷ {c} × 100.",
+  hessOK: "මාර්ගය I = {a} සහ මාර්ගය II = {b} kJ mol⁻¹, වෙනස {p}%. මාර්ග දෙකම එකම අවස්ථාවලින් ආරම්භ වී එකම අවස්ථාවලින් අවසන් වන නිසා පරීක්ෂණාත්මක දෝෂය තුළ එකම එකතුව ලබා දෙයි: හෙස් නියමය.",
+  pDone: "සියලු පියවර අවසන්. දැන් ප්‍රශ්න ටැබය උත්සාහ කරන්න.",
+  chipT: "T = {t} °C", chipTime: "කාලය {m}:{s}", chipLid: "පියන {l}", on: "ඇත", off: "නැත", chipBal: "තුලාව {m} g",
+  cvCup: "පොලිස්ටයිරීන් කෝප්පය", cvLid: "පියන", cvColourless: "අවර්ණ", cvGraph: "උෂ්ණත්වය එදිරිව කාලය", cvTime: "කාලය / මිනිත්තු", cvTemp: "T / °C", cvMixLine: "මිශ්‍ර කිරීම", cvZoom: "උෂ්ණත්වමානය ×5",
+  cvBal: "තුලාව", cvPellets: "NaOH කැට (සුදු)", cvDissolving: "සුදු කැට දිය වෙමින්", cvCycle: "ශක්ති මට්ටම් සටහන (හෙස් චක්‍රය)",
+  cvStart: "NaOH(s) + HCl(aq) + H₂O", cvMidI: "NaOH(aq) + HCl(aq)", cvMidII: "NaOH(s) + HCl(aq, තනුක)", cvEnd: "NaCl(aq)", cvRouteI: "මාර්ගය I", cvRouteII: "මාර්ගය II", cvSolution: "ද්‍රාවණය",
+  lWeigh: "NaOH(s) {m} g ඔරලෝසු වීදුරුවක් මත ඉක්මනින් කිරන ලදී.", lPre: "මිශ්‍ර කිරීමට පෙර උෂ්ණත්වය: {t} °C (ස්ථාවර).",
+  lMixS: "මිනිත්තු 2 දී NaOH කැට එක් කර කලවම් කරන ලදී. සුදු කැට දිය වී අවර්ණ ද්‍රාවණයක් සාදන අතර උෂ්ණත්වය ඉහළ යයි.",
+  lMixL: "මිනිත්තු 2 දී {s} වත් කර කලවම් කරන ලදී. වර්ණ වෙනසක් නැත: ද්‍රාවණය අවර්ණව පවතී.",
+  lPeak: "ඉහළම පාඨාංකය: {t} °C. ඉන්පසු ද්‍රාවණය සෙමින් සිසිල් වේ.", lFit: "සිසිලන රේඛාව මිනිත්තු 2 දක්වා ආපසු බහිර්නිවේශනය: {t} °C. ΔT = {d} °C.", lCalc: "{rx}: Q = {q} J, ΔH = {h} kJ mol⁻¹.",
+  lHess: "මාර්ගය I (ΔH₁ + ΔH₂) = {a} kJ mol⁻¹; මාර්ගය II (ΔH₃ + ΔH₄) = {b} kJ mol⁻¹; වෙනස {p}%. හෙස් නියමය සත්‍යාපනය විය.",
+  tabGuide: "මාර්ගෝපදේශය", tabObs: "නිරීක්ෂණ", tabColours: "වර්ණ", tabQuiz: "ප්‍රශ්න",
+  aimH: "අරමුණ", aim: "NaOH(s) + HCl(aq) සිට NaCl(aq) දක්වා වෙනස් මාර්ග දෙකක් සඳහා ΔH මැන ඒවා සමාන බව පෙන්වීම (හෙස් නියමය).",
+  appH: "උපකරණ සහ රසායන ද්‍රව්‍ය", app: ["පොලිස්ටයිරීන් කෝප්ප", "උෂ්ණත්වමානය", "තුලාව", "NaOH(s) (10 g)", "2 mol dm⁻³ HCl", "2 mol dm⁻³ NaOH", "ආසුත ජලය", "මිනුම් සිලින්ඩර"],
+  procH: "ක්‍රියා පිළිවෙළ", steps: ["මාර්ගය I-A: NaOH(s) 10 g ජලය 125 cm³ ක දිය කරන්න → ΔH₁", "මාර්ගය I-B: 2 M NaOH 125 cm³ + 2 M HCl 125 cm³ → ΔH₂", "මාර්ගය II-C: 2 M HCl 125 cm³ ජලය 125 cm³ කින් තනුක කරන්න → ΔH₃", "මාර්ගය II-D: NaOH(s) 10 g + 1 M HCl 250 cm³ → ΔH₄", "ΔH₁ + ΔH₂ ≈ ΔH₃ + ΔH₄ දැයි පරීක්ෂා කරන්න"],
+  safeH: "ආරක්ෂාව", safe: ["ආරක්ෂිත කණ්ණාඩි පළඳින්න. ඝන NaOH සහ එහි ද්‍රාවණ ඉතා විඛාදකයි, විශේෂයෙන් ඇස්වලට.", "NaOH කැට ඇඟිලිවලින් නොව හැන්දකින් ගන්න. ඉක්මනින් කිර බෝතලය වසන්න.", "NaOH දිය කිරීමේදී විශාල තාපයක් පිට වේ: කෝප්පය උණුසුම් වේ. කැට ප්‍රවේශමෙන් එක් කරන්න.", "HCl විඛාදකයි. සමට ඉසුණු දෑ ජලය බහුලව යොදා සෝදන්න."],
+  logH: "නිරීක්ෂණ සටහන", readH: "උෂ්ණත්ව පාඨාංක, වත්මන් ප්‍රතික්‍රියාව (කාලය, °C)", resH: "ප්‍රතිඵල", thRx: "ප්‍රතික්‍රියාව", none: "තවම ප්‍රතිඵල නැත.", hessH: "හෙස් නියමය පරීක්ෂාව",
+  hRowI: "මාර්ගය I: ΔH₁ + ΔH₂", hRowII: "මාර්ගය II: ΔH₃ + ΔH₄", hRowP: "ප්‍රතිශත වෙනස",
+  coloursH: "වර්ණ සහ දෘශ්‍යමාන වෙනස්කම්", noColour: "මෙම ප්‍රායෝගිකයේ වර්ණ වෙනසක් නැත: සියලු ද්‍රාවණ අවර්ණයි. දෘශ්‍යමාන වෙනස්කම් වන්නේ සුදු NaOH කැට දිය වීම සහ උෂ්ණත්වමානය ඉහළ යාමයි.",
+  k1b: "සුදු NaOH කැට + අවර්ණ ජලය", k1r: "එක් කර කලවම් කරන්න", k1a: "කැට දිය වේ; අවර්ණ ද්‍රාවණය; කෝප්පය උණුසුම් වේ", k2b: "අවර්ණ NaOH(aq) + අවර්ණ HCl(aq)", k2r: "මිශ්‍ර කර කලවම් කරන්න", k2a: "අවර්ණ ද්‍රාවණය; උෂ්ණත්වය ඉහළ යයි",
+  before: "පෙර", after: "පසු", seen: "සටහන් විය", notYet: "තවම කර නැත",
+  replayH: "නැවත බැලීම: අවසන් ප්‍රතික්‍රියාවේ උෂ්ණත්වමානය", play: "සෙමින් ධාවනය", pause: "නවතන්න", rNone: "නැවත බැලීමට ප්‍රතික්‍රියාවක් සම්පූර්ණ කරන්න.", rAt: "{m}:{s} · {t} °C",
+  quizH: "දැනුම පරීක්ෂාව", tryAgain: "නැවත උත්සාහ කරන්න", best: "උපරිම {p}%", scoreLeft: "ඉතිරි {n}", correct: "නිවැරදියි. ", notQuite: "තවම නිවැරදි නැත. ", tDone: "ප්‍රායෝගිකය අවසන්! දැන් ප්‍රශ්න ටැබයේ ප්‍රශ්නවලට පිළිතුරු දෙන්න.",
+  canvasAria: "පියන සහ උෂ්ණත්වමානය සහිත පොලිස්ටයිරීන් කෝප්පයක්, තුලාවක් හෝ මිනුම් සිලින්ඩරයක්, ඇදිය හැකි බහිර්නිවේශන රේඛාවක් සහිත උෂ්ණත්ව-කාල ප්‍රස්තාරයක් සහ හෙස් චක්‍රයේ ශක්ති මට්ටම් සටහනක්.",
+  quiz: [
+    { q: "හෙස් නියමයට අනුව ΔH රඳා පවතින්නේ…", o: ["මාර්ගය මත", "ආරම්භක සහ අවසාන අවස්ථා මත පමණි", "උත්ප්‍රේරකය මත", "කාලය මත"], e: "එන්තැල්පිය අවස්ථා ශ්‍රිතයකි." },
+    { q: "NaOH 10 g හි මවුල ගණන:", o: ["0.25", "0.10", "2.5", "0.40"], e: "10 / 40." },
+    { q: "NaOH(s) ජලයේ දිය වීම…", o: ["තාපාවශෝෂකයි", "තාපදායකයි", "තාප උදාසීනයි", "කළ නොහැකියි"], e: "උෂ්ණත්වය ඉහළ යයි." },
+    { q: "මෙම පරීක්ෂණයේ දෝෂ ප්‍රභවයක්:", o: ["වටපිටාවට තාපය අහිමි වීම", "පියනක් භාවිතය", "කලවම් කිරීම", "උෂ්ණත්වමානයක් භාවිතය"], e: "කෝප්ප පරිපූර්ණ පරිවාරක නොවේ." },
+  ],
+},
+ta: {
+  eyebrow: "க.பொ.த (உ/த) இரசாயனவியல் · அலகு 05 · சக்தியியல் · பரிசோதனை 8", title: "எசின் விதியை வாய்ப்புப் பார்த்தல்", student: "மாணவர்: {name}{cls}", reset: "மீண்டும் தொடங்கு",
+  rxL: "தாக்கம்", gog: "பாதுகாப்புக் கண்ணாடி அணி", gogOn: "கண்ணாடி அணிந்துள்ளீர்", check: "சரிபார்",
+  rx: { A: "I-A · NaOH(s) ஐ நீரில் கரைத்தல்", B: "I-B · NaOH(aq) + HCl(aq)", C: "II-C · HCl ஐ நீரால் ஐதாக்கல்", D: "II-D · NaOH(s) + HCl(aq, 1 M)" },
+  sWater: "காய்ச்சி வடித்த நீர்",
+  p_setup: "{rx} ஐ ஒழுங்குபடுத்துக. கீழுள்ள பொத்தான்களை வரிசையாகப் பயன்படுத்தி, பின் கடிகாரத்தைத் தொடங்குக.",
+  bWeigh: "NaOH(s) 10 g நிறுக்க", bCup: "{s} {v} cm³ ஐக் கிண்ணத்தில் இடு", bCyl: "{s} {v} cm³ அள", mLid: "மூடியும் வெப்பமானியும் பொருத்து", start: "கடிகாரத்தைத் தொடங்கு",
+  tGog: "முதலில் பாதுகாப்புக் கண்ணாடி அணிக. திண்ம NaOH உம் அமிலமும் அரிக்கும் தன்மையுடையவை.", tSetupFirst: "முதலில் இரு தாக்கிகளையும் தயார் செய்து, மூடியையும் வெப்பமானியையும் பொருத்துக.",
+  tOrder: "கைந்நூலின் வரிசையில் தாக்கங்களைச் செய்க. அடுத்தது: {next}.", tBusy: "முதலில் இத்தாக்கத்தை முடிக்க, அல்லது மீண்டும் தொடங்க 'மீண்டும் தொடங்கு' ஐ அழுத்துக.",
+  tWeighFast: "NaOH சிறுகட்டிகளை விரைவாக நிறுக்க: அவை வளியிலிருந்து நீரையும் CO₂ ஐயும் உறிஞ்சும். விரல்களால் அல்ல, கரண்டியால் எடுக்க.",
+  p_pre: "ஆரம்ப வெப்பநிலையை அறியக் கலக்கும் முன் ஒவ்வொரு 30 s இற்கும் வெப்பநிலையை வாசிக்க.", p_mixwait: "2 நிமிடத்தில்: {add}, மூடியை மீண்டும் வைத்துக் கலக்குக.", p_post: "தொடர்ந்து ஒவ்வொரு 30 s இற்கும் வெப்பநிலையை வாசிக்க.",
+  addSolid: "NaOH சிறுகட்டிகளைச் சேர்த்து", addLiq: "{s} ஐ ஊற்றி", bAddSolid: "NaOH சிறுகட்டிகளைச் சேர்", bPour: "{s} ஐ ஊற்று",
+  read: "வாசிப்பைப் பதி", auto: "தானாகப் பதி", speedL: "கடிகார வேகம்", stir: "கலக்கு",
+  tStir: "எல்லாம் கலந்து (சிறுகட்டிகள் கரைந்து) வெப்பம் சீராகப் பரவ இப்போது கலக்குக.", tLidOff: "மூடி இல்லாவிடின் வளிக்கு அதிக வெப்பம் இழக்கப்பட்டு வெப்பநிலை விரைவாகக் குறையும்.",
+  lidOn: "மூடியுடன்", lidOff: "மூடியின்றி",
+  p_graph: "கோடு உச்சத்துக்குப் பின்னான குளிரல் புள்ளிகள் வழியே செல்லுமாறு இரு செம்மஞ்சள் பிடிகளையும் இழுக்கவும். கோடு கலந்த நேரம் (2 நிமிடம்) வரை பின்னோக்கி நீட்டப்படும்.",
+  fitDone: "இக்கோட்டைப் பயன்படுத்து", tFitBad: "சரியில்லை. கோடு உச்சத்தின் வழியே அல்ல, உச்சத்துக்குப் பின்னான (மெதுவாகக் குளிரும்) புள்ளிகள் வழியே செல்ல வேண்டும்.",
+  extInfo: "ஆரம்ப வெப்பநிலை (கலக்கும் முன்): {a} °C · கலந்த நேரத்துக்குப் புறச்செருகிய வெப்பநிலை: {b} °C",
+  p_calc: "{rx} இற்கு ΔH ஐக் கணிக்க. கரைசலின் திணிவு {m} g, c = 4.2 J g⁻¹ °C⁻¹.",
+  c1: "ΔT = புறச்செருகிய வெப்பநிலை − ஆரம்ப வெப்பநிலை (°C)", c2: "Q = m c ΔT (J)", c3: "n(NaOH) = 10 ÷ 40 (mol)", c3C: "n(HCl) = 2 × 125 ÷ 1000 (mol)", c4: "ΔH = −Q ÷ n ÷ 1000 (kJ mol⁻¹)",
+  h1: "{b} − {a}.", h2: "{m} × 4.2 × {d}.", h3: "10 g ÷ 40 g mol⁻¹ = 0.25 mol.", h3C: "2 mol dm⁻³ × 0.125 dm³ = 0.25 mol.", h4: "−{q} ÷ 0.25 ÷ 1000. வெப்பம் வெளியேறுவதால் ΔH மறையானது.",
+  p_summary: "{rx}: ΔH = {h} kJ mol⁻¹. அடுத்தது: {next}.", nextRx: "அடுத்த தாக்கம் →",
+  p_hess: "நான்கு ΔH பெறுமானங்களும் அளக்கப்பட்டன. எசின் விதியைச் சரிபார்க்க: ஒவ்வொரு பாதையையும் கூட்டுக.",
+  hI: "பாதை I: ΔH₁ + ΔH₂ (kJ mol⁻¹)", hII: "பாதை II: ΔH₃ + ΔH₄ (kJ mol⁻¹)", hPc: "சதவீத வேறுபாடு = |I − II| ÷ |I| × 100",
+  hintSum: "({a}) + ({b}).", hintPc: "|{a} − ({b})| ÷ {c} × 100.",
+  hessOK: "பாதை I = {a}, பாதை II = {b} kJ mol⁻¹, வேறுபாடு {p}%. இரு பாதைகளும் ஒரே நிலைகளில் தொடங்கி ஒரே நிலைகளில் முடிவதால் பரிசோதனை வழுவுக்குள் ஒரே மொத்தத்தைத் தருகின்றன: எசின் விதி.",
+  pDone: "எல்லாப் படிகளும் முடிந்தன. இப்போது வினாக்கள் தாவலை முயல்க.",
+  chipT: "T = {t} °C", chipTime: "நேரம் {m}:{s}", chipLid: "மூடி {l}", on: "உண்டு", off: "இல்லை", chipBal: "தராசு {m} g",
+  cvCup: "பொலிஸ்ரைரீன் கிண்ணம்", cvLid: "மூடி", cvColourless: "நிறமற்றது", cvGraph: "வெப்பநிலை எதிர் நேரம்", cvTime: "நேரம் / நிமிடம்", cvTemp: "T / °C", cvMixLine: "கலத்தல்", cvZoom: "வெப்பமானி ×5",
+  cvBal: "தராசு", cvPellets: "NaOH சிறுகட்டிகள் (வெள்ளை)", cvDissolving: "வெள்ளைச் சிறுகட்டிகள் கரைகின்றன", cvCycle: "சக்தி மட்ட வரிப்படம் (எசின் வட்டம்)",
+  cvStart: "NaOH(s) + HCl(aq) + H₂O", cvMidI: "NaOH(aq) + HCl(aq)", cvMidII: "NaOH(s) + HCl(aq, ஐதான)", cvEnd: "NaCl(aq)", cvRouteI: "பாதை I", cvRouteII: "பாதை II", cvSolution: "கரைசல்",
+  lWeigh: "NaOH(s) {m} g ஒரு மணிக்கூட்டுக் கண்ணாடியில் விரைவாக நிறுக்கப்பட்டது.", lPre: "கலக்கும் முன் வெப்பநிலை: {t} °C (நிலையானது).",
+  lMixS: "2 நிமிடத்தில் NaOH சிறுகட்டிகள் சேர்க்கப்பட்டுக் கலக்கப்பட்டன. வெள்ளைச் சிறுகட்டிகள் கரைந்து நிறமற்ற கரைசலைத் தருகின்றன; வெப்பநிலை உயர்கிறது.",
+  lMixL: "2 நிமிடத்தில் {s} ஊற்றப்பட்டுக் கலக்கப்பட்டது. நிறமாற்றம் இல்லை: கரைசல் நிறமற்றதாகவே உள்ளது.",
+  lPeak: "அதிகூடிய வாசிப்பு: {t} °C. பின் கரைசல் மெதுவாகக் குளிர்கிறது.", lFit: "குளிரல் கோடு 2 நிமிடம் வரை பின்னோக்கிப் புறச்செருகப்பட்டது: {t} °C. ΔT = {d} °C.", lCalc: "{rx}: Q = {q} J, ΔH = {h} kJ mol⁻¹.",
+  lHess: "பாதை I (ΔH₁ + ΔH₂) = {a} kJ mol⁻¹; பாதை II (ΔH₃ + ΔH₄) = {b} kJ mol⁻¹; வேறுபாடு {p}%. எசின் விதி வாய்ப்புப் பார்க்கப்பட்டது.",
+  tabGuide: "வழிகாட்டி", tabObs: "அவதானிப்புகள்", tabColours: "நிறங்கள்", tabQuiz: "வினாக்கள்",
+  aimH: "நோக்கம்", aim: "NaOH(s) + HCl(aq) இலிருந்து NaCl(aq) இற்கான இரு வெவ்வேறு பாதைகளுக்கு ΔH ஐ அளந்து அவை சமம் எனக் காட்டுதல் (எசின் விதி).",
+  appH: "உபகரணங்களும் இரசாயனங்களும்", app: ["பொலிஸ்ரைரீன் கிண்ணங்கள்", "வெப்பமானி", "தராசு", "NaOH(s) (10 g)", "2 mol dm⁻³ HCl", "2 mol dm⁻³ NaOH", "காய்ச்சி வடித்த நீர்", "அளவு உருளைகள்"],
+  procH: "செய்முறை", steps: ["பாதை I-A: 10 g NaOH(s) ஐ 125 cm³ நீரில் கரைக்க → ΔH₁", "பாதை I-B: 125 cm³ 2 M NaOH + 125 cm³ 2 M HCl → ΔH₂", "பாதை II-C: 125 cm³ 2 M HCl ஐ 125 cm³ நீரால் ஐதாக்குக → ΔH₃", "பாதை II-D: 10 g NaOH(s) + 250 cm³ 1 M HCl → ΔH₄", "ΔH₁ + ΔH₂ ≈ ΔH₃ + ΔH₄ எனச் சரிபார்க்க"],
+  safeH: "பாதுகாப்பு", safe: ["பாதுகாப்புக் கண்ணாடி அணிக. திண்ம NaOH உம் அதன் கரைசல்களும் குறிப்பாகக் கண்களை மிகவும் அரிக்கும்.", "NaOH சிறுகட்டிகளை விரல்களால் அல்ல, கரண்டியால் எடுக்க. விரைவாக நிறுத்துப் போத்தலை மூடுக.", "NaOH கரையும்போது அதிக வெப்பம் வெளியேறும்: கிண்ணம் சூடாகும். சிறுகட்டிகளைக் கவனமாகச் சேர்க்க.", "HCl அரிக்கும் தன்மையுடையது. தோலில் பட்டால் அதிக நீரால் கழுவுக."],
+  logH: "அவதானிப்புப் பதிவு", readH: "வெப்பநிலை வாசிப்புகள், தற்போதைய தாக்கம் (நேரம், °C)", resH: "முடிவுகள்", thRx: "தாக்கம்", none: "இதுவரை முடிவுகள் இல்லை.", hessH: "எசின் விதிச் சரிபார்ப்பு",
+  hRowI: "பாதை I: ΔH₁ + ΔH₂", hRowII: "பாதை II: ΔH₃ + ΔH₄", hRowP: "சதவீத வேறுபாடு",
+  coloursH: "நிறங்களும் காணக்கூடிய மாற்றங்களும்", noColour: "இச்செய்முறையில் நிறமாற்றம் இல்லை: எல்லாக் கரைசல்களும் நிறமற்றவை. காணக்கூடிய மாற்றங்கள் வெள்ளை NaOH சிறுகட்டிகள் கரைவதும் வெப்பமானி உயர்வதுமே.",
+  k1b: "வெள்ளை NaOH சிறுகட்டிகள் + நிறமற்ற நீர்", k1r: "சேர்த்துக் கலக்கு", k1a: "சிறுகட்டிகள் கரைகின்றன; நிறமற்ற கரைசல்; கிண்ணம் சூடாகிறது", k2b: "நிறமற்ற NaOH(aq) + நிறமற்ற HCl(aq)", k2r: "கலந்து கலக்கு", k2a: "நிறமற்ற கரைசல்; வெப்பநிலை உயர்கிறது",
+  before: "முன்", after: "பின்", seen: "பதியப்பட்டது", notYet: "இன்னும் செய்யவில்லை",
+  replayH: "மீண்டும் பார்: கடைசித் தாக்கத்தின் வெப்பமானி", play: "மெதுவாக இயக்கு", pause: "நிறுத்து", rNone: "மீண்டும் பார்க்க ஒரு தாக்கத்தை முடிக்க.", rAt: "{m}:{s} · {t} °C",
+  quizH: "அறிவுச் சோதனை", tryAgain: "மீண்டும் முயல்க", best: "அதிகூடியது {p}%", scoreLeft: "{n} மீதம்", correct: "சரி. ", notQuite: "சரியில்லை. ", tDone: "செய்முறை முடிந்தது! இப்போது வினாக்கள் தாவலில் உள்ள வினாக்களுக்கு விடையளிக்க.",
+  canvasAria: "மூடியும் வெப்பமானியும் உள்ள பொலிஸ்ரைரீன் கிண்ணம், தராசு அல்லது அளவு உருளை, இழுக்கக்கூடிய புறச்செருகல் கோடுடைய வெப்பநிலை-நேர வரைபு, எசின் வட்டத்தின் சக்தி மட்ட வரிப்படம்.",
+  quiz: [
+    { q: "எசின் விதியின்படி ΔH தங்கியிருப்பது…", o: ["பாதையில்", "ஆரம்ப, இறுதி நிலைகளில் மட்டும்", "ஊக்கியில்", "நேரத்தில்"], e: "வெப்பவுள்ளுறை ஒரு நிலைச் சார்பு." },
+    { q: "10 g NaOH இலுள்ள மூல்கள்:", o: ["0.25", "0.10", "2.5", "0.40"], e: "10 / 40." },
+    { q: "NaOH(s) நீரில் கரைவது…", o: ["அகவெப்பமானது", "புறவெப்பமானது", "வெப்ப நடுநிலையானது", "சாத்தியமற்றது"], e: "வெப்பநிலை உயர்கிறது." },
+    { q: "இப்பரிசோதனையில் ஒரு வழு மூலம்:", o: ["சூழலுக்கு வெப்ப இழப்பு", "மூடியைப் பயன்படுத்தல்", "கலக்குதல்", "வெப்பமானியைப் பயன்படுத்தல்"], e: "கிண்ணங்கள் பூரண காவலிகள் அல்ல." },
+  ],
+},
+};
+const QUIZ_ANS = [1, 0, 1, 0];
+let LANG = "en";
+try { const s = localStorage.getItem("svl-lang") || localStorage.getItem("kmno4-lang"); if (s && I18N[s]) LANG = s; else { const n = (navigator.language || "").slice(0, 2); if (I18N[n]) LANG = n; } } catch (e) {}
+function t(key, p) { let s = I18N[LANG][key]; if (s === undefined) s = I18N.en[key]; if (s === undefined) return key; if (p && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (_, k) => p[k] ?? ""); return s; }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// =====================================================================
+// MODEL
+// =====================================================================
+// ΔH values chosen so the cycle closes: A −19.7, B −57.1 (route I −76.8); C −2.5, D −74.3 (route II −76.8)
+const RX = {
+  A: { i: 0, sub: "₁", m: 125, dH: -19.7, cup: { v: 125, s: "water" }, add: { solid: true } },
+  B: { i: 1, sub: "₂", m: 250, dH: -57.1, cup: { v: 125, s: "naoh2" }, add: { v: 125, s: "hcl2" } },
+  C: { i: 2, sub: "₃", m: 250, dH: -2.5, cup: { v: 125, s: "hcl2" }, add: { v: 125, s: "water" }, nC: true },
+  D: { i: 3, sub: "₄", m: 250, dH: -74.3, cup: { v: 250, s: "hcl1" }, add: { solid: true } },
+};
+const IDS = ["A", "B", "C", "D"];
+const subN = s => ({ water: t("sWater"), naoh2: "2 mol dm⁻³ NaOH", hcl2: "2 mol dm⁻³ HCl", hcl1: "1 mol dm⁻³ HCl" }[s]);
+const rxN = id => t("rx")[id];
+const MARKS = [0, 30, 60, 90, 150, 180, 210, 240, 270, 300, 330, 360, 390, 420, 450], TMIX = 120, TEND = 450, C = 4.2, NMOL = .25;
+let S;
+function newRun(id) {
+  const x = RX[id], T0 = 27.6 + Math.random() * 1.4, dH = x.dH * (1 + (Math.random() - .5) * .03);
+  return { id, ph: "setup", weighed: false, mass: 0, cupF: false, addR: false, lid: false, t: 0, running: false, mi: 0, waitRead: false, waitMix: false, mixed: false, stirT: 0, stirred: false, r: 0, pourT: -1,
+    T0, Troom: T0 + .2 + Math.random() * .3, Tadd: T0 + (Math.random() - .5) * .1, T: T0, dTtrue: NMOL * -dH * 1000 / (x.m * C), reads: [], trace: [], h1: null, h2: null, fit: null, calc: { k: 0, vals: {}, note: null }, final: null, lidOff: false };
+}
+function freshState() { return { gog: false, ev: {}, logs: [], answered: {}, done: false, confetti: [], auto: false, speed: 10, run: newRun("A"), results: {}, hess: { k: 0, vals: {}, note: null } }; }
+const R = () => S.run;
+const X = () => RX[R().id];
+const nextId = () => IDS.find(i => !S.results[i]);
+const preMean = () => { const p = R().reads.filter(x => x[0] < TMIX); return p.length ? p.reduce((a, x) => a + x[1], 0) / p.length : R().T0; };
+function lsqPost() {
+  const r = R().reads.filter(x => x[0] > TMIX); if (r.length < 4) return null; let iMax = 0; r.forEach((x, i) => { if (x[1] > r[iMax][1]) iMax = i; });
+  const pts = r.slice(Math.min(iMax + 1, r.length - 3)); const n = pts.length, sx = pts.reduce((a, p) => a + p[0], 0), sy = pts.reduce((a, p) => a + p[1], 0), sxx = pts.reduce((a, p) => a + p[0] * p[0], 0), sxy = pts.reduce((a, p) => a + p[0] * p[1], 0);
+  const b = (n * sxy - sx * sy) / (n * sxx - sx * sx), a = (sy - b * sx) / n; return { a, b, at: x => a + b * x };
+}
+
+// =====================================================================
+// CANVAS
+// =====================================================================
+const W = 960, H = 540;
+const cv = $("cv"), ctx = cv.getContext("2d"), vp = $("viewport");
+let dpr = 1, cw = 0, ch = 0, sc = 1, ox = 0, oy = 0, T = {};
+function resize() { const r = vp.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2.5); cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); sc = Math.min(cw / W, ch / H); ox = (cw - W * sc) / 2; oy = (ch - H * sc) / 2; }
+function readTokens() { const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim(); T = { wallTop: g("--wall-top"), wallBot: g("--wall-bot"), bench: g("--bench"), benchEdge: g("--bench-edge"), glass: g("--glass"), ink: g("--ink"), muted: g("--muted"), accent: g("--accent"), surface: g("--surface") }; }
+new ResizeObserver(resize).observe(vp);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTokens);
+new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const FONT = (w, s) => `${w} ${s}px 'IBM Plex Sans','Noto Sans Sinhala','Noto Sans Tamil',sans-serif`;
+const MONO = (w, s) => `${w} ${s}px 'IBM Plex Mono', monospace`;
+function rr(c, x, y, w, h, r) { c.beginPath(); c.roundRect(x, y, w, h, r); }
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let hatch = null;
+function makeHatch(c) { const h = document.createElement("canvas"); h.width = h.height = 10; const x = h.getContext("2d"); x.strokeStyle = "rgba(60,90,110,.3)"; x.lineWidth = 1; x.beginPath(); x.moveTo(0, 10); x.lineTo(10, 0); x.stroke(); return c.createPattern(h, "repeat"); }
+const BENCH = 500;
+const shown = () => Math.round(R().T * 10) / 10;
+const G = { x0: 410, x1: 925, y0: 80, y1: 228 };
+function gRange() { const r = R(); return [r.T0 - .8, r.T0 + r.dTtrue + 1.2]; }
+const gx = t => G.x0 + t / TEND * (G.x1 - G.x0);
+const gy = v => { const [lo, hi] = gRange(); return G.y1 - (v - lo) / (hi - lo) * (G.y1 - G.y0); };
+const gyInv = y => { const [lo, hi] = gRange(); return lo + (G.y1 - y) / (G.y1 - G.y0) * (hi - lo); };
+const H1T = 180, H2T = 450;
+const PELLETS = Array.from({ length: 12 }, (_, i) => [((i * 37) % 70) - 35, (i * 23) % 14]);
+function drawScene() {
+  const r = R(), x = X();
+  ctx.fillStyle = T.bench; ctx.fillRect(-ox / sc - 2, BENCH, 345 + ox / sc, (ch - oy) / sc - BENCH + 4); ctx.fillStyle = T.benchEdge; ctx.fillRect(-ox / sc - 2, BENCH, 345 + ox / sc, 4);
+  ctx.fillStyle = "rgba(214,234,242,.3)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 2; rr(ctx, 90, 300, 170, 200, 8); ctx.fill(); ctx.stroke();
+  const cx = 175, top = 290, bot = 490, wt = 74, wb = 52;
+  const vol = (r.cupF ? x.cup.v : 0) + (r.mixed && !x.add.solid ? x.add.v : 0), lvl = bot - vol * .68;
+  ctx.save(); ctx.beginPath(); ctx.moveTo(cx - wt, top); ctx.lineTo(cx - wb, bot); ctx.lineTo(cx + wb, bot); ctx.lineTo(cx + wt, top); ctx.closePath(); ctx.fillStyle = "#f7f7f2"; ctx.fill(); ctx.clip();
+  if (vol) { ctx.fillStyle = "rgba(225,240,247,.95)"; ctx.fillRect(cx - wt, lvl, 2 * wt, bot - lvl); ctx.fillStyle = hatch; ctx.fillRect(cx - wt, lvl, 2 * wt, bot - lvl);
+    if (r.mixed && r.r < .98 && !x.add.solid) { ctx.strokeStyle = `rgba(120,160,190,${.5 * (1 - r.r)})`; ctx.lineWidth = 2; for (let k = 0; k < 5; k++) { ctx.beginPath(); ctx.moveTo(cx - 40 + k * 20, bot - 10); ctx.bezierCurveTo(cx - 20 + k * 20, lvl + 60, cx - 60 + k * 20, lvl + 40, cx - 30 + k * 20, lvl + 8); ctx.stroke(); } } }
+  if (r.mixed && x.add.solid && r.r < .985) { const rad = 5.5 * Math.cbrt(1 - r.r); PELLETS.forEach(([dx, dy], i) => { const jig = r.stirT > 0 && !reduceMotion ? Math.sin(time * 9 + i) * 3 : 0; ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#9aa4a8"; ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(cx - 20 + dx + jig, bot - 8 - dy, rad * 1.3, rad, 0, 0, 7); ctx.fill(); ctx.stroke(); });
+    ctx.fillStyle = "rgba(255,255,255,.35)"; for (let k = 0; k < 14; k++) { const yy = bot - ((time * 25 + k * 23) % (bot - lvl)); ctx.fillRect(cx - 50 + (k * 29) % 90, yy, 2, 6); } }
+  ctx.restore();
+  ctx.strokeStyle = "#c9c6b8"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(cx - wt, top); ctx.lineTo(cx - wb, bot); ctx.lineTo(cx + wb, bot); ctx.lineTo(cx + wt, top); ctx.stroke();
+  ctx.fillStyle = "rgba(0,0,0,.04)"; for (let i = 0; i < 60; i++) { ctx.beginPath(); ctx.arc(cx - 60 + (i * 37) % 120, top + 10 + (i * 53) % 180, 2, 0, 7); ctx.fill(); }
+  if (r.lid && !r.lidOff) { ctx.fillStyle = "#ece9df"; ctx.strokeStyle = "#b8b4a6"; rr(ctx, cx - wt - 6, top - 10, 2 * wt + 12, 12, 4); ctx.fill(); ctx.stroke(); }
+  let tx = cx + 26, colTop = 0;
+  if (r.lid) { const stirY = r.stirT > 0 && !reduceMotion ? Math.sin(time * 20) * 12 : 0;
+    ctx.strokeStyle = "#8a959b"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx + 48, top - 90 + stirY); ctx.lineTo(cx + 48, bot - 30 + stirY); ctx.moveTo(cx + 36, bot - 30 + stirY); ctx.lineTo(cx + 60, bot - 30 + stirY); ctx.stroke();
+    ctx.fillStyle = "rgba(240,246,250,.95)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 1.2; rr(ctx, tx - 5, 60, 10, bot - 80, 5); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#c0392b"; ctx.beginPath(); ctx.arc(tx, bot - 22, 7, 0, 7); ctx.fill(); colTop = bot - 30 - (r.T - 20) * 12; ctx.fillRect(tx - 1.5, colTop, 3, bot - 22 - colTop);
+    for (let v = 20; v <= 52; v++) { const y = bot - 30 - (v - 20) * 12; ctx.strokeStyle = "#1c2a31"; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(tx - 5, y); ctx.lineTo(tx - (v % 5 ? 2 : 0), y); ctx.stroke(); if (v % 5 === 0) { ctx.fillStyle = T.ink; ctx.font = MONO(500, 8); ctx.textAlign = "right"; ctx.fillText(String(v), tx - 7, y + 3); } }
+    drawLens(tx, colTop); }
+  // side apparatus: balance (solid) or measuring cylinder (liquid)
+  const sx = 305;
+  if (x.add.solid && !r.mixed) {
+    ctx.fillStyle = "#d9dde0"; ctx.strokeStyle = "#8a959b"; ctx.lineWidth = 1.5; rr(ctx, sx - 34, BENCH - 30, 68, 30, 4); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#1c2a31"; rr(ctx, sx - 24, BENCH - 22, 48, 14, 2); ctx.fill(); ctx.fillStyle = "#9ef0b0"; ctx.font = MONO(600, 10); ctx.textAlign = "center"; ctx.fillText(r.weighed ? r.mass.toFixed(2) : "0.00", sx, BENCH - 11);
+    ctx.fillStyle = "#b7bec2"; ctx.fillRect(sx - 26, BENCH - 34, 52, 4);
+    if (r.weighed) { ctx.fillStyle = "rgba(225,240,247,.8)"; ctx.strokeStyle = T.glass; ctx.beginPath(); ctx.ellipse(sx, BENCH - 38, 28, 6, 0, 0, 7); ctx.fill(); ctx.stroke();
+      PELLETS.forEach(([dx, dy]) => { ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#9aa4a8"; ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(sx + dx * .5, BENCH - 41 - dy * .3, 6, 4.5, 0, 0, 7); ctx.fill(); ctx.stroke(); });
+      ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "center"; ctx.fillText(t("cvPellets"), sx, BENCH - 60); }
+    ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "center"; ctx.fillText(t("cvBal"), sx, BENCH + 16);
+  }
+  if (!x.add.solid && r.addR && !r.mixed) { const hh = x.add.v * .9; ctx.fillStyle = "rgba(225,240,247,.95)"; ctx.fillRect(sx - 16, BENCH - 6 - hh, 32, hh); ctx.fillStyle = hatch; ctx.fillRect(sx - 16, BENCH - 6 - hh, 32, hh);
+    ctx.strokeStyle = T.glass; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(sx - 16, BENCH - 170); ctx.lineTo(sx - 16, BENCH - 6); ctx.lineTo(sx + 16, BENCH - 6); ctx.lineTo(sx + 16, BENCH - 170); ctx.stroke(); ctx.fillStyle = "#3b4a52"; rr(ctx, sx - 26, BENCH - 8, 52, 8, 2); ctx.fill();
+    ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "center"; ctx.fillText(x.add.s === "water" ? "H₂O" : "HCl", sx, BENCH - 180); ctx.fillText(t("cvColourless"), sx, BENCH - 60); }
+  if (r.pourT >= 0) { ctx.strokeStyle = x.add.solid ? "rgba(255,255,255,.9)" : "rgba(170,205,225,.95)"; ctx.lineWidth = 4; ctx.setLineDash(x.add.solid ? [5, 7] : []); ctx.beginPath(); ctx.moveTo(sx - 10, 300); ctx.quadraticCurveTo(250, 260, 200, lvl); ctx.stroke(); ctx.setLineDash([]); }
+  ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "right"; ctx.fillText(t("cvCup"), 86, 330); if (r.lid && !r.lidOff) ctx.fillText(t("cvLid"), 92, top - 2);
+  ctx.textAlign = "center"; if (vol) { ctx.fillText(r.mixed ? t("cvSolution") : subN(x.cup.s), cx - 24, lvl + 18); ctx.fillText(t("cvColourless"), cx - 24, lvl + 32); }
+  if (r.mixed && x.add.solid && r.r < .985) ctx.fillText(t("cvDissolving"), cx - 24, bot - 26);
+  drawGraph(); drawCycle();
+}
+function drawLens(tx, colTop) {
+  const x = 20, y = 70, w = 90, h = 150, cy = y + h / 2, k = 90;
+  ctx.save(); ctx.fillStyle = "#ffffff"; rr(ctx, x, y, w, h, 10); ctx.fill(); ctx.strokeStyle = "#cbd5d4"; ctx.stroke(); rr(ctx, x, y, w, h, 10); ctx.clip();
+  const T0 = R().T; ctx.fillStyle = "rgba(240,246,250,1)"; ctx.fillRect(x + 30, y, 26, h); ctx.fillStyle = "#c0392b"; ctx.fillRect(x + 39, cy, 8, h);
+  for (let v10 = Math.floor((T0 - .9) * 10); v10 <= (T0 + .9) * 10; v10++) { const yy = cy - (v10 / 10 - T0) * k; ctx.strokeStyle = "#1c2a31"; ctx.lineWidth = v10 % 10 === 0 ? 1.6 : v10 % 5 === 0 ? 1.2 : .8; ctx.beginPath(); ctx.moveTo(x + 30, yy); ctx.lineTo(x + 30 + (v10 % 10 === 0 ? 14 : v10 % 5 === 0 ? 10 : 6), yy); ctx.stroke();
+    if (v10 % 10 === 0) { ctx.fillStyle = "#1c2a31"; ctx.font = MONO(600, 11); ctx.textAlign = "right"; ctx.fillText(String(v10 / 10), x + 27, yy + 4); } }
+  ctx.restore(); ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "center"; ctx.fillText(t("cvZoom"), x + w / 2, y + h + 14);
+  ctx.strokeStyle = T.muted; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.moveTo(x + w, cy); ctx.lineTo(tx - 6, colTop); ctx.stroke(); ctx.setLineDash([]);
+}
+function drawGraph() {
+  const r = R(), [lo, hi] = gRange(), span = hi - lo, st = span > 8 ? 2 : span > 4 ? 1 : .5;
+  ctx.fillStyle = "#ffffff"; rr(ctx, G.x0 - 55, G.y0 - 30, G.x1 - G.x0 + 75, G.y1 - G.y0 + 72, 12); ctx.fill(); ctx.strokeStyle = "#cbd5d4"; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = "#1c2a31"; ctx.font = FONT(600, 12); ctx.textAlign = "left"; ctx.fillText(t("cvGraph") + " · " + rxN(r.id), G.x0 - 45, G.y0 - 12);
+  ctx.strokeStyle = "#e6ecec"; ctx.lineWidth = 1; for (let v = Math.ceil(lo / st) * st; v <= hi; v += st) { ctx.beginPath(); ctx.moveTo(G.x0, gy(v)); ctx.lineTo(G.x1, gy(v)); ctx.stroke(); }
+  for (let m = 0; m <= TEND; m += 30) { ctx.beginPath(); ctx.moveTo(gx(m), G.y0); ctx.lineTo(gx(m), G.y1); ctx.stroke(); }
+  ctx.strokeStyle = "#1c2a31"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(G.x0, G.y0); ctx.lineTo(G.x0, G.y1); ctx.lineTo(G.x1, G.y1); ctx.stroke();
+  ctx.fillStyle = "#1c2a31"; ctx.font = MONO(500, 10); ctx.textAlign = "right"; const ls = st < 1 ? 1 : st; for (let v = Math.ceil(lo / ls) * ls; v <= hi; v += ls) ctx.fillText(v.toFixed(0), G.x0 - 5, gy(v) + 3);
+  ctx.textAlign = "center"; for (let m = 0; m <= TEND; m += 60) ctx.fillText(String(m / 60), gx(m), G.y1 + 13);
+  ctx.font = FONT(600, 10); ctx.fillText(t("cvTime"), (G.x0 + G.x1) / 2, G.y1 + 27); ctx.save(); ctx.translate(G.x0 - 38, (G.y0 + G.y1) / 2); ctx.rotate(-Math.PI / 2); ctx.fillText(t("cvTemp"), 0, 0); ctx.restore();
+  ctx.strokeStyle = "#b7791f"; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(gx(TMIX), G.y0); ctx.lineTo(gx(TMIX), G.y1); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = "#9a520a"; ctx.fillText(t("cvMixLine"), gx(TMIX), G.y0 - 2);
+  if (r.trace.length > 1) { ctx.strokeStyle = "rgba(139,29,111,.18)"; ctx.lineWidth = 2; ctx.beginPath(); r.trace.forEach(([tt, v], i) => i ? ctx.lineTo(gx(tt), gy(v)) : ctx.moveTo(gx(tt), gy(v))); ctx.stroke(); }
+  const pre = r.reads.filter(x => x[0] < TMIX); if (pre.length >= 2) { const m = preMean(); ctx.strokeStyle = "#2c7a4d"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(gx(0), gy(m)); ctx.lineTo(gx(TMIX), gy(m)); ctx.stroke(); }
+  r.reads.forEach(([tt, v]) => { ctx.fillStyle = "#8b1d6f"; ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(gx(tt), gy(v), 4, 0, 7); ctx.fill(); ctx.stroke(); });
+  if (r.h1 !== null) { const slope = (r.h2 - r.h1) / (H2T - H1T), at = x => r.h1 + slope * (x - H1T);
+    ctx.strokeStyle = "#e07a10"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(gx(H1T), gy(at(H1T))); ctx.lineTo(gx(H2T), gy(at(H2T))); ctx.stroke();
+    ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(gx(TMIX), gy(at(TMIX))); ctx.lineTo(gx(H1T), gy(at(H1T))); ctx.stroke(); ctx.setLineDash([]);
+    [[H1T, r.h1], [H2T, r.h2]].forEach(([tt, v]) => { ctx.fillStyle = "#e07a10"; ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(gx(tt), gy(v), 9, 0, 7); ctx.fill(); ctx.stroke(); });
+    const m = preMean(), e = at(TMIX); ctx.strokeStyle = "#1c2a31"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(gx(TMIX) - 6, gy(m)); ctx.lineTo(gx(TMIX) - 6, gy(e)); ctx.stroke();
+    ctx.fillStyle = "#1c2a31"; ctx.font = MONO(600, 12); ctx.textAlign = "right"; ctx.fillText("ΔT = " + (e - m).toFixed(1) + " °C", gx(TMIX) - 10, Math.min(G.y1 - 6, (gy(m) + gy(e)) / 2)); }
+  if (r.running || r.waitRead || r.waitMix) { ctx.strokeStyle = "rgba(28,42,49,.35)"; ctx.beginPath(); ctx.moveTo(gx(r.t), G.y0); ctx.lineTo(gx(r.t), G.y1); ctx.stroke(); }
+}
+// Hess energy-level diagram
+function drawCycle() {
+  const bx = 355, by = 282, bw = 590, bh = 252, top = 322, k = 2.25;
+  ctx.fillStyle = "#ffffff"; rr(ctx, bx, by, bw, bh, 12); ctx.fill(); ctx.strokeStyle = "#cbd5d4"; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = "#1c2a31"; ctx.font = FONT(600, 12); ctx.textAlign = "left"; ctx.fillText(t("cvCycle"), bx + 12, by + 18);
+  ctx.save(); ctx.translate(bx + 14, top + 90); ctx.rotate(-Math.PI / 2); ctx.font = FONT(600, 10); ctx.textAlign = "center"; ctx.fillText("H ↑", 0, 0); ctx.restore();
+  const v = id => S.results[id] ? S.results[id].dH : null, cur = R().id;
+  const dA = v("A"), dB = v("B"), dC = v("C"), dD = v("D");
+  const yMidI = dA !== null ? top - dA * k : top + 25 * k, yEndI = dA !== null && dB !== null ? top - (dA + dB) * k : top + 77 * k;
+  const yMidII = dC !== null ? top - dC * k : top + 8 * k, yEndII = dC !== null && dD !== null ? top - (dC + dD) * k : top + 77 * k;
+  const L = (x1, x2, y, known, label, below) => { ctx.strokeStyle = known ? "#1c2a31" : "#9aa4a8"; ctx.lineWidth = known ? 3 : 2; ctx.setLineDash(known ? [] : [6, 5]); ctx.beginPath(); ctx.moveTo(x1, y); ctx.lineTo(x2, y); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = known ? "#1c2a31" : "#6b767b"; ctx.font = FONT(600, 10); ctx.textAlign = "center"; ctx.fillText(label, (x1 + x2) / 2, below ? y + 13 : y - 5); };
+  const A = (x, y1, y2, id, known, right) => { const col = id === cur && !S.results[id] ? "#e07a10" : known ? "#8b1d6f" : "#9aa4a8"; ctx.strokeStyle = col; ctx.fillStyle = col; ctx.lineWidth = 2; ctx.setLineDash(known ? [] : [4, 4]); ctx.beginPath(); ctx.moveTo(x, y1 + 2); ctx.lineTo(x, y2 - 2); ctx.stroke(); ctx.setLineDash([]);
+    if (Math.abs(y2 - y1) > 6) { ctx.beginPath(); ctx.moveTo(x, y2 - 1); ctx.lineTo(x - 5, y2 - 9); ctx.lineTo(x + 5, y2 - 9); ctx.closePath(); ctx.fill(); }
+    ctx.font = MONO(600, 11); ctx.textAlign = right ? "left" : "right"; ctx.fillText(`${id}: ΔH${RX[id].sub} = ${known ? v(id).toFixed(1) : "?"}`, x + (right ? 8 : -8), Math.max((y1 + y2) / 2 + 4, y1 + 15)); };
+  L(380, 930, top, true, t("cvStart"));
+  ctx.font = FONT(700, 10); ctx.fillStyle = "#8b1d6f"; ctx.textAlign = "center"; ctx.fillText(t("cvRouteI"), 445, top - 5); ctx.fillText(t("cvRouteII"), 865, top - 5);
+  L(380, 510, yMidI, dA !== null, t("cvMidI")); L(380, 510, yEndI, dA !== null && dB !== null, t("cvEnd"), true);
+  L(800, 930, yMidII, dC !== null, t("cvMidII"), true); L(800, 930, yEndII, dC !== null && dD !== null, t("cvEnd"), true);
+  A(520, top, yMidI, "A", dA !== null, true); A(520, yMidI, yEndI, "B", dB !== null, true);
+  A(790, top, yMidII, "C", dC !== null, false); A(790, yMidII, yEndII, "D", dD !== null, false);
+  if ([dA, dB, dC, dD].every(z => z !== null)) { ctx.strokeStyle = "rgba(44,122,77,.6)"; ctx.setLineDash([3, 3]); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(510, yEndI); ctx.lineTo(800, yEndII); ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = "#2c7a4d"; ctx.font = MONO(600, 11); ctx.textAlign = "center"; ctx.fillText(`I: ${(dA + dB).toFixed(1)}  ·  II: ${(dC + dD).toFixed(1)} kJ mol⁻¹`, 655, Math.min(by + bh - 8, Math.max(yEndI, yEndII) + 18)); }
+}
+
+// =====================================================================
+// LOOP
+// =====================================================================
+let time = 0, last = performance.now(), uiT = 0;
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now; time += dt;
+  step(dt);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const g = ctx.createLinearGradient(0, 0, 0, ch); g.addColorStop(0, T.wallTop); g.addColorStop(1, T.wallBot); ctx.fillStyle = g; ctx.fillRect(0, 0, cw, ch);
+  ctx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, dpr * oy);
+  if (!hatch) hatch = makeHatch(ctx);
+  drawScene();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  S.confetti.forEach(p => { p.vy += 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-3, -1.5, 6, 3); ctx.restore(); });
+  S.confetti = S.confetti.filter(p => p.y < ch + 20);
+  if (playing) { const v = Math.min(1000, +$("replay").value + dt / 5 * 1000); $("replay").value = v; if (v >= 1000) { playing = false; renderReplayCtl(); } }
+  uiT += dt; if (uiT > .12) { uiT = 0; renderLive(); if (!$("pane-colours").hidden) drawMini(); }
+  requestAnimationFrame(frame);
+}
+function physics(h) {
+  const r = R(), k = r.lid && !r.lidOff ? .0004 : .0013;
+  let dT = -k * (r.T - r.Troom) * h;
+  if (r.mixed) { const tau = X().add.solid ? (r.stirred ? 9 : 45) : (r.stirred ? 6 : 28), dr = (1 - r.r) * (1 - Math.exp(-h / tau)); r.r += dr; dT += r.dTtrue * dr; }
+  r.T += dT; if (r.stirT > 0) r.stirT -= h;
+}
+function step(dt) {
+  const r = R(); if (r.pourT >= 0) { r.pourT += dt; if (r.pourT > .8) r.pourT = -1; }
+  if (!r.running || r.waitRead || r.waitMix) return;
+  let adv = dt * S.speed;
+  while (adv > 0) {
+    const nextMark = r.mi < MARKS.length ? MARKS[r.mi] : TEND + 1, nextEvt = Math.min(nextMark, !r.mixed ? TMIX : Infinity);
+    const h = Math.min(adv, Math.max(0, nextEvt - r.t), .5); physics(h); r.t += h; adv -= h;
+    if (Math.floor(r.t) % 2 === 0) r.trace.push([r.t, r.T]);
+    if (!r.mixed && r.t >= TMIX - 1e-6) { r.t = TMIX; r.waitMix = true; render(); return; }
+    if (r.mi < MARKS.length && r.t >= MARKS[r.mi] - 1e-6) { r.t = MARKS[r.mi]; if (S.auto) recordReading(true); else { r.waitRead = true; render(); return; } }
+    if (!r.running) break;
+    if (h === 0 && adv > 0) break;
+  }
+}
+function recordReading(auto) {
+  const r = R(); const v = Math.round((r.T + (Math.random() - .5) * .06) * 10) / 10; r.reads.push([MARKS[r.mi], v]); r.mi++; r.waitRead = false;
+  if (r.mi === 4) log(["lPre", { t: preMean().toFixed(1) }]);
+  if (r.mi >= MARKS.length) { r.running = false; const pk = Math.max(...r.reads.filter(x => x[0] > TMIX).map(x => x[1])); log(["lPeak", { t: pk.toFixed(1) }]); r.ph = "graph"; const L = lsqPost(); r.h1 = L.at(H1T) + Math.max(.4, r.dTtrue * .06); r.h2 = L.at(H2T) - .3; }
+  if (!auto) render(); else renderSoft();
+}
+
+// =====================================================================
+// ACTIONS
+// =====================================================================
+function needGog() { if (!S.gog) { toast("tGog", "warn", 4000); return true; } return false; }
+function weigh() { if (needGog()) return; const r = R(); r.weighed = true; r.addR = true; r.mass = 10 + (Math.random() - .5) * .06; log(["lWeigh", { m: r.mass.toFixed(2) }]); toast("tWeighFast", "warn", 5000); render(); }
+function fillCup() { if (needGog()) return; R().cupF = true; render(); }
+function fillCyl() { if (needGog()) return; R().addR = true; render(); }
+function putLid() { if (needGog()) return; const r = R(); if (!(r.cupF && r.addR)) return toast("tSetupFirst", "warn", 4000); r.lid = true; render(); }
+function startClock() { const r = R(); if (!(r.cupF && r.addR && r.lid)) return toast("tSetupFirst", "warn", 4000); r.running = true; r.ph = "run"; render(); }
+function addReagent() { const r = R(), x = X(); r.mixed = true; r.waitMix = false; r.pourT = 0; if (!x.add.solid) r.T = (r.T * x.cup.v + r.Tadd * x.add.v) / (x.cup.v + x.add.v);
+  log(x.add.solid ? ["lMixS", {}] : ["lMixL", { s: subN(x.add.s) }]); toast("tStir", "", 3600); render(); }
+function stir() { const r = R(); r.stirred = true; r.stirT = 10; }
+function useFit() {
+  const r = R(), L = lsqPost(), slope = (r.h2 - r.h1) / (H2T - H1T), at = x => r.h1 + slope * (x - H1T), e = at(TMIX), tol = Math.max(.15, r.dTtrue * .015);
+  if (!L || Math.abs(e - L.at(TMIX)) > tol || Math.abs(at(400) - L.at(400)) > tol) return toast("tFitBad", "warn", 5000);
+  r.fit = { pre: Math.round(preMean() * 10) / 10, ext: Math.round(e * 10) / 10 }; log(["lFit", { t: r.fit.ext.toFixed(1), d: (r.fit.ext - r.fit.pre).toFixed(1) }]); r.ph = "calc"; render();
+}
+function checkStep() {
+  const r = R(), x = X(), c = r.calc, k = c.k, v = parseFloat(($("cIn") || {}).value), own = c.vals;
+  const d = own[0] ?? (r.fit.ext - r.fit.pre), q = own[1] ?? x.m * C * d, n = own[2] ?? NMOL;
+  const exp = [r.fit.ext - r.fit.pre, x.m * C * d, NMOL, -q / n / 1000][k], tol = [.051, Math.abs(exp) * .006 + .5, .0005, Math.abs(exp) * .012 + .05][k];
+  if (!isFinite(v) || Math.abs(v - exp) > tol) { c.note = ["bad", k === 2 && x.nC ? "h3C" : "h" + (k + 1), { a: r.fit.pre.toFixed(1), b: r.fit.ext.toFixed(1), d: d.toFixed(1), q: Math.round(q), m: x.m }]; return renderPanel(); }
+  own[k] = v; c.note = null; c.k++;
+  if (c.k >= 4) { r.final = { dT: own[0], q: own[1], dH: own[3] }; S.ev[r.id] = 1; S.results[r.id] = { dT: own[0], dH: own[3] }; log(["lCalc", { rx: rxN(r.id), q: Math.round(own[1]), h: own[3].toFixed(1) }]); r.ph = nextId() ? "summary" : "hess"; }
+  render();
+}
+function hessVals() { const g = id => S.results[id].dH; const I = g("A") + g("B"), II = g("C") + g("D"); return { I, II, pc: Math.abs(I - II) / Math.abs(I) * 100 }; }
+function checkHess() {
+  const h = S.hess, k = h.k, v = parseFloat(($("cIn") || {}).value), g = id => S.results[id].dH, I = h.vals[0] ?? g("A") + g("B"), II = h.vals[1] ?? g("C") + g("D");
+  const exp = [g("A") + g("B"), g("C") + g("D"), Math.abs(I - II) / Math.abs(I) * 100][k], tol = [.15, .15, Math.max(.06, Math.abs(exp) * .05)][k];
+  if (!isFinite(v) || Math.abs(v - exp) > tol) { h.note = ["bad", k === 2 ? "hintPc" : "hintSum", k === 0 ? { a: g("A").toFixed(1), b: g("B").toFixed(1) } : k === 1 ? { a: g("C").toFixed(1), b: g("D").toFixed(1) } : { a: I.toFixed(1), b: II.toFixed(1), c: Math.abs(I).toFixed(1) }]; return renderPanel(); }
+  h.vals[k] = v; h.note = null; h.k++;
+  if (h.k >= 3) { S.ev.hess = 1; R().ph = "done"; log(["lHess", { a: h.vals[0].toFixed(1), b: h.vals[1].toFixed(1), p: h.vals[2].toFixed(1) }]); if (!S.done) { S.done = true; celebrate(); } }
+  render();
+}
+function nextRx() { const n = nextId(); if (!n) return; S.run = newRun(n); render(); }
+function chooseRx(id) { const r = R(), n = nextId();
+  if (id === r.id) return;
+  if (S.results[id] || id !== n) { $("rxSel").value = r.id; return toast("tOrder", "warn", 4000, { next: n ? rxN(n) : "—" }); }
+  if (r.ph !== "summary" && (r.running || r.cupF || r.weighed || ["graph", "calc"].includes(r.ph))) { $("rxSel").value = r.id; return toast("tBusy", "warn", 4000); }
+  S.run = newRun(id); render(); }
+
+// =====================================================================
+// UI
+// =====================================================================
+let toastT;
+function toast(k, kind = "", ms = 3600, p) { const el = $("toast"); el.textContent = t(k, p); el.className = "toast show " + kind; clearTimeout(toastT); toastT = setTimeout(() => el.className = "toast " + kind, ms); }
+function log(...parts) { S.logs.unshift({ time: new Date().toTimeString().slice(0, 8), parts }); renderLog(); }
+function renderLog() { const box = $("log"); box.innerHTML = ""; S.logs.forEach(e => { const d = document.createElement("div"), s = document.createElement("span"), m = document.createElement("div"); s.textContent = e.time; m.textContent = e.parts.map(([k, p]) => t(k, p)).join(" "); d.append(s, m); box.append(d); }); }
+const fmtT = s => [Math.floor(s / 60), String(Math.round(s % 60)).padStart(2, "0")];
+function promptText() {
+  const r = R(), x = X(); if (r.ph === "setup") return t("p_setup", { rx: rxN(r.id) });
+  if (r.ph === "run") return r.waitMix ? t("p_mixwait", { add: x.add.solid ? t("addSolid") : t("addLiq", { s: subN(x.add.s) }) }) : r.mixed ? t("p_post") : t("p_pre");
+  if (r.ph === "graph") return t("p_graph"); if (r.ph === "calc") return t("p_calc", { rx: rxN(r.id), m: x.m });
+  if (r.ph === "summary") return t("p_summary", { rx: rxN(r.id), h: r.final.dH.toFixed(1), next: rxN(nextId()) });
+  if (r.ph === "hess") return t("p_hess"); return t("pDone");
+}
+const noteHTML = n => n ? `<div class="note ${n[0]}">${esc(t(n[1], n[2]))}</div>` : "";
+function wizard(labels, w, btnId) { return `<div>${labels.map((lab, k) => {
+  if (k < w.k) return `<div class="cstep"><span>${esc(lab)}</span><b>${w.vals[k]}</b></div>`;
+  if (k === w.k) return `<div class="cstep"><span>${esc(lab)}</span><div class="row"><input type="number" id="cIn" step="any" inputmode="decimal" aria-label="${esc(lab)}"><button class="btn primary" id="${btnId}">${esc(t("check"))}</button></div></div>`;
+  return `<div class="cstep muted"><span>${esc(lab)}</span><span>…</span></div>`; }).join("")}</div>` + noteHTML(w.note); }
+function renderPanel() {
+  const r = R(), x = X(), P = $("panel"); let h = `<p>${esc(promptText())}</p>`;
+  const btn = (id, k, primary, dis, p) => `<button class="btn ${primary ? "primary" : ""}" id="${id}" ${dis ? "disabled" : ""}>${esc(t(k, p))}</button>`;
+  const ctl = `<label class="small" style="display:inline-flex;gap:6px;align-items:center"><input type="checkbox" id="autoChk" ${S.auto ? "checked" : ""}>${esc(t("auto"))}</label><label class="label" for="spd">${esc(t("speedL"))}</label><select id="spd">${[5, 10, 20].map(v => `<option value="${v}" ${S.speed === v ? "selected" : ""}>×${v}</option>`).join("")}</select>`;
+  if (r.ph === "setup") { const cupB = btn("cupBtn", "bCup", !r.cupF, r.cupF, { v: x.cup.v, s: subN(x.cup.s) });
+    const addB = x.add.solid ? btn("wBtn", "bWeigh", !r.addR, r.addR) : btn("cylBtn", "bCyl", !r.addR, r.addR, { v: x.add.v, s: subN(x.add.s) });
+    h += `<div class="row">${x.add.solid ? addB + cupB : cupB + addB}${btn("mlBtn", "mLid", !r.lid, r.lid)}${btn("stBtn", "start", r.cupF && r.addR && r.lid)}</div><div class="row">${ctl}</div>`; }
+  if (r.ph === "run") h += `<div class="row">${r.waitMix ? (x.add.solid ? btn("pourBtn", "bAddSolid", 1) : btn("pourBtn", "bPour", 1, 0, { s: subN(x.add.s) })) : ""}${btn("readBtn", "read", r.waitRead, !r.waitRead)}${r.mixed ? btn("stirBtn", "stir", !r.stirred) : ""}<button class="btn" id="lidBtn" aria-pressed="${!r.lidOff}">${esc(t(r.lidOff ? "lidOff" : "lidOn"))}</button></div><div class="row">${ctl}</div>`;
+  if (r.ph === "graph") h += `<div class="row">${btn("fitBtn", "fitDone", 1)}</div><p class="small muted">${esc(t("extInfo", { a: preMean().toFixed(1), b: (r.h1 + (r.h2 - r.h1) / (H2T - H1T) * (TMIX - H1T)).toFixed(1) }))}</p>`;
+  if (r.ph === "calc") h += `<p class="small muted">${esc(t("extInfo", { a: r.fit.pre.toFixed(1), b: r.fit.ext.toFixed(1) }))}</p>` + wizard([t("c1"), t("c2"), t(x.nC ? "c3C" : "c3"), t("c4")], r.calc, "cBtn");
+  if (r.ph === "summary") h += `<div class="row">${btn("npBtn", "nextRx", 1)}</div>`;
+  if (r.ph === "hess") h += wizard([t("hI"), t("hII"), t("hPc")], S.hess, "hBtn");
+  if (r.ph === "done") { const v = S.hess.vals; h += `<div class="note ok">${esc(t("hessOK", { a: v[0].toFixed(1), b: v[1].toFixed(1), p: v[2].toFixed(1) }))}</div>`; }
+  P.innerHTML = h;
+  const on = (id, fn) => { const el = $(id); if (el) el.onclick = fn; };
+  on("wBtn", weigh); on("cupBtn", fillCup); on("cylBtn", fillCyl); on("mlBtn", putLid); on("stBtn", startClock);
+  on("pourBtn", addReagent); on("readBtn", () => recordReading(false)); on("stirBtn", () => { stir(); renderPanel(); });
+  on("lidBtn", () => { r.lidOff = !r.lidOff; if (r.lidOff) toast("tLidOff", "warn", 4000); renderPanel(); });
+  on("fitBtn", useFit); on("cBtn", checkStep); on("hBtn", checkHess); on("npBtn", nextRx);
+  if ($("autoChk")) $("autoChk").onchange = e => { S.auto = e.target.checked; if (S.auto && R().waitRead) recordReading(false); };
+  if ($("spd")) $("spd").onchange = e => { S.speed = +e.target.value; };
+  if ($("cIn")) $("cIn").onkeydown = e => { if (e.key === "Enter") (r.ph === "hess" ? checkHess : checkStep)(); };
+}
+function stepsDone() { return [!!S.ev.A, !!S.ev.B, !!S.ev.C, !!S.ev.D, !!S.ev.hess]; }
+function renderGuide() { const d = stepsDone(), cur = d.indexOf(false), k = d.filter(Boolean).length;
+  $("steps").innerHTML = t("steps").map((s, i) => `<li class="${d[i] ? "done" : i === cur ? "now" : ""}"><span class="tick">${d[i] ? "✓" : i + 1}</span><span>${esc(s)}</span></li>`).join("");
+  $("ringTxt").textContent = `${k}/5`; $("ringArc").style.strokeDashoffset = String(113.1 * (1 - k / 5)); }
+function renderLive() {
+  const r = R(), [m, s] = fmtT(r.t), c = [`<span class="chip">${esc(t("chipT", { t: shown().toFixed(1) }))}</span>`, `<span class="chip">${esc(t("chipTime", { m, s }))}</span>`];
+  if (r.weighed) c.push(`<span class="chip">${esc(t("chipBal", { m: r.mass.toFixed(2) }))}</span>`);
+  if (r.lid) c.push(`<span class="chip">${esc(t("chipLid", { l: t(r.lidOff ? "off" : "on") }))}</span>`);
+  const h = c.join(""); if ($("chips").innerHTML !== h) $("chips").innerHTML = h;
+  const pt = promptText(); if ($("prompt").textContent !== pt) $("prompt").textContent = pt;
+}
+function renderReads() { $("reads").innerHTML = R().reads.length ? R().reads.map(([tt, v]) => { const [m, s] = fmtT(tt); return `<span>${m}:${s} · ${v.toFixed(1)}</span>`; }).join("") : `<span class="muted">${esc(t("none"))}</span>`; }
+function renderTables() {
+  const rows = IDS.filter(i => S.results[i]).map(i => `<tr><td>${esc(rxN(i))} (ΔH${RX[i].sub})</td><td class="num">${RX[i].m}</td><td class="num">${S.results[i].dT.toFixed(1)}</td><td class="num">${S.results[i].dH.toFixed(1)}</td></tr>`);
+  $("tbR").innerHTML = rows.length ? rows.join("") : `<tr><td colspan="4" class="muted">${esc(t("none"))}</td></tr>`;
+  if (IDS.every(i => S.results[i])) { const v = hessVals(); $("tbH").innerHTML = `<tr><td>${esc(t("hRowI"))}</td><td class="num">${v.I.toFixed(1)} kJ mol⁻¹</td></tr><tr><td>${esc(t("hRowII"))}</td><td class="num">${v.II.toFixed(1)} kJ mol⁻¹</td></tr><tr><td>${esc(t("hRowP"))}</td><td class="num">${v.pc.toFixed(1)}%</td></tr>`; }
+  else $("tbH").innerHTML = `<tr><td class="muted">${esc(t("none"))}</td></tr>`;
+  renderReads();
+}
+function renderRxSel() { $("rxSel").innerHTML = IDS.map(i => `<option value="${i}">${S.results[i] ? "✓ " : ""}${esc(rxN(i))}</option>`).join(""); $("rxSel").value = R().id; }
+function render() { $("gogBtn").textContent = t(S.gog ? "gogOn" : "gog"); $("gogBtn").setAttribute("aria-pressed", String(S.gog)); renderRxSel(); renderPanel(); renderGuide(); renderTables(); renderLive(); renderCards(); renderReplayCtl(); }
+function renderSoft() { renderGuide(); renderReads(); renderLive(); if (R().ph !== "run") render(); }
+function celebrate() { toast("tDone", "party", 5200); $("quizTab").classList.add("ping");
+  if (!reduceMotion) { const cols = ["#8b1d6f", "#e07a10", "#4BA3E3", "#2c7a4d"]; for (let i = 0; i < 90; i++) S.confetti.push({ x: cw / 2 + (Math.random() - .5) * 200, y: ch * .3, vx: (Math.random() - .5) * 340, vy: -150 - Math.random() * 220, rot: Math.random() * 6, vr: (Math.random() - .5) * 10, c: cols[i % cols.length] }); } }
+function svgCup(hot, pellets) { const id = "h" + hot + pellets; return `<svg viewBox="0 0 90 60" aria-hidden="true"><defs><pattern id="${id}" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="rgba(60,90,110,.3)"/></pattern></defs><rect width="90" height="60" fill="#ffffff"/><path d="M22 8 L30 56 L60 56 L68 8Z" fill="#f7f7f2" stroke="#c9c6b8"/><path d="M26 28 L64 28 L60 56 L30 56Z" fill="#e1f0f7"/><path d="M26 28 L64 28 L60 56 L30 56Z" fill="url(#${id})"/>${pellets ? [34, 42, 50, 56, 38, 47].map((x, i) => `<ellipse cx="${x}" cy="${52 - (i > 3 ? 4 : 0)}" rx="3.5" ry="2.6" fill="#ffffff" stroke="#9aa4a8" stroke-width=".8"/>`).join("") : ""}<rect x="74" y="6" width="5" height="48" rx="2.5" fill="#f0f6fa" stroke="#7a9aa8"/><rect x="75.5" y="${hot ? 14 : 34}" width="2" height="${hot ? 40 : 20}" fill="#c0392b"/></svg>`; }
+function renderCards() {
+  const card = (ok, b, bs, r, a, as) => `<div class="cc"><div class="ttl"><em class="${ok ? "ok" : ""}">${ok ? "✓ " + esc(t("seen")) : esc(t("notYet"))}</em></div><div class="flow"><div class="st"><small>${esc(t("before"))}</small>${bs}<span>${esc(t(b))}</span></div><div class="arrow"><b>→</b><span>${esc(t(r))}</span></div><div class="st"><small>${esc(t("after"))}</small>${as}<span>${esc(t(a))}</span></div></div></div>`;
+  $("cards").innerHTML = card(!!S.ev.A, "k1b", svgCup(0, 1), "k1r", "k1a", svgCup(1, 0)) + card(!!S.ev.B, "k2b", svgCup(0, 0), "k2r", "k2a", svgCup(1, 0));
+}
+const mini = $("mini"), mctx = mini.getContext("2d"); let playing = false;
+function drawMini() {
+  const w = mini.width, h = mini.height, tr = R().trace, ok = tr.length > 20 && R().reads.length >= MARKS.length; mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.fillStyle = "#ffffff"; mctx.fillRect(0, 0, w, h);
+  if (!ok) { $("rname").textContent = t("rNone"); return; }
+  const i = Math.min(tr.length - 1, Math.round(+$("replay").value / 1000 * (tr.length - 1))), [tt, v] = tr[i], [lo, hi] = gRange(), st = hi - lo > 8 ? 2 : 1;
+  const x = 120, top = 30, bot = h - 40, toY = vv => bot - 20 - (vv - lo) / (hi - lo) * (bot - top - 40);
+  mctx.fillStyle = "#f0f6fa"; mctx.strokeStyle = "#7a9aa8"; mctx.lineWidth = 2; mctx.beginPath(); mctx.roundRect(x - 12, top, 24, bot - top, 12); mctx.fill(); mctx.stroke();
+  mctx.fillStyle = "#c0392b"; mctx.beginPath(); mctx.arc(x, bot, 18, 0, 7); mctx.fill(); mctx.fillRect(x - 5, toY(v), 10, bot - toY(v));
+  mctx.strokeStyle = "#1c2a31"; mctx.fillStyle = "#1c2a31"; mctx.font = "14px 'IBM Plex Mono', monospace"; mctx.textAlign = "right"; for (let vv = Math.ceil(lo / st) * st; vv <= hi; vv += st) { mctx.beginPath(); mctx.moveTo(x - 12, toY(vv)); mctx.lineTo(x - 2, toY(vv)); mctx.stroke(); mctx.fillText(String(vv), x - 16, toY(vv) + 5); }
+  mctx.strokeStyle = "rgba(139,29,111,.3)"; mctx.lineWidth = 2; mctx.beginPath(); tr.forEach(([a, b], k) => { const px = 200 + a / TEND * 360, py = toY(b); k ? mctx.lineTo(px, py) : mctx.moveTo(px, py); }); mctx.stroke();
+  mctx.fillStyle = "#8b1d6f"; mctx.beginPath(); mctx.arc(200 + tt / TEND * 360, toY(v), 6, 0, 7); mctx.fill();
+  const [m, s] = fmtT(tt); $("rname").textContent = t("rAt", { m, s, t: v.toFixed(1) });
+}
+function renderReplayCtl() { const ok = R().reads.length >= MARKS.length; $("replay").disabled = !ok; $("playBtn").disabled = !ok; $("playBtn").textContent = t(playing ? "pause" : "play"); }
+function readScores() { try { return JSON.parse(localStorage.getItem("svl-scores") || "{}") || {}; } catch (e) { return {}; } }
+function saveScore(pct) { try { const s = readScores(); if (!(s[SIM_ID] >= pct)) { s[SIM_ID] = pct; localStorage.setItem("svl-scores", JSON.stringify(s)); } } catch (e) {} }
+function renderQuiz() { const Q = t("quiz"), L = ["A", "B", "C", "D"];
+  $("quiz").innerHTML = Q.map((q, i) => `<div class="q" id="q${i}"><p>${i + 1}. ${esc(q.q)}</p>${q.o.map((o, j) => `<button data-q="${i}" data-o="${j}">${L[j]}) ${esc(o)}</button>`).join("")}<div class="exp"></div></div>`).join("");
+  Object.entries(S.answered).forEach(([i, j]) => markAnswer(+i, j)); score(); }
+function markAnswer(i, j) { const ok = j === QUIZ_ANS[i];
+  $("q" + i).querySelectorAll("button").forEach((x, k) => { x.disabled = true; if (k === QUIZ_ANS[i]) x.classList.add("right"); else if (k === j) x.classList.add("wrong"); });
+  const d = document.createElement("div"); d.className = "note " + (ok ? "ok" : "bad"); d.textContent = t(ok ? "correct" : "notQuite") + t("quiz")[i].e; const ex = $("q" + i).querySelector(".exp"); ex.innerHTML = ""; ex.append(d); }
+$("quiz").onclick = e => { const b = e.target.closest("button[data-q]"); if (!b) return; const i = +b.dataset.q, j = +b.dataset.o; if (i in S.answered) return; S.answered[i] = j; markAnswer(i, j); score(); };
+function score() { const n = Object.keys(S.answered).length, s = Object.entries(S.answered).filter(([i, j]) => j === QUIZ_ANS[+i]).length, N = QUIZ_ANS.length;
+  if (n === N) saveScore(Math.round(s / N * 100)); const best = readScores()[SIM_ID];
+  $("score").textContent = `${s} / ${N}` + (n < N ? " · " + t("scoreLeft", { n: N - n }) : "") + (best !== undefined ? " · " + t("best", { p: best }) : ""); }
+$("retryBtn").onclick = () => { S.answered = {}; renderQuiz(); };
+function applyStatic() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("#langSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  cv.setAttribute("aria-label", t("canvasAria"));
+  $("appList").innerHTML = t("app").map(a => `<span>${esc(a)}</span>`).join(""); $("safeList").innerHTML = t("safe").map(a => `<li>${esc(a)}</li>`).join("");
+  try { const st = JSON.parse(localStorage.getItem("svl-student") || "null"); if (st && st.name) { $("student").hidden = false; $("student").textContent = t("student", { name: st.name, cls: st.cls ? " · " + st.cls : "" }); } } catch (e) {}
+}
+function fullRender() { applyStatic(); render(); renderLog(); renderQuiz(); }
+function applyLang(l) { LANG = l; try { localStorage.setItem("svl-lang", l); } catch (e) {} fullRender(); }
+document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  ["guide", "obs", "colours", "quiz"].forEach(id => $("pane-" + id).hidden = id !== b.dataset.tab);
+  if (b.dataset.tab === "quiz") b.classList.remove("ping"); if (b.dataset.tab === "colours") { renderReplayCtl(); drawMini(); } });
+$("gogBtn").onclick = () => { S.gog = !S.gog; render(); };
+$("rxSel").onchange = e => chooseRx(e.target.value);
+$("resetBtn").onclick = () => { const ans = S.answered; S = freshState(); S.answered = ans; $("quizTab").classList.remove("ping"); fullRender(); };
+$("replay").oninput = () => { playing = false; renderReplayCtl(); drawMini(); };
+$("playBtn").onclick = () => { playing = !playing; if (playing && +$("replay").value >= 1000) $("replay").value = 0; renderReplayCtl(); };
+let hDrag = null;
+function toLogical(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left - ox) / sc, y: (e.clientY - r.top - oy) / sc }; }
+cv.addEventListener("pointerdown", e => { const r = R(); if (r.ph !== "graph") return; const p = toLogical(e);
+  [["h1", H1T], ["h2", H2T]].forEach(([k, tt]) => { if (Math.hypot(p.x - gx(tt), p.y - gy(r[k])) < 22) hDrag = k; });
+  if (hDrag) cv.setPointerCapture(e.pointerId); });
+cv.addEventListener("pointermove", e => { if (!hDrag) return; const p = toLogical(e); R()[hDrag] = gyInv(Math.max(G.y0, Math.min(G.y1, p.y))); renderPanel(); });
+["pointerup", "pointercancel"].forEach(ev => cv.addEventListener(ev, () => { hDrag = null; }));
+cv.addEventListener("keydown", e => { const r = R(); if (r.ph !== "graph") return; const d = { ArrowUp: .05, ArrowDown: -.05 }[e.key]; if (!d) return; e.preventDefault(); const k = e.shiftKey ? "h2" : "h1"; r[k] += d; renderPanel(); });
+
+readTokens(); resize(); S = freshState(); fullRender();
+requestAnimationFrame(frame);
+})();
+</script>

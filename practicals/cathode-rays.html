@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Identify the parts of the circuit that drives a Crookes (cathode-ray) tube and observe the properties of cathode rays.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+.svlnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:#0E1A2B;background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:28px 28px;color:#F4F1EA;font:500 14px/1.2 "IBM Plex Sans","Noto Sans Sinhala","Noto Sans Tamil",system-ui,sans-serif}
+.svlnav .in{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.svlnav a{color:#F4F1EA;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1.5px solid rgba(212,196,255,.45);border-radius:999px}
+.svlnav a:hover{background:rgba(212,196,255,.14)}
+.svlnav a:focus-visible{outline:3px solid #FFC857;outline-offset:2px}
+.svlnav .pos{color:#D4C4FF;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;margin-left:auto}
+.svlnav .pn{display:flex;gap:8px}
+@media (max-width:560px){.svlnav .lbl{display:none}.svlnav .pos{margin-left:0}}
+</style>
+<title>Cathode Ray Bench</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: physics bench (circuit + Crookes tube) on the left, a working notebook (guide / observations / colours / questions) on the right. Same system as the KMnO₄ bench. */
+:root{
+  --bg:#e7eceb; --surface:#f8faf9; --surface-2:#eef2f1; --ink:#162127; --muted:#56666c; --line:#cbd5d4;
+  --accent:#8b1d6f; --accent-soft:#f3dcea; --on-accent:#ffffff; --current:#b7791f;
+  --ok:#2c7a4d; --ok-soft:#dcefe3; --warn:#9a520a; --warn-soft:#f8e8d5; --bad:#a3302b; --bad-soft:#f6dedc;
+  --wall-top:#dde5e4; --wall-bot:#c5d0cf; --bench:#2a3236; --bench-edge:#1b2124; --glass:rgba(40,60,70,.5);
+  --f-display:"Bricolage Grotesque", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", "Noto Sans Sinhala", "Noto Sans Tamil", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.55);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.55);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 28px}
+:lang(si) body,:lang(ta) body{line-height:1.65}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.top > div:first-child{min-width:0}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+:lang(si) .eyebrow,:lang(ta) .eyebrow{letter-spacing:.02em;font-size:12.5px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 6px;text-wrap:balance;letter-spacing:-.01em}
+:lang(si) h1,:lang(ta) h1{letter-spacing:0;font-size:clamp(22px,2.6vw,32px);line-height:1.3}
+.sub{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.top-actions{display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap}
+.student{font-size:13px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;min-height:44px;font-weight:500;font-size:14px;transition:background .15s,border-color .15s,transform .05s;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.next{border-color:var(--current);box-shadow:0 0 0 3px color-mix(in srgb,var(--current) 30%,transparent)}
+.btn[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.btn.danger[aria-pressed="true"]{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.prompt{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.prompt .dot{width:9px;height:9px;border-radius:50%;background:var(--current);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--current) 25%,transparent)}
+.prompt p{margin:0;font-weight:500;min-width:0}
+.viewport{position:relative;height:clamp(340px,calc(100vh - 420px),620px);background:var(--wall-bot);user-select:none;-webkit-user-select:none}
+@media (max-width:980px){.viewport{height:clamp(260px,62vw,560px)}}
+canvas#cv{display:block;width:100%;height:100%;touch-action:none}
+.chips{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;max-width:60%}
+.chip{font-family:var(--f-mono);font-size:12px;background:#0E1A2B;color:#D4C4FF;border:1px solid rgba(212,196,255,.25);padding:3px 9px;border-radius:999px;font-variant-numeric:tabular-nums}
+.chip.hv{background:#5a3a00;color:#ffe08a;border-color:#ffc857}
+.toast{position:absolute;left:50%;bottom:14px;transform:translate(-50%,10px);opacity:0;transition:opacity .25s,transform .25s;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 28px);width:max-content;pointer-events:none;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.toast.danger{background:#b3261e;color:#ffffff;font-weight:600}
+.toast.party{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);font-weight:600}
+.dock{display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-right:2px}
+:lang(si) .label,:lang(ta) .label{letter-spacing:0;font-size:12.5px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface-2)}
+.seg button{border:0;background:transparent;padding:8px 12px;min-height:42px;font-size:14px;font-weight:500;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.lang button{min-height:36px}
+.lang button[lang="si"]{font-family:"Noto Sans Sinhala",var(--f-body)}
+.lang button[lang="ta"]{font-family:"Noto Sans Tamil",var(--f-body)}
+select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px;max-width:100%}
+.slider{display:flex;align-items:center;gap:8px;min-width:200px;flex:1 1 200px;max-width:340px}
+.slider input{flex:1;min-width:0}
+.slider output{font-family:var(--f-mono);font-size:13px;min-width:48px;text-align:right;font-variant-numeric:tabular-nums}
+input[type=range]{accent-color:var(--accent);min-height:30px}
+.status{font-size:13.5px;padding:8px 12px;border-radius:9px;background:var(--surface-2);border:1px solid var(--line)}
+.status.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.status.warn{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.status.hv{background:#fff4d6;border-color:#c98a00;color:#6b4700}
+.kbd{font-size:12px;color:var(--muted)}
+.modebox{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;padding-top:2px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.tabs button{flex:1;min-width:0;border:0;background:transparent;padding:12px 4px;min-height:46px;font-weight:600;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;line-height:1.3;position:relative}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs button.ping::after{content:"";position:absolute;top:8px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--current)}
+.pane{padding:16px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:980px){.pane{max-height:none}}
+h2{font-family:var(--f-display);font-size:18px;font-weight:700;margin:0}
+h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+:lang(si) h3,:lang(ta) h3{letter-spacing:0;font-size:13px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2)}
+.box.safety{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.box.safety h3{color:var(--warn)}
+.box.safety ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ring{position:relative;width:46px;height:46px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;font-weight:500}
+.chiplist{display:flex;flex-wrap:wrap;gap:6px}
+.chiplist span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;background:var(--surface)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid transparent}
+.steps li .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-family:var(--f-mono);color:var(--muted);margin-top:2px}
+.steps li.done{color:var(--muted)}
+.steps li.done .tick{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.steps li.now{background:var(--surface);border-color:var(--current)}
+.steps li.now .tick{border-color:var(--current);color:var(--current)}
+.log{font-size:13.5px;display:flex;flex-direction:column;gap:5px;max-height:240px;overflow:auto}
+.log > div{display:grid;grid-template-columns:58px 1fr;gap:6px}
+.log span{font-family:var(--f-mono);color:var(--muted);font-size:11.5px;padding-top:2px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:8px 10px;background:var(--surface-2);font-weight:600;vertical-align:bottom}
+:lang(si) th,:lang(ta) th{letter-spacing:0;font-size:12px}
+td{padding:8px 10px;border-top:1px solid var(--line);vertical-align:top}
+.cc{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px}
+.cc .ttl{display:flex;justify-content:flex-end}
+.cc .ttl em{font-style:normal;font-weight:500;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.cc .ttl em.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.cc .flow{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start}
+.cc .st{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:13px;min-width:0}
+.cc .st small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+:lang(si) .cc .st small,:lang(ta) .cc .st small{letter-spacing:0}
+.cc .sw{width:84px;height:54px;border-radius:10px;border:1px solid var(--line);overflow:hidden;display:block}
+.cc .arrow{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);padding-top:14px;max-width:110px;text-align:center}
+.cc .arrow b{font-size:20px;color:var(--ink);line-height:1}
+.cc .via{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;justify-content:center}
+.cc .via i{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid var(--line)}
+.replaycv{width:100%;max-width:100%;aspect-ratio:330/200;border-radius:10px;border:1px solid var(--line);background:#0b1014;display:block}
+.rname{font-size:14px;font-weight:600}
+.q{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}
+.q p{margin:0 0 4px;font-weight:600}
+.q button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px}
+.q button:hover:not(:disabled){border-color:var(--accent)}
+.q button.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.q button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.q button:disabled{cursor:default}
+.note{font-size:13px;padding:8px 10px;border-radius:8px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--accent);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<nav class="svlnav" aria-label="Practicals">
+<div class="in"><a href="../index.html#practicals">← <span data-svlnav="home">A/L labs</span></a>
+<span class="pos">Exp 1 · 1 / 22</span>
+<span class="pn"><a href="vsepr-shapes.html" rel="next"><span class="lbl" data-svlnav="next">Next</span> ›</a></span></div>
+</nav>
+<script>
+(function(){var L={en:{home:"All practicals",prev:"Previous",next:"Next"},si:{home:"සියලු ප්‍රායෝගික",prev:"පෙර",next:"ඊළඟ"},ta:{home:"எல்லாச் செய்முறைகளும்",prev:"முந்தையது",next:"அடுத்தது"}};
+function lang(){try{var l=localStorage.getItem("svl-lang");if(L[l])return l;}catch(e){}return "en";}
+function apply(){var l=lang();document.querySelectorAll("[data-svlnav]").forEach(function(e){e.textContent=L[l][e.getAttribute("data-svlnav")];});}
+apply();document.addEventListener("click",function(){setTimeout(apply,60);});})();
+</script>
+
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1 data-i18n="title"></h1>
+      <div class="sub">NIE Practical Handbook (2018) · al-exp-01</div>
+    </div>
+    <div class="top-actions">
+      <span class="student" id="student" hidden></span>
+      <div class="seg lang" role="group" aria-label="Language / භාෂාව / மொழி" id="langSeg">
+        <button data-lang="si" lang="si" aria-pressed="false">සිංහල</button>
+        <button data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button data-lang="ta" lang="ta" aria-pressed="false">தமிழ்</button>
+      </div>
+      <button class="btn" id="resetBtn" data-i18n="reset"></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="prompt"><span class="dot"></span><p id="prompt" aria-live="polite"></p></div>
+      <div class="viewport" id="viewport">
+        <canvas id="cv" role="img" tabindex="0" data-i18n-aria="canvasAria"></canvas>
+        <div class="chips" id="chips"></div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+      <div class="dock">
+        <div class="status" id="status" aria-live="polite"></div>
+        <div class="row">
+          <span class="label" data-i18n="circuitL"></span>
+          <button class="btn" id="undoBtn" data-i18n="undo"></button>
+          <button class="btn" id="clearBtn" data-i18n="clear"></button>
+          <button class="btn" id="hintBtn" data-i18n="hint"></button>
+          <button class="btn primary" id="swBtn"></button>
+          <button class="btn" id="revBtn" data-i18n="reverse"></button>
+        </div>
+        <div class="row">
+          <label class="label" for="screw" data-i18n="screwL"></label>
+          <div class="slider"><input type="range" id="screw" min="0" max="100" value="15"><output id="screwOut">15</output></div>
+          <button class="btn" id="dimBtn" aria-pressed="false" data-i18n="dim"></button>
+        </div>
+        <div class="row">
+          <span class="label" data-i18n="tubeL"></span>
+          <div class="seg" role="group" id="modeSeg" data-i18n-aria="tubeL">
+            <button data-m="maltese" aria-pressed="true" data-i18n="mMaltese"></button>
+            <button data-m="paddle" aria-pressed="false" data-i18n="mPaddle"></button>
+            <button data-m="slit" aria-pressed="false" data-i18n="mSlit"></button>
+          </div>
+        </div>
+        <div class="modebox" id="paddleBox" hidden>
+          <button class="btn" id="wheelBtn" data-i18n="resetWheel"></button>
+        </div>
+        <div class="modebox" id="slitBox" hidden>
+          <button class="btn" id="magBtn" aria-pressed="false"></button>
+          <button class="btn" id="flipBtn" data-i18n="flip"></button>
+          <label class="label" for="strength" data-i18n="strength"></label>
+          <div class="slider"><input type="range" id="strength" min="0" max="100" value="60"><output id="strOut">60%</output></div>
+          <button class="btn" id="plBtn" aria-pressed="false"></button>
+          <label class="label" for="plV" data-i18n="voltage"></label>
+          <div class="slider"><input type="range" id="plV" min="0" max="3" step="0.1" value="1.5"><output id="plOut">1.5 kV</output></div>
+          <select id="plPol" data-i18n-aria="platesL"><option value="top" data-i18n="polTop"></option><option value="bottom" data-i18n="polBottom"></option></select>
+        </div>
+        <p class="kbd" data-i18n="keys"></p>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="guide" data-i18n="tabGuide"></button>
+        <button role="tab" aria-selected="false" data-tab="obs" data-i18n="tabObs"></button>
+        <button role="tab" aria-selected="false" data-tab="colours" data-i18n="tabColours"></button>
+        <button role="tab" aria-selected="false" data-tab="quiz" data-i18n="tabQuiz" id="quizTab"></button>
+      </div>
+      <div class="pane" id="pane-guide">
+        <div class="headrow">
+          <div><h3 data-i18n="aimH"></h3><p class="small" data-i18n="aim"></p></div>
+          <div class="ring" aria-hidden="true"><svg width="46" height="46"><circle cx="23" cy="23" r="18" fill="none" stroke="var(--line)" stroke-width="4"/><circle id="ringArc" cx="23" cy="23" r="18" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><span id="ringTxt">0/6</span></div>
+        </div>
+        <div><h3 data-i18n="appH"></h3><div class="chiplist" id="appList"></div></div>
+        <div><h3 data-i18n="procH"></h3><ul class="steps" id="steps"></ul></div>
+        <div class="box safety"><h3 data-i18n="safeH"></h3><ul id="safeList"></ul></div>
+      </div>
+      <div class="pane" id="pane-obs" hidden>
+        <div><h3 data-i18n="logH"></h3><div class="log" id="log"></div></div>
+        <div><h3 data-i18n="resH"></h3>
+          <div class="tablewrap"><table>
+            <thead><tr><th data-i18n="thProp"></th><th data-i18n="thObs"></th><th data-i18n="thInf"></th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table></div>
+        </div>
+      </div>
+      <div class="pane" id="pane-colours" hidden>
+        <div><h2 data-i18n="coloursH"></h2><p class="small muted" style="margin-top:4px" data-i18n="coloursIntro"></p></div>
+        <div id="cards" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div class="box" style="display:flex;flex-direction:column;gap:8px">
+          <h3 data-i18n="replayH" style="margin:0"></h3>
+          <select id="replaySel" data-i18n-aria="replaySelAria"></select>
+          <canvas id="mini" class="replaycv" width="660" height="400" aria-hidden="true"></canvas>
+          <input type="range" id="replay" min="0" max="1000" value="0" data-i18n-aria="replayH">
+          <div class="row"><button class="btn" id="playBtn"></button><span class="rname" id="rname"></span></div>
+          <div class="small muted" id="rhint"></div>
+        </div>
+      </div>
+      <div class="pane" id="pane-quiz" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <h2 data-i18n="quizH"></h2><span class="score" id="score"></span>
+        </div>
+        <div id="quiz" style="display:flex;flex-direction:column;gap:12px"></div>
+        <button class="btn" id="retryBtn" data-i18n="tryAgain" style="align-self:flex-start"></button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const SIM_ID = "al-exp-01";
+
+// =====================================================================
+// LANGUAGES
+// =====================================================================
+const I18N = {
+en: {
+  eyebrow: "A/L Chemistry · Unit 01 · Atomic structure · Experiment 1", title: "Properties of cathode rays", student: "Student: {name}{cls}", reset: "Reset bench",
+  circuitL: "Circuit", undo: "Undo last wire", clear: "Clear wires", hint: "Show next connection", swClose: "Close switch", swOpen: "Open switch", reverse: "Reverse polarity",
+  screwL: "Interrupter screw", dim: "Dim the room lights", tubeL: "Tube", mMaltese: "Maltese cross", mPaddle: "Paddle wheel", mSlit: "Slit + screen", resetWheel: "Reset wheel",
+  magnetL: "Magnet", magOn: "Bring magnet near", magOff: "Remove magnet", flip: "Flip magnet", strength: "Field strength", platesL: "Deflection plates", platesOn: "Plates on", platesOff: "Switch on plates", voltage: "Plate voltage", polTop: "Top plate +", polBottom: "Bottom plate +",
+  keys: "Drag from one terminal to another to connect a wire. Click a wire to remove it. Drag the magnet to move it.",
+  stNone: "Connect the circuit.", stPrimary: "Primary circuit incomplete: 6 V supply → switch → coil → back to the supply.", stSecondary: "Connect the coil's secondary terminals to the tube.", stOk: "Circuit complete.",
+  stRev: "Polarity reversed: the cathode (K) is on the + terminal.", stShort: "Short circuit: the supply is connected straight back to itself.", stOpen: "Switch open.", stNoBuzz: "Interrupter not vibrating: turn the screw.", stSpark: "Interrupter buzzing · sparks across the gap", stHV: "HIGH VOLTAGE ON",
+  chipSupply: "Supply 6 V DC", chipCoil: "Coil sparking", chipTube: "Tube: {m}", chipPlates: "Plates {v} kV", chipField: "Magnet {p}%",
+  tabGuide: "Guide", tabObs: "Observations", tabColours: "Colours", tabQuiz: "Questions",
+  aimH: "Aim", aim: "Identify the parts of the circuit that drives a Crookes (cathode-ray) tube and observe the properties of cathode rays.",
+  appH: "Apparatus", app: ["Crookes tubes (Maltese cross, paddle wheel, slit + fluorescent screen)", "Induction coil", "6 V DC source", "Switch", "Connecting wires", "Bar magnet", "Pair of deflection plates (high-voltage DC)"],
+  procH: "Procedure", steps: ["Connect the 6 V supply → switch → induction coil → tube (cathode to −, anode to +)", "Close the switch and turn the interrupter screw until sparks jump across the coil gap", "Observe the green glow and the sharp shadow of the Maltese cross (rays travel in straight lines)", "Use the paddle-wheel tube: the wheel rolls from cathode to anode (rays carry momentum)", "Bring a magnet near the slit tube and apply charged plates: the beam bends towards the + plate (rays are negative)", "Reverse the polarity and confirm the glow disappears or shifts"],
+  safeH: "Safety", safe: ["The induction coil gives several thousand volts. Never touch the tube, terminals or wires while it is on.", "Open the switch before changing tubes or moving wires.", "Run the tube only for short times and keep your distance from it."],
+  logH: "Observation log", resH: "Results table", thProp: "Property tested", thObs: "Observation", thInf: "Inference", noRes: "Results appear here as you work.",
+  rs: ["Maltese cross tube", "Sharp shadow of the cross on the green glowing end", "Cathode rays travel in straight lines"],
+  rm: ["Paddle-wheel tube", "Wheel rolls from the cathode towards the anode", "Cathode rays have momentum, so they have mass"],
+  rB: ["Slit tube + magnet", "The beam is deflected by the magnet", "Cathode rays are a stream of charged particles"],
+  rE: ["Slit tube + charged plates", "The beam bends towards the + plate", "Cathode rays are negatively charged"],
+  rR: ["Polarity reversed", "The green glow or shadow disappears from the screen", "Cathode rays come from the cathode (− electrode)"],
+  coloursH: "Colour and beam changes", coloursIntro: "Each card shows the state before and after, with its name. Do the step on the bench to record it, then replay it slowly below.",
+  c1b: "dark tube (no glow)", c1r: "switch on", c1a: "green fluorescent glow", c1v: "faint flickering green",
+  c2b: "straight green beam", c2r: "magnet / + plate", c2a: "beam curves towards the + plate", c2v: "beam starts to bend",
+  before: "Before", after: "After", via: "Seen on the way: {c}", seen: "Recorded", notYet: "Not done yet",
+  replayH: "Replay a change", replaySelAria: "Change to replay", play: "Play slowly", pause: "Pause", replayNone: "Do this step on the bench to record it.", replayHint: "Drag the slider to move forwards and backwards.",
+  rGlow: "Glow: {p}%", rBeam: "Beam shift at screen: {d} mm",
+  lbBattery: "6 V DC supply", lbSwitch: "switch", lbCoil: "induction coil", lbInterrupter: "interrupter", lbSecondary: "secondary (high voltage)", lbPrimary: "primary",
+  lbK: "cathode (−)", lbA: "anode (+)", lbFront: "end of tube, front view", lbHV: "HIGH VOLTAGE", lbFacing: "{p} pole facing tube", lbScreen: "fluorescent screen", lbShadow: "shadow",
+  quizH: "Knowledge check", tryAgain: "Try again", best: "best {p}%", scoreLeft: "{n} left", correct: "Correct. ", notQuite: "Not quite. ",
+  canvasAria: "Circuit bench: 6 V supply, switch, induction coil and a Crookes tube on a stand. Drag between terminals to wire the circuit.",
+  p0: "Drag wires: supply + → switch → coil primary → supply −. Then coil secondary − → cathode (K) and + → anode (A).",
+  p0rev: "Check the polarity: the cathode (K) must go to the coil's − terminal.",
+  p1: "Close the switch, then turn the interrupter screw until sparks jump across the coil gap.", p1b: "Turn the interrupter screw slowly until the interrupter buzzes and sparks jump.",
+  p2: "With the Maltese cross tube, look at the end of the tube. Dimming the room lights helps.",
+  p3: "Open the switch, change to the paddle-wheel tube, then close the switch and watch the wheel.",
+  p4: "Open the switch and change to the slit tube. Close the switch, bring a magnet near, then switch on the charged plates.",
+  p4b: "Now switch on the deflection plates and see which plate the beam bends towards.", p4c: "Now bring the magnet near the tube and drag it close to the beam.",
+  p5: "Open the switch, reverse the polarity of the tube leads, then close the switch again.", pDone: "All steps done. Try the Questions tab.",
+  lWired: "Circuit connected: 6 V supply → switch → induction coil (primary). Secondary: − to the cathode, + to the anode.",
+  lSpark: "The interrupter buzzes and sparks jump across the gap of the induction coil.",
+  lGlow: "On switching on, the dark tube shows a green fluorescent glow on the glass opposite the cathode.",
+  lShadow: "Maltese cross tube: a sharp shadow of the cross forms on the green glowing end. Cathode rays travel in straight lines.",
+  lWheel: "Paddle-wheel tube: the wheel rolls from the cathode towards the anode. Cathode rays have momentum, so they have mass.",
+  lMagnet: "Slit tube: the straight green beam curves when a magnet is brought near.",
+  lPlates: "Slit tube: the beam bends towards the positive (+) plate. Cathode rays are negatively charged.",
+  lReverse: "On reversing the polarity, the green glow disappears from the screen and shifts to the other end of the tube.",
+  lSwap: "Tube leads swapped (polarity reversed).",
+  tTouch: "Danger: high voltage! Never touch the tube or wires while the coil is on. Open the switch first.",
+  tChangeOn: "Open the switch before changing the tube. The coil gives several thousand volts.", tWireOn: "Open the switch before moving wires.", tRevOn: "Open the switch before swapping the leads.",
+  tShort: "Short circuit! A wire connects the supply straight back to itself. Remove it before closing the switch.",
+  tWrongPol: "No glow on the screen. Check the polarity: the cathode (K) must go to the coil's − terminal.",
+  tLowV: "The 6 V supply cannot drive a cathode-ray tube. The tube needs the high voltage from the coil's secondary terminals.",
+  tMixHV: "Keep the high-voltage secondary separate from the 6 V primary circuit.", tSameComp: "Connect to a terminal on a different part.", tDup: "That wire is already connected.",
+  tConnectTube: "Connect the tube to the coil first.", tOrder: "Good observation, but finish step {n} first: {s}", tDone: "Practical complete! Now answer the questions in the Questions tab.", tWheelOff: "Open the switch before resetting the wheel.",
+  quiz: [
+    { q: "A sharp shadow of the Maltese cross shows that cathode rays…", o: ["are waves", "travel in straight lines", "are positively charged", "have no mass"], e: "Straight-line travel casts a sharp shadow." },
+    { q: "The paddle wheel moving towards the anode shows that cathode rays…", o: ["have momentum (mass)", "are light", "are neutral", "carry heat only"], e: "They transfer momentum to the wheel." },
+    { q: "Cathode rays bend towards the positive plate because they are…", o: ["neutral", "negatively charged", "positively charged", "magnetic"], e: "Opposite charges attract." },
+    { q: "Who measured the e/m ratio of cathode rays?", o: ["Rutherford", "J. J. Thomson", "Millikan", "Chadwick"], e: "Thomson, 1897." },
+  ],
+},
+si: {
+  eyebrow: "උ.පෙ. රසායන විද්‍යාව · ඒකකය 01 · පරමාණුක ව්‍යුහය · පරීක්ෂණය 1", title: "කැතෝඩ කිරණවල ගුණ", student: "ශිෂ්‍යයා: {name}{cls}", reset: "නැවත අරඹන්න",
+  circuitL: "පරිපථය", undo: "අවසන් කම්බිය ඉවත් කරන්න", clear: "කම්බි සියල්ල ඉවත් කරන්න", hint: "ඊළඟ සම්බන්ධය පෙන්වන්න", swClose: "ස්විචය වසන්න", swOpen: "ස්විචය විවෘත කරන්න", reverse: "ධ්‍රැවීයතාව මාරු කරන්න",
+  screwL: "විච්ඡේදක ඉස්කුරුප්පුව", dim: "කාමරයේ ආලෝකය අඩු කරන්න", tubeL: "නළය", mMaltese: "මෝල්ටීස් කුරුසය", mPaddle: "පැඩල් රෝදය", mSlit: "සිදුර + තිරය", resetWheel: "රෝදය නැවත තබන්න",
+  magnetL: "චුම්බකය", magOn: "චුම්බකය ළං කරන්න", magOff: "චුම්බකය ඉවත් කරන්න", flip: "චුම්බකය හරවන්න", strength: "ක්ෂේත්‍ර ප්‍රබලතාව", platesL: "අපගමන තහඩු", platesOn: "තහඩු ක්‍රියාත්මකයි", platesOff: "තහඩු ක්‍රියාත්මක කරන්න", voltage: "තහඩු වෝල්ටීයතාව", polTop: "ඉහළ තහඩුව +", polBottom: "පහළ තහඩුව +",
+  keys: "කම්බියක් සම්බන්ධ කිරීමට එක් අග්‍රයක සිට තවත් අග්‍රයකට අදින්න. ඉවත් කිරීමට කම්බිය ක්ලික් කරන්න. චුම්බකය චලනය කිරීමට එය අදින්න.",
+  stNone: "පරිපථය සම්බන්ධ කරන්න.", stPrimary: "ප්‍රාථමික පරිපථය අසම්පූර්ණයි: 6 V සැපයුම → ස්විචය → දඟරය → නැවත සැපයුමට.", stSecondary: "දඟරයේ ද්විතීයික අග්‍ර නළයට සම්බන්ධ කරන්න.", stOk: "පරිපථය සම්පූර්ණයි.",
+  stRev: "ධ්‍රැවීයතාව ප්‍රතිවිරුද්ධයි: කැතෝඩය (K) + අග්‍රයට සම්බන්ධයි.", stShort: "කෙටි පරිපථයකි: සැපයුම කෙලින්ම තමාටම සම්බන්ධ වී ඇත.", stOpen: "ස්විචය විවෘතයි.", stNoBuzz: "විච්ඡේදකය කම්පනය නොවේ: ඉස්කුරුප්පුව කරකවන්න.", stSpark: "විච්ඡේදකය ශබ්ද නගයි · පරතරය හරහා පුළිඟු", stHV: "අධි වෝල්ටීයතාව ක්‍රියාත්මකයි",
+  chipSupply: "සැපයුම 6 V DC", chipCoil: "දඟරයේ පුළිඟු", chipTube: "නළය: {m}", chipPlates: "තහඩු {v} kV", chipField: "චුම්බකය {p}%",
+  tabGuide: "මාර්ගෝපදේශය", tabObs: "නිරීක්ෂණ", tabColours: "වර්ණ", tabQuiz: "ප්‍රශ්න",
+  aimH: "අරමුණ", aim: "ක්‍රූක්ස් (කැතෝඩ කිරණ) නළයක් ක්‍රියා කරවන පරිපථයේ කොටස් හඳුනා ගැනීම සහ කැතෝඩ කිරණවල ගුණ නිරීක්ෂණය කිරීම.",
+  appH: "උපකරණ", app: ["ක්‍රූක්ස් නළ (මෝල්ටීස් කුරුසය, පැඩල් රෝදය, සිදුර + ප්‍රතිදීප්ත තිරය)", "ප්‍රේරණ දඟරය", "6 V DC සැපයුම", "ස්විචය", "සම්බන්ධක කම්බි", "දණ්ඩ චුම්බකය", "අපගමන තහඩු යුගලයක් (අධි වෝල්ටීයතා DC)"],
+  procH: "ක්‍රියා පිළිවෙළ", steps: ["6 V සැපයුම → ස්විචය → ප්‍රේරණ දඟරය → නළය සම්බන්ධ කරන්න (කැතෝඩය − ට, ඇනෝඩය + ට)", "ස්විචය වසා, දඟරයේ පරතරය හරහා පුළිඟු පනින තුරු විච්ඡේදක ඉස්කුරුප්පුව කරකවන්න", "කොළ දීප්තිය සහ මෝල්ටීස් කුරුසයේ තියුණු සෙවනැල්ල නිරීක්ෂණය කරන්න (කිරණ සරල රේඛීයව ගමන් කරයි)", "පැඩල් රෝද නළය භාවිත කරන්න: රෝදය කැතෝඩයේ සිට ඇනෝඩය දෙසට පෙරළේ (කිරණවලට ගම්‍යතාවක් ඇත)", "සිදුරු නළය අසලට චුම්බකයක් ගෙන ඒමෙන් සහ ආරෝපිත තහඩු යෙදීමෙන් කදම්බය + තහඩුව දෙසට නැමේ (කිරණ සෘණ ආරෝපිතයි)", "ධ්‍රැවීයතාව මාරු කර දීප්තිය අතුරුදහන් වන හෝ ස්ථානය වෙනස් වන බව තහවුරු කරන්න"],
+  safeH: "ආරක්ෂාව", safe: ["ප්‍රේරණ දඟරය වෝල්ට් දහස් ගණනක් ලබා දෙයි. ක්‍රියාත්මක වන විට නළය, අග්‍ර හෝ කම්බි ස්පර්ශ නොකරන්න.", "නළ හෝ කම්බි වෙනස් කිරීමට පෙර ස්විචය විවෘත කරන්න.", "නළය කෙටි කාලයක් පමණක් ක්‍රියා කරවා, එයින් දුරින් සිටින්න."],
+  logH: "නිරීක්ෂණ සටහන", resH: "ප්‍රතිඵල වගුව", thProp: "පරීක්ෂා කළ ගුණය", thObs: "නිරීක්ෂණය", thInf: "අනුමානය", noRes: "ඔබ වැඩ කරන විට ප්‍රතිඵල මෙහි දිස් වේ.",
+  rs: ["මෝල්ටීස් කුරුස නළය", "කොළ දීප්තිමත් කෙළවර මත කුරුසයේ තියුණු සෙවනැල්ලක්", "කැතෝඩ කිරණ සරල රේඛීයව ගමන් කරයි"],
+  rm: ["පැඩල් රෝද නළය", "රෝදය කැතෝඩයේ සිට ඇනෝඩය දෙසට පෙරළේ", "කැතෝඩ කිරණවලට ගම්‍යතාවක් ඇත, එබැවින් ස්කන්ධයක් ඇත"],
+  rB: ["සිදුරු නළය + චුම්බකය", "චුම්බකය මගින් කදම්බය අපගමනය වේ", "කැතෝඩ කිරණ ආරෝපිත අංශු ප්‍රවාහයකි"],
+  rE: ["සිදුරු නළය + ආරෝපිත තහඩු", "කදම්බය + තහඩුව දෙසට නැමේ", "කැතෝඩ කිරණ සෘණ ආරෝපිතයි"],
+  rR: ["ධ්‍රැවීයතාව මාරු කළ විට", "තිරයේ කොළ දීප්තිය හෝ සෙවනැල්ල අතුරුදහන් වේ", "කැතෝඩ කිරණ නිකුත් වන්නේ කැතෝඩයෙන් (− ඉලෙක්ට්‍රෝඩය)"],
+  coloursH: "වර්ණ හා කදම්බ වෙනස්වීම්", coloursIntro: "සෑම කාඩ්පතකම පෙර සහ පසු තත්ත්වය එහි නාමය සමඟ දැක්වේ. එය සටහන් කිරීමට මේසය මත පියවර කරන්න, ඉන්පසු පහතින් සෙමින් නැවත බලන්න.",
+  c1b: "අඳුරු නළය (දීප්තියක් නැත)", c1r: "ස්විචය වැසීම", c1a: "කොළ ප්‍රතිදීප්ත දීප්තිය", c1v: "දුර්වල, දැල්වෙන කොළ පැහැය",
+  c2b: "සරල කොළ කදම්බය", c2r: "චුම්බකය / + තහඩුව", c2a: "කදම්බය + තහඩුව දෙසට වක්‍ර වේ", c2v: "කදම්බය නැමෙන්නට පටන් ගනී",
+  before: "පෙර", after: "පසු", via: "අතරමැදදී දකින්නේ: {c}", seen: "සටහන් විය", notYet: "තවම කර නැත",
+  replayH: "වෙනස්වීමක් නැවත බලන්න", replaySelAria: "නැවත බැලිය යුතු වෙනස්වීම", play: "සෙමින් ධාවනය", pause: "නවතන්න", replayNone: "එය සටහන් කිරීමට මේසය මත මෙම පියවර කරන්න.", replayHint: "ඉදිරියට සහ පසුපසට යාමට ස්ලයිඩරය අදින්න.",
+  rGlow: "දීප්තිය: {p}%", rBeam: "තිරයේ කදම්බ විස්ථාපනය: {d} mm",
+  lbBattery: "6 V DC සැපයුම", lbSwitch: "ස්විචය", lbCoil: "ප්‍රේරණ දඟරය", lbInterrupter: "විච්ඡේදකය", lbSecondary: "ද්විතීයිකය (අධි වෝල්ටීයතාව)", lbPrimary: "ප්‍රාථමිකය",
+  lbK: "කැතෝඩය (−)", lbA: "ඇනෝඩය (+)", lbFront: "නළයේ කෙළවර, ඉදිරි පෙනුම", lbHV: "අධි වෝල්ටීයතාව", lbFacing: "{p} ධ්‍රැවය නළය දෙසට", lbScreen: "ප්‍රතිදීප්ත තිරය", lbShadow: "සෙවනැල්ල",
+  quizH: "දැනුම පරීක්ෂාව", tryAgain: "නැවත උත්සාහ කරන්න", best: "උපරිම {p}%", scoreLeft: "ඉතිරි {n}", correct: "නිවැරදියි. ", notQuite: "තවම නිවැරදි නැත. ",
+  canvasAria: "පරිපථ මේසය: 6 V සැපයුම, ස්විචය, ප්‍රේරණ දඟරය සහ ආධාරකයක් මත ක්‍රූක්ස් නළයක්. පරිපථය සම්බන්ධ කිරීමට අග්‍ර අතර අදින්න.",
+  p0: "කම්බි අදින්න: සැපයුමේ + → ස්විචය → දඟරයේ ප්‍රාථමිකය → සැපයුමේ −. ඉන්පසු ද්විතීයිකයේ − → කැතෝඩය (K), + → ඇනෝඩය (A).",
+  p0rev: "ධ්‍රැවීයතාව පරීක්ෂා කරන්න: කැතෝඩය (K) දඟරයේ − අග්‍රයට සම්බන්ධ විය යුතුය.",
+  p1: "ස්විචය වසා, දඟරයේ පරතරය හරහා පුළිඟු පනින තුරු විච්ඡේදක ඉස්කුරුප්පුව කරකවන්න.", p1b: "විච්ඡේදකය ශබ්ද නගා පුළිඟු පනින තුරු ඉස්කුරුප්පුව සෙමින් කරකවන්න.",
+  p2: "මෝල්ටීස් කුරුස නළය සමඟ නළයේ කෙළවර බලන්න. කාමරයේ ආලෝකය අඩු කිරීම උපකාරී වේ.",
+  p3: "ස්විචය විවෘත කර පැඩල් රෝද නළයට මාරු වී, නැවත ස්විචය වසා රෝදය නිරීක්ෂණය කරන්න.",
+  p4: "ස්විචය විවෘත කර සිදුරු නළයට මාරු වන්න. ස්විචය වසා, චුම්බකයක් ළං කර, ඉන්පසු ආරෝපිත තහඩු ක්‍රියාත්මක කරන්න.",
+  p4b: "දැන් අපගමන තහඩු ක්‍රියාත්මක කර කදම්බය නැමෙන්නේ කුමන තහඩුව දෙසටදැයි බලන්න.", p4c: "දැන් චුම්බකය නළය අසලට ගෙන ඇවිත් කදම්බයට ළං කරන්න.",
+  p5: "ස්විචය විවෘත කර නළයේ කම්බිවල ධ්‍රැවීයතාව මාරු කරන්න, ඉන්පසු නැවත ස්විචය වසන්න.", pDone: "සියලු පියවර අවසන්. ප්‍රශ්න ටැබය උත්සාහ කරන්න.",
+  lWired: "පරිපථය සම්බන්ධ කරන ලදී: 6 V සැපයුම → ස්විචය → ප්‍රේරණ දඟරය (ප්‍රාථමිකය). ද්විතීයිකය: − කැතෝඩයට, + ඇනෝඩයට.",
+  lSpark: "විච්ඡේදකය ශබ්ද නගන අතර ප්‍රේරණ දඟරයේ පරතරය හරහා පුළිඟු පනී.",
+  lGlow: "ස්විචය වැසූ විට අඳුරු නළයේ කැතෝඩයට ප්‍රතිවිරුද්ධ වීදුරුව මත කොළ ප්‍රතිදීප්ත දීප්තියක් ඇති වේ.",
+  lShadow: "මෝල්ටීස් කුරුස නළය: කොළ දීප්තිමත් කෙළවර මත කුරුසයේ තියුණු සෙවනැල්ලක් ඇති වේ. කැතෝඩ කිරණ සරල රේඛීයව ගමන් කරයි.",
+  lWheel: "පැඩල් රෝද නළය: රෝදය කැතෝඩයේ සිට ඇනෝඩය දෙසට පෙරළේ. කැතෝඩ කිරණවලට ගම්‍යතාවක් ඇත, එබැවින් ස්කන්ධයක් ඇත.",
+  lMagnet: "සිදුරු නළය: චුම්බකයක් ළං කළ විට සරල කොළ කදම්බය වක්‍ර වේ.",
+  lPlates: "සිදුරු නළය: කදම්බය ධන (+) තහඩුව දෙසට නැමේ. කැතෝඩ කිරණ සෘණ ආරෝපිතයි.",
+  lReverse: "ධ්‍රැවීයතාව මාරු කළ විට තිරයේ කොළ දීප්තිය අතුරුදහන් වී නළයේ අනෙක් කෙළවරට මාරු වේ.",
+  lSwap: "නළයේ කම්බි මාරු කරන ලදී (ධ්‍රැවීයතාව ප්‍රතිවිරුද්ධ කරන ලදී).",
+  tTouch: "අනතුරුයි: අධි වෝල්ටීයතාව! දඟරය ක්‍රියාත්මක විට නළය හෝ කම්බි කිසිවිටෙක ස්පර්ශ නොකරන්න. පළමුව ස්විචය විවෘත කරන්න.",
+  tChangeOn: "නළය මාරු කිරීමට පෙර ස්විචය විවෘත කරන්න. දඟරය වෝල්ට් දහස් ගණනක් ලබා දෙයි.", tWireOn: "කම්බි චලනය කිරීමට පෙර ස්විචය විවෘත කරන්න.", tRevOn: "කම්බි මාරු කිරීමට පෙර ස්විචය විවෘත කරන්න.",
+  tShort: "කෙටි පරිපථයකි! කම්බියක් සැපයුම කෙලින්ම තමාටම සම්බන්ධ කරයි. ස්විචය වැසීමට පෙර එය ඉවත් කරන්න.",
+  tWrongPol: "තිරය මත දීප්තියක් නැත. ධ්‍රැවීයතාව පරීක්ෂා කරන්න: කැතෝඩය (K) දඟරයේ − අග්‍රයට සම්බන්ධ විය යුතුය.",
+  tLowV: "6 V සැපයුමෙන් කැතෝඩ කිරණ නළයක් ක්‍රියා කළ නොහැක. නළයට දඟරයේ ද්විතීයික අග්‍රවලින් ලැබෙන අධි වෝල්ටීයතාව අවශ්‍යයි.",
+  tMixHV: "අධි වෝල්ටීයතා ද්විතීයිකය 6 V ප්‍රාථමික පරිපථයෙන් වෙන්ව තබන්න.", tSameComp: "වෙනත් කොටසක අග්‍රයකට සම්බන්ධ කරන්න.", tDup: "එම කම්බිය දැනටමත් සම්බන්ධයි.",
+  tConnectTube: "පළමුව නළය දඟරයට සම්බන්ධ කරන්න.", tOrder: "හොඳ නිරීක්ෂණයක්, නමුත් පළමුව පියවර {n} අවසන් කරන්න: {s}", tDone: "ප්‍රායෝගිකය අවසන්! දැන් ප්‍රශ්න ටැබයේ ප්‍රශ්නවලට පිළිතුරු දෙන්න.", tWheelOff: "රෝදය නැවත තැබීමට පෙර ස්විචය විවෘත කරන්න.",
+  quiz: [
+    { q: "මෝල්ටීස් කුරුසයේ තියුණු සෙවනැල්ලකින් පෙන්වන්නේ කැතෝඩ කිරණ…", o: ["තරංග බව", "සරල රේඛීයව ගමන් කරන බව", "ධන ආරෝපිත බව", "ස්කන්ධයක් නැති බව"], e: "සරල රේඛීය ගමන නිසා තියුණු සෙවනැල්ලක් ඇති වේ." },
+    { q: "පැඩල් රෝදය ඇනෝඩය දෙසට චලනය වීමෙන් පෙන්වන්නේ කැතෝඩ කිරණ…", o: ["ගම්‍යතාවක් (ස්කන්ධයක්) ඇති බව", "ආලෝකය බව", "උදාසීන බව", "තාපය පමණක් ගෙන යන බව"], e: "ඒවා රෝදයට ගම්‍යතාව පවරයි." },
+    { q: "කැතෝඩ කිරණ ධන තහඩුව දෙසට නැමෙන්නේ ඒවා…", o: ["උදාසීන නිසා", "සෘණ ආරෝපිත නිසා", "ධන ආරෝපිත නිසා", "චුම්බක නිසා"], e: "ප්‍රතිවිරුද්ධ ආරෝපණ ආකර්ෂණය වේ." },
+    { q: "කැතෝඩ කිරණවල e/m අනුපාතය මැන්නේ කවුද?", o: ["රදර්ෆර්ඩ්", "ජේ. ජේ. තොම්සන්", "මිලිකන්", "චැඩ්වික්"], e: "තොම්සන්, 1897." },
+  ],
+},
+ta: {
+  eyebrow: "க.பொ.த (உ/த) இரசாயனவியல் · அலகு 01 · அணுக் கட்டமைப்பு · பரிசோதனை 1", title: "கதோட்டுக் கதிர்களின் இயல்புகள்", student: "மாணவர்: {name}{cls}", reset: "மீண்டும் தொடங்கு",
+  circuitL: "சுற்று", undo: "கடைசிக் கம்பியை அகற்று", clear: "எல்லாக் கம்பிகளையும் அகற்று", hint: "அடுத்த இணைப்பைக் காட்டு", swClose: "ஆளியை மூடு", swOpen: "ஆளியைத் திற", reverse: "முனைவை மாற்று",
+  screwL: "இடைமறிப்பித் திருகு", dim: "அறை ஒளியைக் குறை", tubeL: "குழாய்", mMaltese: "மோல்ற்றீசுச் சிலுவை", mPaddle: "துடுப்புச் சில்லு", mSlit: "பிளவு + திரை", resetWheel: "சில்லை மீள வை",
+  magnetL: "காந்தம்", magOn: "காந்தத்தை அருகே கொண்டுவா", magOff: "காந்தத்தை அகற்று", flip: "காந்தத்தைத் திருப்பு", strength: "புல வலிமை", platesL: "திரும்பல் தட்டுகள்", platesOn: "தட்டுகள் இயங்குகின்றன", platesOff: "தட்டுகளை இயக்கு", voltage: "தட்டு மின்னழுத்தம்", polTop: "மேல் தட்டு +", polBottom: "கீழ்த் தட்டு +",
+  keys: "கம்பியை இணைக்க ஒரு முடிவிடத்திலிருந்து மற்றொன்றுக்கு இழுக்கவும். அகற்ற கம்பியைச் சொடுக்கவும். காந்தத்தை நகர்த்த அதை இழுக்கவும்.",
+  stNone: "சுற்றை இணைக்கவும்.", stPrimary: "முதற் சுற்று முழுமையில்லை: 6 V வழங்கல் → ஆளி → சுருள் → மீண்டும் வழங்கலுக்கு.", stSecondary: "சுருளின் துணை முடிவிடங்களைக் குழாயுடன் இணைக்கவும்.", stOk: "சுற்று முழுமையானது.",
+  stRev: "முனைவு தலைகீழ்: கதோட்டு (K) + முடிவிடத்தில் உள்ளது.", stShort: "குறுஞ்சுற்று: வழங்கல் நேரடியாகத் தன்னுடனேயே இணைக்கப்பட்டுள்ளது.", stOpen: "ஆளி திறந்துள்ளது.", stNoBuzz: "இடைமறிப்பி அதிரவில்லை: திருகைச் சுழற்றவும்.", stSpark: "இடைமறிப்பி ஒலிக்கிறது · இடைவெளியில் பொறிகள்", stHV: "உயர் மின்னழுத்தம் இயங்குகிறது",
+  chipSupply: "வழங்கல் 6 V DC", chipCoil: "சுருளில் பொறிகள்", chipTube: "குழாய்: {m}", chipPlates: "தட்டுகள் {v} kV", chipField: "காந்தம் {p}%",
+  tabGuide: "வழிகாட்டி", tabObs: "அவதானிப்புகள்", tabColours: "நிறங்கள்", tabQuiz: "வினாக்கள்",
+  aimH: "நோக்கம்", aim: "குரூக்ஸ் (கதோட்டுக் கதிர்) குழாயை இயக்கும் சுற்றின் பகுதிகளை இனங்காணலும் கதோட்டுக் கதிர்களின் இயல்புகளை அவதானித்தலும்.",
+  appH: "உபகரணங்கள்", app: ["குரூக்ஸ் குழாய்கள் (மோல்ற்றீசுச் சிலுவை, துடுப்புச் சில்லு, பிளவு + புளோரொளிர் திரை)", "தூண்டற் சுருள்", "6 V DC வழங்கல்", "ஆளி", "இணைப்புக் கம்பிகள்", "சட்டக் காந்தம்", "திரும்பல் தட்டுச் சோடி (உயர் மின்னழுத்த DC)"],
+  procH: "செய்முறை", steps: ["6 V வழங்கல் → ஆளி → தூண்டற் சுருள் → குழாய் என இணைக்க (கதோட்டு − இற்கு, அனோட்டு + இற்கு)", "ஆளியை மூடி, சுருளின் இடைவெளியில் பொறிகள் பாயும் வரை இடைமறிப்பித் திருகைச் சுழற்றுக", "பச்சை ஒளிர்வையும் மோல்ற்றீசுச் சிலுவையின் கூர்மையான நிழலையும் அவதானிக்க (கதிர்கள் நேர்கோட்டில் செல்கின்றன)", "துடுப்புச் சில்லுக் குழாயைப் பயன்படுத்துக: சில்லு கதோட்டிலிருந்து அனோட்டு நோக்கி உருள்கிறது (கதிர்களுக்கு உந்தம் உண்டு)", "பிளவுக் குழாயருகே காந்தத்தைக் கொண்டுவந்து ஏற்றிய தட்டுகளைப் பிரயோகிக்க: கற்றை + தட்டு நோக்கி வளைகிறது (கதிர்கள் மறை ஏற்றமுடையவை)", "முனைவை மாற்றி ஒளிர்வு மறைவதை அல்லது இடம் மாறுவதை உறுதிப்படுத்துக"],
+  safeH: "பாதுகாப்பு", safe: ["தூண்டற் சுருள் பல ஆயிரம் வோல்ற்றுகளைத் தருகிறது. இயங்கும்போது குழாய், முடிவிடங்கள், கம்பிகளைத் தொடாதீர்.", "குழாய்களையோ கம்பிகளையோ மாற்றும் முன் ஆளியைத் திறக்க.", "குழாயைக் குறுகிய நேரம் மட்டும் இயக்கி, அதிலிருந்து தூரத்தில் இருக்க."],
+  logH: "அவதானிப்புப் பதிவு", resH: "முடிவுகள் அட்டவணை", thProp: "சோதித்த இயல்பு", thObs: "அவதானிப்பு", thInf: "அனுமானம்", noRes: "நீங்கள் செய்யும்போது முடிவுகள் இங்கே தோன்றும்.",
+  rs: ["மோல்ற்றீசுச் சிலுவைக் குழாய்", "பச்சையாக ஒளிரும் முனையில் சிலுவையின் கூர்மையான நிழல்", "கதோட்டுக் கதிர்கள் நேர்கோட்டில் செல்கின்றன"],
+  rm: ["துடுப்புச் சில்லுக் குழாய்", "சில்லு கதோட்டிலிருந்து அனோட்டு நோக்கி உருள்கிறது", "கதோட்டுக் கதிர்களுக்கு உந்தம் உண்டு, எனவே திணிவு உண்டு"],
+  rB: ["பிளவுக் குழாய் + காந்தம்", "காந்தத்தால் கற்றை திரும்புகிறது", "கதோட்டுக் கதிர்கள் ஏற்றமுடைய துணிக்கைகளின் ஓட்டம்"],
+  rE: ["பிளவுக் குழாய் + ஏற்றிய தட்டுகள்", "கற்றை + தட்டு நோக்கி வளைகிறது", "கதோட்டுக் கதிர்கள் மறை ஏற்றமுடையவை"],
+  rR: ["முனைவு மாற்றப்பட்டது", "திரையிலுள்ள பச்சை ஒளிர்வு அல்லது நிழல் மறைகிறது", "கதோட்டுக் கதிர்கள் கதோட்டிலிருந்து (− மின்வாய்) வெளிவருகின்றன"],
+  coloursH: "நிற மற்றும் கற்றை மாற்றங்கள்", coloursIntro: "ஒவ்வொரு அட்டையும் முன்னும் பின்னுமான நிலையை அதன் பெயருடன் காட்டுகிறது. பதிவு செய்ய மேசையில் அப்படியைச் செய்து, பின் கீழே மெதுவாக மீண்டும் பாருங்கள்.",
+  c1b: "இருண்ட குழாய் (ஒளிர்வு இல்லை)", c1r: "ஆளியை மூடுதல்", c1a: "பச்சைப் புளோரொளிர் ஒளிர்வு", c1v: "மங்கலான, மினுங்கும் பச்சை",
+  c2b: "நேரான பச்சைக் கற்றை", c2r: "காந்தம் / + தட்டு", c2a: "கற்றை + தட்டு நோக்கி வளைகிறது", c2v: "கற்றை வளையத் தொடங்குகிறது",
+  before: "முன்", after: "பின்", via: "இடையில் காண்பது: {c}", seen: "பதியப்பட்டது", notYet: "இன்னும் செய்யவில்லை",
+  replayH: "மாற்றத்தை மீண்டும் பார்", replaySelAria: "மீண்டும் பார்க்க வேண்டிய மாற்றம்", play: "மெதுவாக இயக்கு", pause: "நிறுத்து", replayNone: "இதைப் பதிவு செய்ய மேசையில் இப்படியைச் செய்க.", replayHint: "முன்னும் பின்னும் நகர வழுக்கியை இழுக்கவும்.",
+  rGlow: "ஒளிர்வு: {p}%", rBeam: "திரையில் கற்றை இடப்பெயர்ச்சி: {d} mm",
+  lbBattery: "6 V DC வழங்கல்", lbSwitch: "ஆளி", lbCoil: "தூண்டற் சுருள்", lbInterrupter: "இடைமறிப்பி", lbSecondary: "துணைச் சுருள் (உயர் மின்னழுத்தம்)", lbPrimary: "முதற் சுருள்",
+  lbK: "கதோட்டு (−)", lbA: "அனோட்டு (+)", lbFront: "குழாய் முனை, முன் தோற்றம்", lbHV: "உயர் மின்னழுத்தம்", lbFacing: "{p} முனைவு குழாயை நோக்கி", lbScreen: "புளோரொளிர் திரை", lbShadow: "நிழல்",
+  quizH: "அறிவுச் சோதனை", tryAgain: "மீண்டும் முயல்க", best: "அதிகூடியது {p}%", scoreLeft: "{n} மீதம்", correct: "சரி. ", notQuite: "சரியில்லை. ",
+  canvasAria: "சுற்று மேசை: 6 V வழங்கல், ஆளி, தூண்டற் சுருள், தாங்கியில் குரூக்ஸ் குழாய். சுற்றை இணைக்க முடிவிடங்களுக்கிடையே இழுக்கவும்.",
+  p0: "கம்பிகளை இழுக்க: வழங்கல் + → ஆளி → சுருளின் முதற் சுற்று → வழங்கல் −. பின் துணைச் சுருள் − → கதோட்டு (K), + → அனோட்டு (A).",
+  p0rev: "முனைவைச் சரிபார்க்க: கதோட்டு (K) சுருளின் − முடிவிடத்துடன் இணைக்கப்பட வேண்டும்.",
+  p1: "ஆளியை மூடி, சுருளின் இடைவெளியில் பொறிகள் பாயும் வரை இடைமறிப்பித் திருகைச் சுழற்றுக.", p1b: "இடைமறிப்பி ஒலித்துப் பொறிகள் பாயும் வரை திருகை மெதுவாகச் சுழற்றுக.",
+  p2: "மோல்ற்றீசுச் சிலுவைக் குழாயுடன் குழாயின் முனையைப் பாருங்கள். அறை ஒளியைக் குறைப்பது உதவும்.",
+  p3: "ஆளியைத் திறந்து துடுப்புச் சில்லுக் குழாய்க்கு மாற்றி, மீண்டும் ஆளியை மூடிச் சில்லை அவதானிக்க.",
+  p4: "ஆளியைத் திறந்து பிளவுக் குழாய்க்கு மாற்றுக. ஆளியை மூடி, காந்தத்தை அருகே கொண்டுவந்து, பின் ஏற்றிய தட்டுகளை இயக்குக.",
+  p4b: "இப்போது திரும்பல் தட்டுகளை இயக்கி, கற்றை எந்தத் தட்டு நோக்கி வளைகிறது எனப் பாருங்கள்.", p4c: "இப்போது காந்தத்தைக் குழாயருகே கொண்டுவந்து கற்றைக்கு அண்மையாக இழுக்கவும்.",
+  p5: "ஆளியைத் திறந்து குழாய்க் கம்பிகளின் முனைவை மாற்றி, மீண்டும் ஆளியை மூடுக.", pDone: "எல்லாப் படிகளும் முடிந்தன. வினாக்கள் தாவலை முயல்க.",
+  lWired: "சுற்று இணைக்கப்பட்டது: 6 V வழங்கல் → ஆளி → தூண்டற் சுருள் (முதற் சுற்று). துணைச் சுற்று: − கதோட்டுக்கு, + அனோட்டுக்கு.",
+  lSpark: "இடைமறிப்பி ஒலிக்கிறது; தூண்டற் சுருளின் இடைவெளியில் பொறிகள் பாய்கின்றன.",
+  lGlow: "ஆளியை மூடியதும் இருண்ட குழாயில் கதோட்டுக்கு எதிரேயுள்ள கண்ணாடியில் பச்சைப் புளோரொளிர் ஒளிர்வு தோன்றுகிறது.",
+  lShadow: "மோல்ற்றீசுச் சிலுவைக் குழாய்: பச்சையாக ஒளிரும் முனையில் சிலுவையின் கூர்மையான நிழல் தோன்றுகிறது. கதோட்டுக் கதிர்கள் நேர்கோட்டில் செல்கின்றன.",
+  lWheel: "துடுப்புச் சில்லுக் குழாய்: சில்லு கதோட்டிலிருந்து அனோட்டு நோக்கி உருள்கிறது. கதோட்டுக் கதிர்களுக்கு உந்தம் உண்டு, எனவே திணிவு உண்டு.",
+  lMagnet: "பிளவுக் குழாய்: காந்தத்தை அருகே கொண்டுவரும்போது நேரான பச்சைக் கற்றை வளைகிறது.",
+  lPlates: "பிளவுக் குழாய்: கற்றை நேர் (+) தட்டு நோக்கி வளைகிறது. கதோட்டுக் கதிர்கள் மறை ஏற்றமுடையவை.",
+  lReverse: "முனைவை மாற்றியபோது திரையிலுள்ள பச்சை ஒளிர்வு மறைந்து குழாயின் மறுமுனைக்கு இடம் மாறுகிறது.",
+  lSwap: "குழாய்க் கம்பிகள் மாற்றப்பட்டன (முனைவு தலைகீழாக்கப்பட்டது).",
+  tTouch: "ஆபத்து: உயர் மின்னழுத்தம்! சுருள் இயங்கும்போது குழாயையோ கம்பிகளையோ ஒருபோதும் தொடாதீர். முதலில் ஆளியைத் திறக்க.",
+  tChangeOn: "குழாயை மாற்றும் முன் ஆளியைத் திறக்க. சுருள் பல ஆயிரம் வோல்ற்றுகளைத் தருகிறது.", tWireOn: "கம்பிகளை நகர்த்தும் முன் ஆளியைத் திறக்க.", tRevOn: "கம்பிகளை மாற்றும் முன் ஆளியைத் திறக்க.",
+  tShort: "குறுஞ்சுற்று! ஒரு கம்பி வழங்கலை நேரடியாகத் தன்னுடனேயே இணைக்கிறது. ஆளியை மூடும் முன் அதை அகற்றுக.",
+  tWrongPol: "திரையில் ஒளிர்வு இல்லை. முனைவைச் சரிபார்க்க: கதோட்டு (K) சுருளின் − முடிவிடத்துடன் இணைக்கப்பட வேண்டும்.",
+  tLowV: "6 V வழங்கலால் கதோட்டுக் கதிர்க் குழாயை இயக்க முடியாது. குழாய்க்குச் சுருளின் துணை முடிவிடங்களிலிருந்து உயர் மின்னழுத்தம் தேவை.",
+  tMixHV: "உயர் மின்னழுத்தத் துணைச் சுற்றை 6 V முதற் சுற்றிலிருந்து தனியாக வைத்திருக்க.", tSameComp: "வேறொரு பகுதியிலுள்ள முடிவிடத்துடன் இணைக்க.", tDup: "அந்தக் கம்பி ஏற்கனவே இணைக்கப்பட்டுள்ளது.",
+  tConnectTube: "முதலில் குழாயைச் சுருளுடன் இணைக்க.", tOrder: "நல்ல அவதானிப்பு, ஆனால் முதலில் படி {n} ஐ முடிக்க: {s}", tDone: "செய்முறை முடிந்தது! இப்போது வினாக்கள் தாவலில் உள்ள வினாக்களுக்கு விடையளிக்க.", tWheelOff: "சில்லை மீள வைக்கும் முன் ஆளியைத் திறக்க.",
+  quiz: [
+    { q: "மோல்ற்றீசுச் சிலுவையின் கூர்மையான நிழல் காட்டுவது கதோட்டுக் கதிர்கள்…", o: ["அலைகள் என்பதை", "நேர்கோட்டில் செல்கின்றன என்பதை", "நேர் ஏற்றமுடையவை என்பதை", "திணிவு அற்றவை என்பதை"], e: "நேர்கோட்டுப் பயணம் கூர்மையான நிழலை உருவாக்குகிறது." },
+    { q: "துடுப்புச் சில்லு அனோட்டு நோக்கி நகர்வது காட்டுவது கதோட்டுக் கதிர்கள்…", o: ["உந்தம் (திணிவு) உடையவை என்பதை", "ஒளி என்பதை", "நடுநிலையானவை என்பதை", "வெப்பத்தை மட்டும் கொண்டுசெல்கின்றன என்பதை"], e: "அவை சில்லுக்கு உந்தத்தைக் கடத்துகின்றன." },
+    { q: "கதோட்டுக் கதிர்கள் நேர் தட்டு நோக்கி வளைவதற்குக் காரணம் அவை…", o: ["நடுநிலையானவை", "மறை ஏற்றமுடையவை", "நேர் ஏற்றமுடையவை", "காந்தத்தன்மையுடையவை"], e: "எதிர் ஏற்றங்கள் கவர்கின்றன." },
+    { q: "கதோட்டுக் கதிர்களின் e/m விகிதத்தை அளந்தவர் யார்?", o: ["ரதபோட்", "ஜே. ஜே. தொம்சன்", "மிலிக்கன்", "சட்விக்"], e: "தொம்சன், 1897." },
+  ],
+},
+};
+const QUIZ_ANS = [1, 0, 1, 1];
+let LANG = "en";
+try { const s = localStorage.getItem("svl-lang") || localStorage.getItem("kmno4-lang"); if (s && I18N[s]) LANG = s; else { const n = (navigator.language || "").slice(0, 2); if (I18N[n]) LANG = n; } } catch (e) {}
+function t(key, p) { let s = I18N[LANG][key]; if (s === undefined) s = I18N.en[key]; if (s === undefined) return key; if (p && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (_, k) => p[k] ?? ""); return s; }
+
+// =====================================================================
+// MODEL
+// =====================================================================
+const TERM = {
+  bp: { x: 96, y: 390, c: "bat", lab: "+" }, bn: { x: 146, y: 390, c: "bat", lab: "−" },
+  s1: { x: 214, y: 438, c: "sw" }, s2: { x: 292, y: 438, c: "sw" },
+  p1: { x: 352, y: 450, c: "cp" }, p2: { x: 394, y: 450, c: "cp" },
+  sn: { x: 452, y: 340, c: "cs", lab: "−" }, sp: { x: 536, y: 340, c: "cs", lab: "+" },
+  K: { x: 648, y: 440, c: "tube", lab: "K" }, A: { x: 872, y: 440, c: "tube", lab: "A" },
+};
+const CANON = [["bp", "s1"], ["s2", "p1"], ["p2", "bn"], ["sn", "K"], ["sp", "A"]];
+const GREEN = [91, 227, 122], GLOW_HEX = "#5BE37A";
+const BAND = [42, 72];
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let S;
+function freshState() {
+  return { wires: [], drag: null, magDrag: false, sw: false, screw: 15, dim: false, mode: "maltese", wheelX: 680, wheelRot: 0,
+    magnet: { on: false, x: 770, y: 96, pole: 1 }, strength: 0.6, plates: { on: false, V: 1.5, top: true },
+    glow: 0, rev: 0, ev: {}, warned: {}, logs: [], results: [], answered: {}, done: false, hist: [], histT: 0,
+    seg: { c1: { start: null, end: null, endAt: null }, c2: { start: null, end: null, endAt: null } },
+    parts: [], sparks: [], sparkT: 0, confetti: [], hintUntil: 0, hintPair: null, wheelTravel: 0, maltT: 0, revT: 0, beam: null, endDefl: 0, beamGlow: 0 };
+}
+const has = (a, b) => S.wires.some(w => (w.a === a && w.b === b) || (w.a === b && w.b === a));
+function reach(edges, from, to) { const seen = new Set([from]), q = [from]; while (q.length) { const n = q.shift(); if (n === to) return true; for (const [a, b] of edges) { const m = a === n ? b : b === n ? a : null; if (m && !seen.has(m)) { seen.add(m); q.push(m); } } } return false; }
+function analyze() {
+  const W_ = S.wires.map(w => [w.a, w.b]), SW = ["s1", "s2"], CO = ["p1", "p2"];
+  const primaryOK = reach([...W_, SW, CO], "bp", "bn") && !reach([...W_, SW], "bp", "bn") && !reach([...W_, CO], "bp", "bn");
+  const shortAny = reach([...W_, SW], "bp", "bn");
+  const short = reach([...W_, ...(S.sw ? [SW] : [])], "bp", "bn");
+  const secondary = has("sn", "K") && has("sp", "A") ? "ok" : has("sn", "A") && has("sp", "K") ? "rev" : "none";
+  const band = S.screw >= BAND[0] && S.screw <= BAND[1];
+  const hv = S.sw && primaryOK && !short && band;
+  return { primaryOK, short, shortAny, secondary, band, hv, tubeOn: hv && secondary !== "none", correct: secondary === "ok" };
+}
+
+// beam through slit tube: screen coords, y down, z into screen. a = -k (v × B) for an electron
+const KB = 0.0032, KE = 0.00104, SIG = 55, BY = 210;
+function beamPath(useMag, usePl) {
+  let x = 692, y = BY, vx = 1, vy = 0; const pts = [[645, BY], [x, y]]; const ds = 2; let i = 0, hit = false;
+  while (x < 898) {
+    let Bz = 0; if (useMag && S.magnet.on) Bz = S.magnet.pole * S.strength * Math.exp(-(((x - S.magnet.x) ** 2) + ((y - S.magnet.y) ** 2)) / (2 * SIG * SIG));
+    let ay = KB * vx * Bz, ax = -KB * vy * Bz;
+    if (usePl && S.plates.on && x >= 745 && x <= 825) ay += (S.plates.top ? -1 : 1) * KE * S.plates.V;
+    vx += ax * ds; vy += ay * ds; const m = Math.hypot(vx, vy); vx /= m; vy /= m; x += vx * ds; y += vy * ds;
+    if (++i % 2 === 0) pts.push([x, y]);
+    if (Math.abs(y - BY) > 31) { hit = true; break; }
+  }
+  pts.push([x, y]);
+  return { pts, end: y - BY, hit };
+}
+
+// =====================================================================
+// CANVAS
+// =====================================================================
+const W = 960, H = 540;
+const cv = $("cv"), ctx = cv.getContext("2d"), vp = $("viewport");
+let dpr = 1, cw = 0, ch = 0, sc = 1, ox = 0, oy = 0, T = {};
+function resize() { const r = vp.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2.5); cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); sc = Math.min(cw / W, ch / H); ox = (cw - W * sc) / 2; oy = (ch - H * sc) / 2; }
+function readTokens() { const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim(); T = { wallTop: g("--wall-top"), wallBot: g("--wall-bot"), bench: g("--bench"), benchEdge: g("--bench-edge"), glass: g("--glass"), ink: g("--ink"), muted: g("--muted"), accent: g("--accent"), current: g("--current") }; }
+new ResizeObserver(resize).observe(vp);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTokens);
+new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const FONT = (w, s) => `${w} ${s}px 'IBM Plex Sans', 'Noto Sans Sinhala', 'Noto Sans Tamil', sans-serif`;
+const MONO = (w, s) => `${w} ${s}px 'IBM Plex Mono', monospace`;
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+function rr(c, x, y, w, h, r) { c.beginPath(); c.roundRect(x, y, w, h, r); }
+
+function wireCtrl(a, b) { const d = Math.hypot(b.x - a.x, b.y - a.y), sag = 30 + d * 0.18; return [a.x + (b.x - a.x) * 0.25, Math.max(a.y, b.y) + sag, a.x + (b.x - a.x) * 0.75, Math.max(a.y, b.y) + sag]; }
+function wireColor(w) { const s = w.a + w.b; return /bp|sp|A/.test(w.a) || /bp|sp|A/.test(w.b) ? "#c0392b" : /bn|sn|K/.test(s) ? "#1d1d1d" : "#d68910"; }
+function bez(a, b, tt) { const [c1x, c1y, c2x, c2y] = wireCtrl(a, b), u = 1 - tt; return [u * u * u * a.x + 3 * u * u * tt * c1x + 3 * u * tt * tt * c2x + tt * tt * tt * b.x, u * u * u * a.y + 3 * u * u * tt * c1y + 3 * u * tt * tt * c2y + tt * tt * tt * b.y]; }
+
+// tube geometry
+const MAL = { cx: 642, crossX: 760, faceX: 884, faceRy: 86 };
+function malPath(c) { c.beginPath(); c.moveTo(626, 194); c.lineTo(690, 194); c.lineTo(882, 124); c.ellipse(MAL.faceX, BY, 14, MAL.faceRy, 0, -Math.PI / 2, Math.PI / 2); c.lineTo(690, 226); c.lineTo(626, 226); c.arc(626, BY, 16, Math.PI / 2, Math.PI * 1.5); c.closePath(); }
+function cylPath(c) { c.beginPath(); c.moveTo(640, 172); c.lineTo(900, 172); c.arc(900, BY, 38, -Math.PI / 2, Math.PI / 2); c.lineTo(640, 248); c.arc(640, BY, 38, Math.PI / 2, Math.PI * 1.5); c.closePath(); }
+function crossPts(cx, cy, s) { const a = 26 * s, w = 6 * s, f = 11 * s; return [[cx - w, cy - a + 0], [cx - f, cy - a], [cx + f, cy - a], [cx + w, cy - a], [cx + w, cy - w], [cx + a, cy - w], [cx + a, cy - f], [cx + a, cy + f], [cx + a, cy + w], [cx + w, cy + w], [cx + w, cy + a], [cx + f, cy + a], [cx - f, cy + a], [cx - w, cy + a], [cx - w, cy + w], [cx - a, cy + w], [cx - a, cy + f], [cx - a, cy - f], [cx - a, cy - w], [cx - w, cy - w]]; }
+function polyFill(c, pts) { c.beginPath(); pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.closePath(); c.fill(); }
+
+// body: glass + electrodes (no light)
+function drawTubeBody(c, s) {
+  c.save(); c.lineJoin = "round";
+  if (s.mode === "maltese") {
+    malPath(c); c.fillStyle = "rgba(225,238,245,.16)"; c.fill();
+    c.fillStyle = "#9aa5ab"; c.fillRect(MAL.cx - 2, BY - 11, 4, 22); // cathode disc
+    c.strokeStyle = "#6b757a"; c.lineWidth = 1.5; c.beginPath(); c.moveTo(610, BY); c.lineTo(MAL.cx - 2, BY); c.stroke();
+    c.fillStyle = "#b9c2c6"; c.fillRect(MAL.crossX - 2, BY - 26, 4, 52); // cross edge-on
+    c.strokeStyle = "#7d878c"; c.beginPath(); c.moveTo(MAL.crossX, BY + 26); c.lineTo(MAL.crossX, 255); c.stroke();
+    malPath(c); c.strokeStyle = T.glass; c.lineWidth = 1.8; c.stroke();
+    c.strokeStyle = "rgba(255,255,255,.55)"; c.lineWidth = 3; c.lineCap = "round"; c.beginPath(); c.moveTo(640, 199); c.lineTo(690, 199); c.lineTo(860, 138); c.stroke();
+  } else {
+    cylPath(c); c.fillStyle = "rgba(225,238,245,.16)"; c.fill();
+    c.fillStyle = "#9aa5ab"; c.fillRect(640, BY - 26, 4, 52); c.fillRect(896, BY - 26, 4, 52);
+    c.strokeStyle = "#6b757a"; c.lineWidth = 1.5; c.beginPath(); c.moveTo(604, BY); c.lineTo(640, BY); c.moveTo(900, BY); c.lineTo(940, BY); c.stroke();
+    if (s.mode === "paddle") {
+      c.strokeStyle = "rgba(170,200,215,.9)"; c.lineWidth = 2; c.beginPath(); c.moveTo(662, 236); c.lineTo(880, 236); c.stroke();
+      const wx = s.wheelX, wy = 232 - 18;
+      c.save(); c.translate(wx, wy); c.rotate(s.wheelRot);
+      for (let k = 0; k < 8; k++) { c.save(); c.rotate(k * Math.PI / 4); c.fillStyle = "rgba(230,215,170,.75)"; c.strokeStyle = "rgba(120,100,60,.8)"; c.lineWidth = .8; c.fillRect(3, -2.5, 17, 5); c.strokeRect(3, -2.5, 17, 5); c.restore(); }
+      c.fillStyle = "#6b757a"; c.beginPath(); c.arc(0, 0, 3, 0, 7); c.fill(); c.restore();
+    }
+    if (s.mode === "slit") {
+      c.fillStyle = "#9aa5ab"; c.fillRect(688, 176, 4, 30); c.fillRect(688, 214, 4, 30);
+      c.fillStyle = "rgba(205,225,215,.55)"; c.fillRect(700, 180, 196, 60);
+      c.strokeStyle = "rgba(120,150,140,.6)"; c.lineWidth = .6; for (let x = 720; x < 896; x += 20) { c.beginPath(); c.moveTo(x, 180); c.lineTo(x, 240); c.stroke(); }
+      c.fillStyle = "#8f9aa0"; c.fillRect(745, 183, 80, 4); c.fillRect(745, 233, 80, 4);
+      c.strokeStyle = "#6b757a"; c.lineWidth = 1.2; c.beginPath(); c.moveTo(785, 183); c.lineTo(785, 160); c.moveTo(785, 237); c.lineTo(785, 262); c.stroke();
+      if (s.pl) { c.font = FONT(700, 13); c.textAlign = "center"; c.textBaseline = "middle"; c.fillStyle = "#c0392b"; c.fillStyle = s.pl.top ? "#c0392b" : "#1d4e89"; c.fillText(s.pl.top ? "+" : "−", 785, 152); c.fillStyle = s.pl.top ? "#1d4e89" : "#c0392b"; c.fillText(s.pl.top ? "−" : "+", 785, 270); }
+    }
+    cylPath(c); c.strokeStyle = T.glass; c.lineWidth = 1.8; c.stroke();
+    c.strokeStyle = "rgba(255,255,255,.55)"; c.lineWidth = 3; c.lineCap = "round"; c.beginPath(); c.moveTo(650, 179); c.lineTo(890, 179); c.stroke();
+  }
+  c.restore();
+}
+// light: glow, shadows, beam
+function drawTubeLight(c, s, main) {
+  c.save(); c.globalCompositeOperation = "lighter";
+  const g = s.glow, r = s.rev;
+  if (s.mode === "maltese") {
+    if (g > 0.01) {
+      c.save(); malPath(c); c.clip();
+      const gg = c.createLinearGradient(640, 0, 890, 0); gg.addColorStop(0, rgba(GREEN, 0)); gg.addColorStop(1, rgba(GREEN, .22 * g)); c.fillStyle = gg; c.fillRect(600, 100, 300, 220);
+      c.restore();
+      // end face glow with shadow band (cross projected from the cathode)
+      c.save(); c.beginPath(); c.ellipse(MAL.faceX, BY, 14, MAL.faceRy, 0, 0, 7); c.clip();
+      c.fillStyle = rgba(GREEN, .85 * g); c.fillRect(MAL.faceX - 16, BY - MAL.faceRy, 32, MAL.faceRy * 2);
+      c.restore();
+      const k = (MAL.faceX - MAL.cx) / (MAL.crossX - MAL.cx), half = 26 * k;
+      c.globalCompositeOperation = "source-over"; c.fillStyle = "rgba(8,14,10,.85)"; c.beginPath(); c.ellipse(MAL.faceX, BY, 13, half, 0, 0, 7); c.save(); c.clip(); c.fillRect(MAL.faceX - 3, BY - half, 6, half * 2); c.restore();
+      c.globalCompositeOperation = "lighter";
+    }
+    if (r > 0.01) { const rg = c.createRadialGradient(700, BY, 2, 700, BY, 70); rg.addColorStop(0, rgba(GREEN, .45 * r)); rg.addColorStop(1, rgba(GREEN, 0)); c.save(); malPath(c); c.clip(); c.fillStyle = rg; c.fillRect(600, 120, 220, 180); c.restore(); }
+  } else {
+    c.save(); cylPath(c); c.clip();
+    if (s.mode === "paddle") {
+      const endX = g > r ? 900 : 640, a = Math.max(g, r);
+      if (a > 0.01) { const rg = c.createRadialGradient(endX, BY, 4, endX, BY, 120); rg.addColorStop(0, rgba(GREEN, .55 * a)); rg.addColorStop(1, rgba(GREEN, 0)); c.fillStyle = rg; c.fillRect(600, 160, 340, 100); }
+    }
+    if (s.mode === "slit") {
+      if (g > 0.01 && s.pts) {
+        c.strokeStyle = rgba(GREEN, .35 * g); c.lineWidth = 9; c.lineCap = "round"; c.lineJoin = "round"; c.beginPath(); s.pts.forEach(([x, y], i) => i ? c.lineTo(x, y) : c.moveTo(x, y)); c.stroke();
+        c.strokeStyle = rgba([200, 255, 210], .95 * g); c.lineWidth = 2.4; c.stroke();
+        const [ex, ey] = s.pts[s.pts.length - 1]; const sg = c.createRadialGradient(ex, ey, 0, ex, ey, 14); sg.addColorStop(0, rgba(GREEN, .9 * g)); sg.addColorStop(1, rgba(GREEN, 0)); c.fillStyle = sg; c.fillRect(ex - 15, ey - 15, 30, 30);
+      }
+      if (r > 0.01) { const rg = c.createRadialGradient(640, BY, 4, 640, BY, 90); rg.addColorStop(0, rgba(GREEN, .5 * r)); rg.addColorStop(1, rgba(GREEN, 0)); c.fillStyle = rg; c.fillRect(600, 160, 200, 100); }
+    }
+    c.restore();
+  }
+  c.restore();
+  if (main && s.mode === "maltese" && (g > 0.01 || r > 0.01)) drawInset(c, g);
+}
+function drawInset(c, g) {
+  const cx = 836, cy = 58, R = 40;
+  c.save(); c.fillStyle = "#0b1014"; c.beginPath(); c.arc(cx, cy, R + 4, 0, 7); c.fill();
+  c.beginPath(); c.arc(cx, cy, R, 0, 7); c.clip();
+  c.fillStyle = rgba(GREEN, .9 * g); c.fillRect(cx - R, cy - R, 2 * R, 2 * R);
+  const k = (MAL.faceX - MAL.cx) / (MAL.crossX - MAL.cx) * (R / MAL.faceRy);
+  c.fillStyle = "rgba(6,12,8,.92)"; polyFill(c, crossPts(cx, cy, k));
+  c.restore();
+  c.strokeStyle = "#566"; c.lineWidth = 2; c.beginPath(); c.arc(cx, cy, R + 2, 0, 7); c.stroke();
+  c.fillStyle = "#dfe6e8"; c.font = FONT(500, 10); c.textAlign = "right"; c.textBaseline = "middle"; c.fillText(t("lbFront"), cx - R - 8, cy - 8);
+  c.fillText(t("lbShadow") + " →", cx - R - 8, cy + 8);
+}
+
+function draw() {
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const bg = ctx.createLinearGradient(0, 0, 0, ch); bg.addColorStop(0, T.wallTop); bg.addColorStop(1, T.wallBot); ctx.fillStyle = bg; ctx.fillRect(0, 0, cw, ch);
+  ctx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, dpr * oy);
+  const L = -ox / sc, R = (cw - ox) / sc, TOP = -oy / sc, BOT = (ch - oy) / sc, A = analyze();
+  ctx.fillStyle = T.bench; ctx.fillRect(L, 470, R - L, BOT - 470); ctx.fillStyle = T.benchEdge; ctx.fillRect(L, 470, R - L, 4);
+  drawBattery(); drawSwitch(); drawCoil(A); drawHolder();
+  const snap = liveSnap(); drawTubeBody(ctx, snap);
+  if (S.mode === "slit" && S.magnet.on) drawMagnet();
+  // wires
+  S.wires.forEach(w => { const a = TERM[w.a], b = TERM[w.b], [c1x, c1y, c2x, c2y] = wireCtrl(a, b); ctx.strokeStyle = wireColor(w); ctx.lineWidth = 3; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.bezierCurveTo(c1x, c1y, c2x, c2y, b.x, b.y); ctx.stroke(); ctx.strokeStyle = "rgba(255,255,255,.25)"; ctx.lineWidth = 1; ctx.stroke(); });
+  if (S.drag) { const a = TERM[S.drag.from]; ctx.setLineDash([6, 5]); ctx.strokeStyle = T.accent; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(S.drag.x, S.drag.y); ctx.stroke(); ctx.setLineDash([]); }
+  if (S.hintPair && time < S.hintUntil) { const [a, b] = S.hintPair.map(k => TERM[k]); ctx.setLineDash([4, 6]); ctx.strokeStyle = T.current; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke(); ctx.setLineDash([]); }
+  Object.entries(TERM).forEach(([k, p]) => drawTerminal(k, p));
+  // dim the room
+  if (S.dim) { ctx.fillStyle = "rgba(4,8,14,.66)"; ctx.fillRect(L, TOP, R - L, BOT - TOP); }
+  // light layer
+  drawTubeLight(ctx, snap, true);
+  if (A.tubeOn && !reduceMotion) { ctx.save(); ctx.globalCompositeOperation = "lighter"; S.parts.forEach(p => { ctx.fillStyle = `rgba(150,200,255,${0.55 * p.a})`; ctx.fillRect(p.x - 1, p.y - 1, 2, 2); }); ctx.restore(); }
+  if (A.hv) drawSparks();
+  drawLabels(A);
+  S.confetti.forEach(p => { ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-3, -1.5, 6, 3); ctx.restore(); });
+}
+function drawTerminal(k, p) {
+  const near = S.drag && Math.hypot(S.drag.x - p.x, S.drag.y - p.y) < 18 && k !== S.drag.from;
+  const hint = S.hintPair && time < S.hintUntil && S.hintPair.includes(k);
+  ctx.fillStyle = "#b8963e"; ctx.strokeStyle = "#5c4a1c"; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(p.x, p.y, 6, 0, 7); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#3b3220"; ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, 7); ctx.fill();
+  if (near || hint) { ctx.strokeStyle = hint ? T.current : T.accent; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(p.x, p.y, 11 + (hint ? Math.sin(time * 6) * 2 : 0), 0, 7); ctx.stroke(); }
+  if (p.lab) { ctx.fillStyle = p.lab === "+" ? "#c0392b" : p.lab === "−" ? "#1d1d1d" : "#1c2a31"; ctx.font = FONT(700, 12); ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    const dy = (k === "K" || k === "A") ? -14 : -13; ctx.fillStyle = (k === "sn" || k === "sp") ? "#ffffff" : ctx.fillStyle; ctx.fillText(p.lab, p.x + ((k === "sn") ? -12 : (k === "sp") ? 12 : 0), p.y + ((k === "sn" || k === "sp") ? 0 : dy)); }
+}
+function drawBattery() {
+  const g = ctx.createLinearGradient(66, 0, 176, 0); g.addColorStop(0, "#26313a"); g.addColorStop(.5, "#3c4a55"); g.addColorStop(1, "#1d262d");
+  ctx.fillStyle = g; rr(ctx, 66, 398, 110, 72, 6); ctx.fill();
+  ctx.fillStyle = "#f2c81f"; ctx.fillRect(66, 420, 110, 18);
+  ctx.fillStyle = "#1c2a31"; ctx.font = MONO(700, 12); ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("6 V DC", 121, 429);
+  [["bp", "#c0392b"], ["bn", "#1d1d1d"]].forEach(([k, col]) => { const p = TERM[k]; ctx.fillStyle = col; ctx.fillRect(p.x - 7, 392, 14, 8); });
+}
+function drawSwitch() {
+  ctx.fillStyle = "#6d5638"; rr(ctx, 198, 446, 110, 24, 4); ctx.fill();
+  ctx.fillStyle = "#4a3b26"; ctx.fillRect(198, 466, 110, 4);
+  const a = TERM.s1, b = TERM.s2; ctx.fillStyle = "#9aa5ab"; ctx.fillRect(a.x - 4, a.y, 8, 10); ctx.fillRect(b.x - 6, b.y - 4, 12, 14);
+  const ang = S.sw ? 0.02 : -0.75, len = 84;
+  ctx.save(); ctx.translate(a.x, a.y + 2); ctx.rotate(ang); ctx.fillStyle = "#c9ced1"; ctx.strokeStyle = "#7b858a"; ctx.lineWidth = 1; rr(ctx, 0, -3, len, 6, 2); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#1d1d1d"; rr(ctx, len - 4, -7, 14, 14, 4); ctx.fill(); ctx.restore();
+}
+function drawCoil(A) {
+  ctx.fillStyle = "#6d5638"; rr(ctx, 322, 452, 254, 18, 3); ctx.fill();
+  // cylinder
+  const cg = ctx.createLinearGradient(0, 380, 0, 440); cg.addColorStop(0, "#d38a4a"); cg.addColorStop(.45, "#b46a2f"); cg.addColorStop(1, "#6e3b16");
+  ctx.fillStyle = cg; ctx.fillRect(404, 380, 156, 60);
+  ctx.strokeStyle = "rgba(60,25,5,.35)"; ctx.lineWidth = 1; for (let x = 406; x < 560; x += 3) { ctx.beginPath(); ctx.moveTo(x, 381); ctx.lineTo(x, 439); ctx.stroke(); }
+  ctx.fillStyle = "#1d1d1d"; ctx.beginPath(); ctx.ellipse(404, 410, 7, 32, 0, 0, 7); ctx.fill(); ctx.beginPath(); ctx.ellipse(560, 410, 7, 32, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = "#7d878c"; ctx.beginPath(); ctx.arc(398, 410, 6, 0, 7); ctx.fill();
+  ctx.fillStyle = "#1d1d1d"; ctx.fillRect(404, 440, 6, 12); ctx.fillRect(554, 440, 6, 12);
+  // interrupter
+  const vib = A.hv && !reduceMotion ? Math.sin(time * 140) * 1.6 : 0;
+  ctx.fillStyle = "#4a5359"; ctx.fillRect(334, 396, 8, 56);
+  const tip = 352 + S.screw * 0.26; ctx.fillStyle = "#c9ced1"; ctx.fillRect(338, 404, tip - 338, 4);
+  ctx.fillStyle = "#1d1d1d"; ctx.beginPath(); ctx.arc(330, 406, 7, 0, 7); ctx.fill();
+  ctx.strokeStyle = "#9aa5ab"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(384, 452); ctx.lineTo(384 + vib, 402); ctx.stroke();
+  ctx.fillStyle = "#7d878c"; ctx.fillRect(380 + vib, 398, 12, 10);
+  // secondary pillars and spark gap
+  [TERM.sn.x, TERM.sp.x].forEach(x => { ctx.fillStyle = "#e9e4d8"; ctx.fillRect(x - 4, 312, 8, 68); ctx.fillStyle = "#1d1d1d"; ctx.fillRect(x - 6, 372, 12, 8); });
+  ctx.strokeStyle = "#9aa5ab"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(TERM.sn.x, 312); ctx.lineTo(482, 312); ctx.moveTo(TERM.sp.x, 312); ctx.lineTo(506, 312); ctx.stroke();
+  ctx.fillStyle = "#c9ced1"; ctx.beginPath(); ctx.arc(484, 312, 4, 0, 7); ctx.arc(504, 312, 4, 0, 7); ctx.fill();
+  hvSign(590, 330);
+}
+function hvSign(x, y) { ctx.fillStyle = "#ffc857"; ctx.strokeStyle = "#1d1d1d"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, y - 12); ctx.lineTo(x + 12, y + 9); ctx.lineTo(x - 12, y + 9); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#1d1d1d"; ctx.beginPath(); ctx.moveTo(x + 2, y - 7); ctx.lineTo(x - 4, y + 2); ctx.lineTo(x, y + 2); ctx.lineTo(x - 2, y + 7); ctx.lineTo(x + 4, y - 1); ctx.lineTo(x, y - 1); ctx.closePath(); ctx.fill(); }
+function drawHolder() {
+  ctx.fillStyle = "#6d5638"; rr(ctx, 612, 448, 300, 22, 3); ctx.fill(); ctx.fillStyle = "#4a3b26"; ctx.fillRect(612, 466, 300, 4);
+  [700, 850].forEach(x => { ctx.fillStyle = "#4a5359"; ctx.fillRect(x - 3, 248, 6, 200); ctx.fillStyle = "#2b3338"; rr(ctx, x - 12, 244, 24, 8, 3); ctx.fill(); });
+  // leads from binding posts to electrodes
+  ctx.strokeStyle = "#6b757a"; ctx.lineWidth = 1.4; ctx.beginPath();
+  ctx.moveTo(TERM.K.x, TERM.K.y); ctx.lineTo(TERM.K.x, 300); ctx.lineTo(604, 300); ctx.lineTo(604, BY); ctx.lineTo(612, BY);
+  ctx.moveTo(TERM.A.x, TERM.A.y);
+  if (S.mode === "maltese") { ctx.lineTo(TERM.A.x, 290); ctx.lineTo(MAL.crossX, 290); ctx.lineTo(MAL.crossX, 255); }
+  else { ctx.lineTo(TERM.A.x, 300); ctx.lineTo(944, 300); ctx.lineTo(944, BY); ctx.lineTo(938, BY); }
+  ctx.stroke();
+  hvSign(928, 430);
+}
+function drawMagnet() {
+  const m = S.magnet, N = m.pole > 0;
+  ctx.save(); ctx.translate(m.x, m.y);
+  ctx.fillStyle = "rgba(0,0,0,.25)"; ctx.beginPath(); ctx.ellipse(6, 8, 24, 22, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = N ? "#1d4e89" : "#b03a2e"; ctx.beginPath(); ctx.moveTo(-14, -14); ctx.lineTo(-44, -54); ctx.lineTo(-20, -66); ctx.lineTo(14, -18); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = N ? "#b03a2e" : "#1d4e89"; ctx.beginPath(); ctx.arc(0, 0, 20, 0, 7); ctx.fill(); ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2; ctx.stroke();
+  ctx.fillStyle = "#ffffff"; ctx.font = FONT(700, 16); ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(N ? "N" : "S", 0, 1);
+  ctx.restore();
+}
+function drawSparks() {
+  ctx.save(); ctx.globalCompositeOperation = "lighter";
+  S.sparks.forEach(pts => { ctx.strokeStyle = "rgba(150,190,255,.55)"; ctx.lineWidth = 5; ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); ctx.strokeStyle = "rgba(240,245,255,.95)"; ctx.lineWidth = 1.6; ctx.stroke(); });
+  const g = ctx.createRadialGradient(494, 312, 0, 494, 312, 26); g.addColorStop(0, "rgba(170,200,255,.5)"); g.addColorStop(1, "rgba(170,200,255,0)"); ctx.fillStyle = g; ctx.fillRect(464, 284, 60, 56);
+  ctx.restore();
+}
+function drawLabels(A) {
+  const light = "#dfe6e8", wallInk = S.dim ? light : T.ink;
+  ctx.font = FONT(600, 11); ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillStyle = light;
+  ctx.fillText(t("lbBattery"), 121, 490); ctx.fillText(t("lbSwitch"), 253, 490); ctx.fillText(t("lbCoil"), 450, 490);
+  ctx.fillText(t({ maltese: "mMaltese", paddle: "mPaddle", slit: "mSlit" }[S.mode]), 762, 490);
+  ctx.fillStyle = "#ffc857"; ctx.font = FONT(700, 10); ctx.fillText("⚠ " + t("lbHV"), 762, 508);
+  ctx.fillStyle = light; ctx.font = FONT(500, 10); ctx.fillText(t("lbPrimary"), 373, 506);
+  ctx.fillStyle = wallInk;
+  ctx.fillText(t("lbSecondary"), 494, 292); ctx.fillText(t("lbInterrupter"), 352, 384);
+  ctx.fillStyle = light; ctx.font = FONT(600, 10); ctx.fillText(t("lbK"), TERM.K.x, 460); ctx.fillText(t("lbA"), TERM.A.x, 460);
+  if (S.mode === "slit") { ctx.fillStyle = wallInk; ctx.font = FONT(500, 10); ctx.fillText(t("lbScreen"), 800, 280);
+    if (S.magnet.on) { ctx.fillText(t("lbFacing", { p: S.magnet.pole > 0 ? "N" : "S" }), S.magnet.x, S.magnet.y + (S.magnet.y < BY ? -76 : 32)); } }
+}
+function liveSnap() { return { mode: S.mode, glow: S.glowDisp || 0, rev: S.revDisp || 0, pts: S.beam ? S.beam.pts : null, wheelX: S.wheelX, wheelRot: S.wheelRot, pl: S.mode === "slit" && S.plates.on ? { top: S.plates.top } : null }; }
+
+// =====================================================================
+// SIMULATION LOOP
+// =====================================================================
+let time = 0, last = performance.now(), uiT = 0;
+function frame(now) { const dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt; step(dt); draw(); requestAnimationFrame(frame); }
+function step(dt) {
+  const A = analyze();
+  // glow ramps (≈1.4 s) with a flicker while it is faint
+  const gT = A.tubeOn && A.correct ? 1 : 0, rT = A.tubeOn && !A.correct ? 1 : 0;
+  const prevG = S.glow;
+  S.glow += Math.sign(gT - S.glow) * Math.min(Math.abs(gT - S.glow), dt * (gT ? 0.7 : 2.5));
+  S.rev += Math.sign(rT - S.rev) * Math.min(Math.abs(rT - S.rev), dt * (rT ? 0.7 : 2.5));
+  const fl = g => g < 0.65 && g > 0 && !reduceMotion ? g * (0.55 + 0.45 * Math.random()) : g;
+  S.glowDisp = fl(S.glow); S.revDisp = fl(S.rev);
+  if (prevG < 0.02 && S.glow >= 0.02 && S.seg.c1.start === null) S.seg.c1.start = Math.max(0, S.hist.length - 2);
+  // sparks
+  if (A.hv) { S.sparkT -= dt; if (S.sparkT <= 0) { S.sparkT = 0.05 + Math.random() * 0.06; S.sparks = []; const n = 1 + (Math.random() * 2 | 0); for (let k = 0; k < n; k++) { const pts = [[486, 312]]; for (let j = 1; j < 5; j++) pts.push([486 + j * 4, 312 + (Math.random() - .5) * 10]); pts.push([502, 312]); S.sparks.push(pts); } } } else S.sparks = [];
+  // paddle wheel
+  if (S.mode === "paddle" && A.tubeOn) { const v = (A.correct ? 1 : -1) * 24 * Math.max(S.glow, S.rev); const nx = Math.max(676, Math.min(858, S.wheelX + v * dt)); const dx = nx - S.wheelX; S.wheelX = nx; S.wheelRot += dx / 3; if (A.correct && dx > 0) S.wheelTravel += dx; }
+  // beam
+  if (S.mode === "slit" && A.tubeOn && A.correct) { S.beam = beamPath(true, true); S.endDefl = S.beam.end; } else { S.beam = null; S.endDefl = 0; }
+  // electrons
+  if (A.tubeOn && !reduceMotion) {
+    const n = 4; for (let k = 0; k < n; k++) spawnElectron(A.correct);
+    S.parts.forEach(p => { if (p.path) { p.u += dt * 1.6; p.a = p.u < 1 ? 1 : 0; const pts = S.beam && S.beam.pts; if (pts) { const idx = Math.min(pts.length - 1, Math.floor(p.u * (pts.length - 1))); p.x = pts[idx][0]; p.y = pts[idx][1]; } else p.a = 0; return; }
+      p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; if (killElectron(p)) p.a = 0; });
+  } else S.parts = [];
+  S.parts = S.parts.filter(p => p.a > 0 && (p.life === undefined || p.life > 0)).slice(-260);
+  S.confetti.forEach(p => { p.vy += 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; }); S.confetti = S.confetti.filter(p => p.y < 600);
+  checkEvents(A, dt);
+  S.histT += dt; if (S.histT >= 0.08) { S.histT = 0; S.hist.push({ mode: S.mode, glow: S.glowDisp, rev: S.revDisp, pts: S.beam ? S.beam.pts.filter((_, i) => i % 3 === 0 || i === S.beam.pts.length - 1) : null, wheelX: S.wheelX, wheelRot: S.wheelRot, pl: S.mode === "slit" && S.plates.on ? { top: S.plates.top } : null, d: S.endDefl });
+    if (S.hist.length > 6000) S.hist.splice(0, 1000);
+    Object.values(S.seg).forEach(sg => { if (sg.endAt !== null && sg.end === null && time >= sg.endAt) { sg.end = S.hist.length - 1; renderCards(); renderReplay(); } }); }
+  uiT += dt; if (uiT > 0.15) { uiT = 0; renderLive(A); }
+}
+function spawnElectron(correct) {
+  if (S.mode === "maltese") {
+    if (correct) { const ty = BY + (Math.random() * 2 - 1) * (MAL.faceRy - 6), y0 = BY + (Math.random() - .5) * 10, d = Math.hypot(MAL.faceX - MAL.cx, ty - y0); S.parts.push({ x: MAL.cx + 2, y: y0, vx: (MAL.faceX - MAL.cx) / d * 420, vy: (ty - y0) / d * 420, a: 1, life: 1.2 }); }
+    else S.parts.push({ x: MAL.crossX - 3, y: BY + (Math.random() - .5) * 50, vx: -300, vy: (Math.random() - .5) * 60, a: 1, life: .5 });
+  } else if (S.mode === "paddle") {
+    S.parts.push(correct ? { x: 646, y: BY + (Math.random() - .5) * 46, vx: 380, vy: (Math.random() - .5) * 20, a: 1, life: 1 } : { x: 894, y: BY + (Math.random() - .5) * 46, vx: -380, vy: (Math.random() - .5) * 20, a: 1, life: 1 });
+  } else {
+    if (correct) { if (Math.random() < .5) S.parts.push({ path: true, u: 0, x: 645, y: BY, a: 1 }); }
+    else S.parts.push({ x: 894, y: BY + (Math.random() - .5) * 40, vx: -300, vy: (Math.random() - .5) * 30, a: 1, life: .7 });
+  }
+}
+function killElectron(p) {
+  if (S.mode === "maltese") { if (p.vx > 0 && Math.abs(p.x - MAL.crossX) < 4 && Math.abs(p.y - BY) < 26) return true; if (p.x >= MAL.faceX - 10) return true; if (p.x < 630) return true; return false; }
+  if (S.mode === "paddle") { if (Math.abs(p.x - S.wheelX) < 18 && Math.abs(p.y - 214) < 22) return true; return p.x > 896 || p.x < 644; }
+  return p.x < 644;
+}
+function stepsDone() { const e = S.ev; return [!!e.wired, !!e.spark, !!e.shadow, !!e.wheel, !!e.deflect, !!e.reverse]; }
+function orderGate(i) { const d = stepsDone(); for (let j = 0; j < i; j++) if (!d[j]) { if (!S.warned["o" + i]) { S.warned["o" + i] = 1; toast("tOrder", "warn", 4500, { n: j + 1, s: t("steps")[j] }); } return false; } return true; }
+function checkEvents(A, dt) {
+  const e = S.ev;
+  if (!e.wired && A.primaryOK && A.secondary === "ok" && !A.shortAny) { e.wired = 1; log("lWired"); render(); }
+  if (!e.spark && A.hv && orderGate(1)) { e.spark = 1; log("lSpark"); render(); }
+  if (!e.glowLogged && S.glow >= 0.95) { e.glowLogged = 1; log("lGlow"); S.seg.c1.endAt = time + 1; renderCards(); }
+  if (S.mode === "maltese" && A.tubeOn && A.correct && S.glow > 0.9) S.maltT += dt; else S.maltT = 0;
+  if (!e.shadow && S.maltT > 1.5 && orderGate(2)) { e.shadow = 1; log("lShadow"); addResult("rs"); render(); }
+  if (!e.wheel && S.wheelTravel >= 90 && orderGate(3)) { e.wheel = 1; log("lWheel"); addResult("rm"); render(); }
+  if (S.mode === "slit" && A.tubeOn && A.correct && S.glow > 0.8) {
+    if (Math.abs(S.endDefl) > 1.5 && S.seg.c2.start === null) S.seg.c2.start = Math.max(0, S.hist.length - 4);
+    if (!e.mag && S.magnet.on && Math.abs(beamPath(true, false).end) > 8 && orderGate(4)) { e.mag = 1; log("lMagnet"); addResult("rB"); render(); }
+    if (!e.pl && S.plates.on && S.plates.V >= 0.5) { const d = beamPath(false, true).end; if (Math.abs(d) > 8 && Math.sign(d) === (S.plates.top ? -1 : 1) && orderGate(4)) { e.pl = 1; log("lPlates"); addResult("rE"); render(); } }
+    if (!e.deflect && e.mag && e.pl) { e.deflect = 1; S.seg.c2.endAt = time + 1.5; render(); }
+  }
+  if (A.tubeOn && !A.correct && S.rev > 0.9) S.revT += dt; else S.revT = 0;
+  if (!e.reverse && S.revT > 1.5 && e.deflect) { e.reverse = 1; log("lReverse"); addResult("rR"); render(); }
+  if (!S.done && stepsDone().every(Boolean)) { S.done = true; celebrate(); }
+}
+function celebrate() {
+  toast("tDone", "party", 5000); $("quizTab").classList.add("ping");
+  if (!reduceMotion) { const cols = [GLOW_HEX, "#ffc857", "#b79cff", "#4ba3e3"]; for (let i = 0; i < 90; i++) S.confetti.push({ x: 480 + (Math.random() - .5) * 240, y: 140, vx: (Math.random() - .5) * 340, vy: -150 - Math.random() * 220, rot: Math.random() * 6, vr: (Math.random() - .5) * 10, c: cols[i % cols.length] }); }
+  render();
+}
+
+// =====================================================================
+// ACTIONS
+// =====================================================================
+function addWire(a, b) {
+  if (a === b) return;
+  const ca = TERM[a].c, cb = TERM[b].c;
+  if (ca === cb) return toast("tSameComp", "warn");
+  if (has(a, b)) return toast("tDup", "warn");
+  const tube = ca === "tube" || cb === "tube", sec = ca === "cs" || cb === "cs";
+  if (tube && !sec) return toast("tLowV", "warn", 4500);
+  if (sec && !tube) return toast("tMixHV", "warn", 4500);
+  S.wires.push({ a, b }); render();
+  const A = analyze(); if (A.secondary === "rev" && !S.ev.wired) toast("tWrongPol", "warn", 4500);
+}
+function removeWire(i) { if (S.sw) return toast("tWireOn", "danger"); S.wires.splice(i, 1); render(); }
+function toggleSwitch() {
+  if (!S.sw) { const A0 = analyze(); if (A0.shortAny) return toast("tShort", "danger", 4500); S.sw = true; const A = analyze(); if (A.secondary === "rev" && !S.ev.deflect) toast("tWrongPol", "warn", 4500); }
+  else S.sw = false;
+  render();
+}
+function reversePol() {
+  if (S.sw) return toast("tRevOn", "danger");
+  const A = analyze(); if (A.secondary === "none") return toast("tConnectTube", "warn");
+  S.wires.forEach(w => { [["a"], ["b"]].forEach(([k]) => { if (w[k] === "K") w[k] = "A"; else if (w[k] === "A") w[k] = "K"; }); });
+  log("lSwap"); render();
+}
+function setMode(m) { if (m === S.mode) return; if (analyze().hv) return toast("tChangeOn", "danger"); S.mode = m; S.parts = []; S.glow = 0; S.rev = 0; S.maltT = 0; render(); }
+function showHint() { const A = analyze(); let pair = null;
+  if (!A.primaryOK) pair = CANON.slice(0, 3).find(([a, b]) => !has(a, b)) || CANON[0];
+  else if (A.secondary !== "ok") pair = A.secondary === "rev" ? ["sn", "K"] : CANON.slice(3).find(([a, b]) => !has(a, b));
+  if (pair) { S.hintPair = pair; S.hintUntil = time + 4; } }
+
+// =====================================================================
+// UI
+// =====================================================================
+let toastT;
+function toast(k, kind = "", ms = 3600, p) { const el = $("toast"); el.textContent = t(k, p); el.className = "toast show " + kind; clearTimeout(toastT); toastT = setTimeout(() => el.className = "toast " + kind, ms); }
+function log(k) { S.logs.unshift({ time: new Date().toTimeString().slice(0, 8), k }); renderLog(); }
+function renderLog() { const box = $("log"); box.innerHTML = ""; S.logs.forEach(e => { const d = document.createElement("div"), s = document.createElement("span"), m = document.createElement("div"); s.textContent = e.time; m.textContent = t(e.k); d.append(s, m); box.append(d); }); }
+function addResult(id) { if (!S.results.includes(id)) S.results.push(id); renderTable(); }
+function renderTable() {
+  const tb = $("tbody");
+  if (!S.results.length) { tb.innerHTML = ""; const tr = document.createElement("tr"), td = document.createElement("td"); td.colSpan = 3; td.className = "muted"; td.textContent = t("noRes"); tr.append(td); tb.append(tr); return; }
+  tb.innerHTML = S.results.map(id => `<tr>${t(id).map(x => `<td>${x}</td>`).join("")}</tr>`).join("");
+}
+function phase() { const d = stepsDone(); const i = d.indexOf(false); return i < 0 ? 6 : i; }
+function promptText(p, A) {
+  if (p === 0 && A.secondary === "rev") return t("p0rev");
+  if (p === 1 && S.sw && A.primaryOK && !A.band) return t("p1b");
+  if (p === 4 && S.mode === "slit") { if (S.ev.mag && !S.ev.pl) return t("p4b"); if (S.ev.pl && !S.ev.mag) return t("p4c"); }
+  return t(["p0", "p1", "p2", "p3", "p4", "p5", "pDone"][p]);
+}
+function render() {
+  const A = analyze(), p = phase(), done = stepsDone();
+  $("prompt").textContent = promptText(p, A);
+  $("steps").innerHTML = t("steps").map((s, i) => `<li class="${done[i] ? "done" : i === p ? "now" : ""}"><span class="tick">${done[i] ? "✓" : i + 1}</span><span>${s}</span></li>`).join("");
+  const n = done.filter(Boolean).length; $("ringTxt").textContent = `${n}/6`; $("ringArc").style.strokeDashoffset = String(113.1 * (1 - n / 6));
+  $("swBtn").textContent = t(S.sw ? "swOpen" : "swClose");
+  $("dimBtn").setAttribute("aria-pressed", String(S.dim));
+  document.querySelectorAll("#modeSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.m === S.mode)));
+  $("paddleBox").hidden = S.mode !== "paddle"; $("slitBox").hidden = S.mode !== "slit";
+  $("magBtn").textContent = t(S.magnet.on ? "magOff" : "magOn"); $("magBtn").setAttribute("aria-pressed", String(S.magnet.on)); $("flipBtn").disabled = !S.magnet.on;
+  $("plBtn").textContent = t(S.plates.on ? "platesOn" : "platesOff"); $("plBtn").setAttribute("aria-pressed", String(S.plates.on));
+  $("plPol").value = S.plates.top ? "top" : "bottom";
+  ["swBtn", "revBtn", "hintBtn"].forEach(id => $(id).classList.remove("next"));
+  if (p === 1 && !S.sw) $("swBtn").classList.add("next"); if (p === 5) $("revBtn").classList.add("next"); if (p === 0) $("hintBtn").classList.add("next");
+  renderLive(A);
+}
+function renderLive(A) {
+  A = A || analyze();
+  const chips = [`<span class="chip">${t("chipSupply")}</span>`];
+  if (A.hv) chips.push(`<span class="chip hv">⚡ ${t("chipCoil")}</span>`);
+  chips.push(`<span class="chip">${t("chipTube", { m: t({ maltese: "mMaltese", paddle: "mPaddle", slit: "mSlit" }[S.mode]) })}</span>`);
+  if (S.mode === "slit" && S.plates.on) chips.push(`<span class="chip">${t("chipPlates", { v: S.plates.V.toFixed(1) })}</span>`);
+  if (S.mode === "slit" && S.magnet.on) chips.push(`<span class="chip">${t("chipField", { p: Math.round(S.strength * 100) })}</span>`);
+  const h = chips.join(""); if ($("chips").innerHTML !== h) $("chips").innerHTML = h;
+  let cls = "status", msg;
+  if (A.shortAny) { cls += " warn"; msg = t("stShort"); }
+  else if (!S.wires.length) msg = t("stNone");
+  else if (!A.primaryOK) { cls += " warn"; msg = t("stPrimary"); }
+  else if (A.secondary === "none") { cls += " warn"; msg = t("stSecondary"); }
+  else { msg = A.secondary === "rev" ? t("stRev") : t("stOk"); cls += A.secondary === "rev" ? " warn" : " ok";
+    if (!S.sw) msg += " " + t("stOpen"); else if (!A.band) msg += " " + t("stNoBuzz"); else { msg = "⚡ " + t("stHV") + " · " + t("stSpark") + (A.secondary === "rev" ? " · " + t("stRev") : ""); cls = "status hv"; } }
+  if ($("status").textContent !== msg) $("status").textContent = msg; if ($("status").className !== cls) $("status").className = cls;
+  const pt = promptText(phase(), A); if ($("prompt").textContent !== pt) render();
+}
+
+// colour cards
+function svgBeam(curved, glow) {
+  const path = curved ? "M6 27 L30 27 Q52 27 78 8" : "M6 27 L78 27";
+  return `<svg class="sw" viewBox="0 0 84 54" role="img" aria-hidden="true"><rect width="84" height="54" fill="#0b1014"/><rect x="40" y="4" width="26" height="3" fill="#c0392b"/><text x="53" y="16" fill="#ff8a7a" font-size="9" text-anchor="middle" font-family="sans-serif">+</text><rect x="40" y="47" width="26" height="3" fill="#1d4e89"/>${glow ? `<path d="${path}" stroke="rgba(91,227,122,.35)" stroke-width="7" fill="none" stroke-linecap="round"/><path d="${path}" stroke="#c8ffd2" stroke-width="2" fill="none" stroke-linecap="round"/>` : ""}</svg>`;
+}
+const CARDS = [
+  { id: "c1", b: ["c1b", `<span class="sw" style="background:#15191d"></span>`], r: "c1r", a: ["c1a", `<span class="sw" style="background:${GLOW_HEX}"></span>`], via: ["c1v", "#2f6b3a"] },
+  { id: "c2", b: ["c2b", svgBeam(false, true)], r: "c2r", a: ["c2a", svgBeam(true, true)], via: ["c2v", "#7fd197"] },
+];
+function renderCards() {
+  $("cards").innerHTML = CARDS.map(c => { const rec = S.seg[c.id].end !== null;
+    return `<div class="cc"><div class="ttl"><em class="${rec ? "ok" : ""}">${rec ? "✓ " + t("seen") : t("notYet")}</em></div>
+      <div class="flow"><div class="st"><small>${t("before")}</small>${c.b[1]}<span>${t(c.b[0])}</span></div>
+      <div class="arrow"><b>→</b><span>${t(c.r)}</span></div>
+      <div class="st"><small>${t("after")}</small>${c.a[1]}<span>${t(c.a[0])}</span></div></div>
+      <div class="via"><i style="background:${c.via[1]}"></i>${t("via", { c: t(c.via[0]) })}</div></div>`; }).join("");
+}
+const mini = $("mini"), mctx = mini.getContext("2d");
+let playing = false, playRAF = 0;
+function renderReplaySel() { const v = $("replaySel").value || "c1"; $("replaySel").innerHTML = CARDS.map(c => `<option value="${c.id}">${t(c.b[0])} → ${t(c.a[0])}</option>`).join(""); $("replaySel").value = v; }
+function renderReplay() {
+  const id = $("replaySel").value || "c1", sg = S.seg[id], ok = sg.start !== null && sg.end !== null && sg.end > sg.start;
+  $("replay").disabled = !ok; $("playBtn").disabled = !ok; $("playBtn").textContent = t(playing ? "pause" : "play");
+  $("rhint").textContent = ok ? t("replayHint") : t("replayNone");
+  mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.fillStyle = "#0b1014"; mctx.fillRect(0, 0, mini.width, mini.height);
+  const s = 1.85; mctx.setTransform(s, 0, 0, s, -598 * s, -100 * s);
+  let snap;
+  if (!ok) { snap = { mode: id === "c1" ? "maltese" : "slit", glow: 0, rev: 0, pts: null, wheelX: 680, wheelRot: 0, pl: null }; $("rname").textContent = ""; }
+  else { const idx = Math.round(sg.start + (+$("replay").value / 1000) * (sg.end - sg.start)); snap = S.hist[Math.max(0, Math.min(S.hist.length - 1, idx))];
+    $("rname").textContent = id === "c1" ? t("rGlow", { p: Math.round(snap.glow * 100) }) : t("rBeam", { d: (Math.abs(snap.d) * 0.5).toFixed(1) }); }
+  drawTubeBody(mctx, snap); drawTubeLight(mctx, snap, false);
+}
+function togglePlay() {
+  playing = !playing; cancelAnimationFrame(playRAF); renderReplay(); if (!playing) return;
+  if (+$("replay").value >= 1000) $("replay").value = 0;
+  const sg = S.seg[$("replaySel").value]; const dur = Math.max(3, (sg.end - sg.start) * 0.08 * 2); let lt = performance.now();
+  const tick = now => { const dt = (now - lt) / 1000; lt = now; const v = Math.min(1000, +$("replay").value + dt / dur * 1000); $("replay").value = v; renderReplay(); if (v < 1000 && playing) playRAF = requestAnimationFrame(tick); else { playing = false; renderReplay(); } };
+  playRAF = requestAnimationFrame(tick);
+}
+
+// quiz + scores
+function readScores() { try { return JSON.parse(localStorage.getItem("svl-scores") || "{}") || {}; } catch (e) { return {}; } }
+function saveScore(pct) { try { const s = readScores(); if (!(s[SIM_ID] >= pct)) { s[SIM_ID] = pct; localStorage.setItem("svl-scores", JSON.stringify(s)); } } catch (e) {} }
+function renderQuiz() {
+  const Q = t("quiz"), L = ["A", "B", "C", "D"];
+  $("quiz").innerHTML = Q.map((q, i) => `<div class="q" id="q${i}"><p>${i + 1}. ${q.q}</p>${q.o.map((o, j) => `<button data-q="${i}" data-o="${j}">${L[j]}) ${o}</button>`).join("")}<div class="exp"></div></div>`).join("");
+  Object.entries(S.answered).forEach(([i, j]) => markAnswer(+i, j)); score();
+}
+function markAnswer(i, j) {
+  const ok = j === QUIZ_ANS[i];
+  $("q" + i).querySelectorAll("button").forEach((x, k) => { x.disabled = true; if (k === QUIZ_ANS[i]) x.classList.add("right"); else if (k === j) x.classList.add("wrong"); });
+  const d = document.createElement("div"); d.className = "note " + (ok ? "ok" : "bad"); d.textContent = t(ok ? "correct" : "notQuite") + t("quiz")[i].e;
+  const ex = $("q" + i).querySelector(".exp"); ex.innerHTML = ""; ex.append(d);
+}
+$("quiz").onclick = e => { const b = e.target.closest("button[data-q]"); if (!b) return; const i = +b.dataset.q, j = +b.dataset.o; if (i in S.answered) return; S.answered[i] = j; markAnswer(i, j); score(); };
+function score() {
+  const n = Object.keys(S.answered).length, s = Object.entries(S.answered).filter(([i, j]) => j === QUIZ_ANS[+i]).length, N = QUIZ_ANS.length;
+  if (n === N) saveScore(Math.round(s / N * 100));
+  const best = readScores()[SIM_ID];
+  $("score").textContent = `${s} / ${N}` + (n < N ? " · " + t("scoreLeft", { n: N - n }) : "") + (best !== undefined ? " · " + t("best", { p: best }) : "");
+}
+$("retryBtn").onclick = () => { S.answered = {}; renderQuiz(); };
+
+function applyStatic() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("#langSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  $("appList").innerHTML = t("app").map(a => `<span>${a}</span>`).join("");
+  $("safeList").innerHTML = t("safe").map(a => `<li>${a}</li>`).join("");
+  try { const st = JSON.parse(localStorage.getItem("svl-student") || "null"); if (st && st.name) { $("student").hidden = false; $("student").textContent = t("student", { name: st.name, cls: st.cls ? " · " + st.cls : "" }); } } catch (e) {}
+}
+function renderAll() { applyStatic(); render(); renderLog(); renderTable(); renderCards(); renderReplaySel(); renderReplay(); renderQuiz(); }
+function applyLang(l) { LANG = l; try { localStorage.setItem("svl-lang", l); } catch (e) {} renderAll(); }
+document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  ["guide", "obs", "colours", "quiz"].forEach(id => $("pane-" + id).hidden = id !== b.dataset.tab);
+  if (b.dataset.tab === "quiz") b.classList.remove("ping");
+  if (b.dataset.tab === "colours") renderReplay();
+});
+
+// controls
+$("resetBtn").onclick = () => { const ans = S.answered; S = freshState(); S.answered = ans; $("screw").value = S.screw; $("screwOut").textContent = S.screw; $("quizTab").classList.remove("ping"); renderAll(); };
+$("undoBtn").onclick = () => { if (S.sw) return toast("tWireOn", "danger"); S.wires.pop(); render(); };
+$("clearBtn").onclick = () => { if (S.sw) return toast("tWireOn", "danger"); S.wires = []; render(); };
+$("hintBtn").onclick = showHint;
+$("swBtn").onclick = toggleSwitch;
+$("revBtn").onclick = reversePol;
+$("screw").oninput = e => { S.screw = +e.target.value; $("screwOut").textContent = S.screw; render(); };
+$("dimBtn").onclick = () => { S.dim = !S.dim; render(); };
+document.querySelectorAll("#modeSeg button").forEach(b => b.onclick = () => setMode(b.dataset.m));
+$("wheelBtn").onclick = () => { if (analyze().hv) return toast("tWheelOff", "danger"); S.wheelX = 680; S.wheelRot = 0; };
+$("magBtn").onclick = () => { S.magnet.on = !S.magnet.on; if (S.magnet.on) { S.magnet.x = 770; S.magnet.y = 96; } render(); };
+$("flipBtn").onclick = () => { S.magnet.pole *= -1; render(); };
+$("strength").oninput = e => { S.strength = e.target.value / 100; $("strOut").textContent = e.target.value + "%"; renderLive(); };
+$("plBtn").onclick = () => { S.plates.on = !S.plates.on; render(); };
+$("plV").oninput = e => { S.plates.V = +e.target.value; $("plOut").textContent = (+e.target.value).toFixed(1) + " kV"; renderLive(); };
+$("plPol").onchange = e => { S.plates.top = e.target.value === "top"; render(); };
+$("replaySel").onchange = () => { playing = false; $("replay").value = 0; renderReplay(); };
+$("replay").oninput = () => { playing = false; renderReplay(); };
+$("playBtn").onclick = togglePlay;
+
+// canvas pointer: wires, switch, magnet, safety
+function toLogical(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left - ox) / sc, y: (e.clientY - r.top - oy) / sc }; }
+function nearTerm(p, r = 16) { let best = null, bd = r; for (const [k, q] of Object.entries(TERM)) { const d = Math.hypot(p.x - q.x, p.y - q.y); if (d < bd) { bd = d; best = k; } } return best; }
+function wireAt(p) { for (let i = S.wires.length - 1; i >= 0; i--) { const w = S.wires[i]; for (let k = 1; k < 24; k++) { const [x, y] = bez(TERM[w.a], TERM[w.b], k / 24); if (Math.hypot(p.x - x, p.y - y) < 7) return i; } } return -1; }
+cv.addEventListener("pointerdown", e => {
+  const p = toLogical(e), A = analyze();
+  if (S.mode === "slit" && S.magnet.on && Math.hypot(p.x - S.magnet.x, p.y - S.magnet.y) < 30) { S.magDrag = true; cv.setPointerCapture(e.pointerId); return; }
+  const tk = nearTerm(p);
+  if (tk) { if (S.sw) return toast("tWireOn", "danger"); S.drag = { from: tk, x: p.x, y: p.y }; cv.setPointerCapture(e.pointerId); return; }
+  if (p.x > 196 && p.x < 312 && p.y > 380 && p.y < 472) return toggleSwitch();
+  const wi = wireAt(p); if (wi >= 0) return removeWire(wi);
+  if (A.hv && ((p.x > 596 && p.x < 950 && p.y > 110 && p.y < 310) || (p.x > 440 && p.x < 550 && p.y > 296 && p.y < 380))) return toast("tTouch", "danger", 4200);
+});
+cv.addEventListener("pointermove", e => {
+  const p = toLogical(e);
+  if (S.drag) { S.drag.x = p.x; S.drag.y = p.y; }
+  if (S.magDrag) { S.magnet.x = Math.max(620, Math.min(920, p.x)); let y = Math.max(60, Math.min(440, p.y)); if (Math.abs(y - BY) < 62) y = y < BY ? BY - 62 : BY + 62; S.magnet.y = y; }
+});
+function endPointer(e) { if (S.drag) { const p = toLogical(e), tk = nearTerm(p, 20); const from = S.drag.from; S.drag = null; if (tk && tk !== from) addWire(from, tk); } S.magDrag = false; }
+cv.addEventListener("pointerup", endPointer); cv.addEventListener("pointercancel", () => { S.drag = null; S.magDrag = false; });
+cv.addEventListener("keydown", e => { if (!(S.mode === "slit" && S.magnet.on)) return; const d = 8; let used = true;
+  if (e.key === "ArrowLeft") S.magnet.x -= d; else if (e.key === "ArrowRight") S.magnet.x += d; else if (e.key === "ArrowUp") S.magnet.y -= d; else if (e.key === "ArrowDown") S.magnet.y += d; else used = false;
+  if (used) { e.preventDefault(); S.magnet.x = Math.max(620, Math.min(920, S.magnet.x)); S.magnet.y = Math.max(60, Math.min(440, S.magnet.y)); if (Math.abs(S.magnet.y - BY) < 62) S.magnet.y = S.magnet.y < BY ? BY - 62 : BY + 62; } });
+
+readTokens(); resize(); S = freshState(); renderAll();
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>

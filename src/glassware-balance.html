@@ -1,0 +1,1009 @@
+<title>Glassware and Balance Bench</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: three-mode stage (glassware bins · four-beam balance · meniscus reading) with a control dock, working notebook on the right. Same system as the KMnO₄ bench. */
+:root{
+  --bg:#e7eceb; --surface:#f8faf9; --surface-2:#eef2f1; --ink:#162127; --muted:#56666c; --line:#cbd5d4;
+  --accent:#8b1d6f; --accent-soft:#f3dcea; --on-accent:#ffffff; --current:#b7791f;
+  --ok:#2c7a4d; --ok-soft:#dcefe3; --warn:#9a520a; --warn-soft:#f8e8d5; --bad:#a3302b; --bad-soft:#f6dedc;
+  --wall-top:#dde5e4; --wall-bot:#c5d0cf; --bench:#2a3236; --bench-edge:#1b2124; --glass:rgba(40,60,70,.55);
+  --f-display:"Bricolage Grotesque", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", "Noto Sans Sinhala", "Noto Sans Tamil", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 28px}
+:lang(si) body,:lang(ta) body{line-height:1.65}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.top > div:first-child{min-width:0}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+:lang(si) .eyebrow,:lang(ta) .eyebrow{letter-spacing:.02em;font-size:12.5px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 6px;text-wrap:balance;letter-spacing:-.01em}
+:lang(si) h1,:lang(ta) h1{letter-spacing:0;font-size:clamp(22px,2.6vw,32px);line-height:1.3}
+.sub{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.top-actions{display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap}
+.student{font-size:13px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;min-height:44px;font-weight:500;font-size:14px;transition:background .15s,border-color .15s,transform .05s;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.next{border-color:var(--current);box-shadow:0 0 0 3px color-mix(in srgb,var(--current) 30%,transparent)}
+.btn.sm{min-height:40px;padding:6px 10px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface-2)}
+.seg button{border:0;background:transparent;padding:8px 12px;min-height:42px;font-size:14px;font-weight:500;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.seg button:disabled{opacity:.5;cursor:not-allowed}
+.lang button{min-height:36px}
+.lang button[lang="si"]{font-family:"Noto Sans Sinhala",var(--f-body)}
+.lang button[lang="ta"]{font-family:"Noto Sans Tamil",var(--f-body)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.modebar{display:flex;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.prompt{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.prompt .dot{width:9px;height:9px;border-radius:50%;background:var(--current);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--current) 25%,transparent)}
+.prompt p{margin:0;font-weight:500;min-width:0}
+.scene{position:relative}
+.viewport{position:relative;height:clamp(320px,calc(100vh - 470px),560px);background:var(--wall-bot);user-select:none;-webkit-user-select:none}
+@media (max-width:980px){.viewport{height:clamp(260px,62vw,520px)}}
+canvas#cv{display:block;width:100%;height:100%;touch-action:none}
+.chips{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;max-width:70%}
+.chip{font-family:var(--f-mono);font-size:12.5px;background:#0E1A2B;color:#D4C4FF;border:1px solid rgba(212,196,255,.25);padding:3px 10px;border-radius:999px}
+.chip.ok{color:#9fe6b8;border-color:#2c7a4d}
+.toast{position:absolute;left:50%;bottom:14px;transform:translate(-50%,10px);opacity:0;transition:opacity .25s,transform .25s;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 28px);width:max-content;pointer-events:none;text-align:center;z-index:5}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.toast.good{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.toast.party{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);font-weight:600}
+/* glassware mode */
+.glass{padding:14px 16px;display:flex;flex-direction:column;gap:14px;background:linear-gradient(var(--wall-top),var(--surface-2))}
+.bins{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.bins{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.bin{border:2px dashed var(--line);border-radius:12px;background:var(--surface);padding:10px;min-height:120px;display:flex;flex-direction:column;gap:6px;text-align:left;align-items:stretch;min-width:0}
+.bin b{font-size:14px}
+.bin small{font-size:12px;color:var(--muted)}
+.bin.hot{border-color:var(--accent);background:var(--accent-soft)}
+.bin.armed{border-color:var(--current)}
+.placed{display:flex;gap:6px;align-items:center;font-size:12.5px;padding:4px 6px;border-radius:8px;background:var(--ok-soft);color:var(--ok);min-width:0}
+.placed svg{flex:none;width:18px;height:32px}
+.placed span{min-width:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:10px}
+.gcard{border:1px solid var(--line);border-radius:12px;background:#ffffff;padding:8px;display:flex;flex-direction:column;gap:6px;align-items:stretch}
+.gcard.sel{border-color:var(--current);box-shadow:0 0 0 3px color-mix(in srgb,var(--current) 30%,transparent)}
+.gpic{border:0;background:#ffffff;border-radius:8px;height:120px;display:grid;place-items:center;touch-action:none;cursor:grab}
+.gpic svg{height:112px;width:auto}
+.gcard select{min-height:40px;font-size:13px;color:#162127;background:#f8faf9;border-color:#cbd5d4}
+.gcard .num{font-family:var(--f-mono);font-size:11px;color:#56666c}
+.ghost{position:fixed;z-index:50;pointer-events:none;transform:translate(-50%,-50%);padding:4px;border-radius:10px;background:#ffffff;border:2px solid var(--accent);box-shadow:0 6px 18px rgba(0,0,0,.2)}
+.ghost svg{height:70px;width:auto;display:block}
+.dock{display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-right:2px}
+:lang(si) .label,:lang(ta) .label{letter-spacing:0;font-size:12.5px}
+select,input[type=number]{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px;max-width:100%}
+input[type=number]{font-family:var(--f-mono);width:140px}
+.slider{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-width:0;max-width:420px}
+.slider input{flex:1;min-width:0}
+.slider output{font-family:var(--f-mono);font-size:13px;min-width:70px;text-align:right}
+input[type=range]{accent-color:var(--accent);min-height:30px}
+.beamctl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.beamctl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.beamctl div{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:9px;padding:4px;background:var(--surface-2);min-width:0}
+.beamctl span{flex:1;text-align:center;font-family:var(--f-mono);font-size:12.5px;min-width:0}
+.note{font-size:13.5px;padding:8px 10px;border-radius:8px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.note.info{background:var(--surface-2);border:1px solid var(--line)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.tabs button{flex:1;min-width:0;border:0;background:transparent;padding:12px 4px;min-height:46px;font-weight:600;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;line-height:1.3;position:relative}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs button.ping::after{content:"";position:absolute;top:8px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--current)}
+.pane{padding:16px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:980px){.pane{max-height:none}}
+h2{font-family:var(--f-display);font-size:18px;font-weight:700;margin:0}
+h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+:lang(si) h3,:lang(ta) h3{letter-spacing:0;font-size:13px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2)}
+.box.safety{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.box.safety h3{color:var(--warn)}
+.box.safety ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ring{position:relative;width:46px;height:46px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;font-weight:500}
+.chiplist{display:flex;flex-wrap:wrap;gap:6px}
+.chiplist span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;background:var(--surface)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid transparent}
+.steps li .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-family:var(--f-mono);color:var(--muted);margin-top:2px}
+.steps li.done{color:var(--muted)}
+.steps li.done .tick{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.steps li.now{background:var(--surface);border-color:var(--current)}
+.steps li.now .tick{border-color:var(--current);color:var(--current)}
+.log{font-size:13.5px;display:flex;flex-direction:column;gap:5px;max-height:220px;overflow:auto}
+.log > div{display:grid;grid-template-columns:58px 1fr;gap:6px}
+.log span{font-family:var(--f-mono);color:var(--muted);font-size:11.5px;padding-top:2px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:7px 8px;background:var(--surface-2);font-weight:600;vertical-align:bottom}
+:lang(si) th,:lang(ta) th{letter-spacing:0;font-size:12px}
+td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+td.num{font-family:var(--f-mono);white-space:nowrap}
+.cc{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px}
+.cc .flow{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start}
+.cc .st{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:13px;min-width:0}
+.cc .st small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+:lang(si) .cc .st small,:lang(ta) .cc .st small{letter-spacing:0}
+.cc .arrow{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);padding-top:14px;max-width:110px;text-align:center}
+.cc .arrow b{font-size:20px;color:var(--ink);line-height:1}
+.cc svg{width:90px;height:64px;border-radius:8px;border:1px solid var(--line);background:#ffffff}
+.hatch{width:90px;height:40px;border-radius:8px;border:1px solid var(--line);background-color:#f2f8fb;background-image:repeating-linear-gradient(45deg,rgba(60,80,90,.22) 0 1px,transparent 1px 7px)}
+.replaycv{width:100%;max-width:100%;aspect-ratio:2/1;border-radius:10px;border:1px solid var(--line);display:block;background:#ffffff}
+.q{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}
+.q p{margin:0 0 4px;font-weight:600}
+.q button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px}
+.q button:hover:not(:disabled){border-color:var(--accent)}
+.q button.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.q button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.q button:disabled{cursor:default}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--accent);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1 data-i18n="title"></h1>
+      <div class="sub">NIE Practical Handbook (2018) · al-exp-03</div>
+    </div>
+    <div class="top-actions">
+      <span class="student" id="student" hidden></span>
+      <div class="seg lang" role="group" aria-label="Language / භාෂාව / மொழி" id="langSeg">
+        <button data-lang="si" lang="si" aria-pressed="false">සිංහල</button>
+        <button data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button data-lang="ta" lang="ta" aria-pressed="false">தமிழ்</button>
+      </div>
+      <button class="btn" id="resetBtn" data-i18n="reset"></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="modebar">
+        <span class="label" data-i18n="modeL"></span>
+        <div class="seg" role="group" id="modeSeg" data-i18n-aria="modeL">
+          <button data-m="glass" aria-pressed="true" data-i18n="m1"></button>
+          <button data-m="balance" aria-pressed="false" data-i18n="m2"></button>
+          <button data-m="men" aria-pressed="false" data-i18n="m3"></button>
+        </div>
+      </div>
+      <div class="prompt"><span class="dot"></span><p id="prompt" aria-live="polite"></p></div>
+      <div class="scene">
+        <div class="glass" id="glassArea">
+          <div class="bins" id="bins"></div>
+          <div class="cards" id="cards"></div>
+        </div>
+        <div class="viewport" id="viewport" hidden>
+          <canvas id="cv" role="img" tabindex="0"></canvas>
+          <div class="chips" id="chips"></div>
+        </div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+      <div class="dock" id="dockBalance" hidden>
+        <div class="row">
+          <label class="label" for="objSel" data-i18n="objL"></label>
+          <select id="objSel"></select>
+          <button class="btn" id="placeBtn" data-i18n="place"></button>
+          <button class="btn" id="removeBtn" data-i18n="remove"></button>
+        </div>
+        <div class="row">
+          <label class="label" for="zero" data-i18n="zeroL"></label>
+          <button class="btn sm" id="zMinus" aria-label="−0.01">−</button>
+          <div class="slider"><input type="range" id="zero" min="-100" max="100" step="1" value="0"></div>
+          <button class="btn sm" id="zPlus" aria-label="+0.01">+</button>
+        </div>
+        <div class="beamctl" id="beamctl"></div>
+        <div class="row">
+          <label class="label" for="massIn" data-i18n="readL"></label>
+          <input type="number" id="massIn" step="0.01" min="0" inputmode="decimal" placeholder="0.00">
+          <span class="small">g</span>
+          <button class="btn primary" id="massBtn" data-i18n="record"></button>
+          <button class="btn" id="ridersZero" data-i18n="ridersZero"></button>
+        </div>
+        <div id="balNote"></div>
+      </div>
+      <div class="dock" id="dockMen" hidden>
+        <div class="row">
+          <span class="label" data-i18n="instL"></span>
+          <div class="seg" role="group" id="instSeg" data-i18n-aria="instL">
+            <button data-i="burette" aria-pressed="true" data-i18n="iBur"></button>
+            <button data-i="cylinder" aria-pressed="false" data-i18n="iCyl"></button>
+            <button data-i="pipette" aria-pressed="false" data-i18n="iPip"></button>
+          </div>
+        </div>
+        <div class="row">
+          <label class="label" for="eye" data-i18n="eyeL"></label>
+          <span class="small" data-i18n="eyeBelow"></span>
+          <div class="slider"><input type="range" id="eye" min="-100" max="100" step="1" value="70"></div>
+          <span class="small" data-i18n="eyeAbove"></span>
+          <button class="btn sm" id="eyeDown" data-i18n="eyeDn"></button>
+          <button class="btn sm" id="eyeUp" data-i18n="eyeUpB"></button>
+        </div>
+        <div class="row" id="menAnswer"></div>
+        <div id="menNote"></div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="guide" data-i18n="tabGuide"></button>
+        <button role="tab" aria-selected="false" data-tab="obs" data-i18n="tabObs"></button>
+        <button role="tab" aria-selected="false" data-tab="colours" data-i18n="tabColours"></button>
+        <button role="tab" aria-selected="false" data-tab="quiz" data-i18n="tabQuiz" id="quizTab"></button>
+      </div>
+      <div class="pane" id="pane-guide">
+        <div class="headrow">
+          <div><h3 data-i18n="aimH"></h3><p class="small" data-i18n="aim"></p></div>
+          <div class="ring" aria-hidden="true"><svg width="46" height="46"><circle cx="23" cy="23" r="18" fill="none" stroke="var(--line)" stroke-width="4"/><circle id="ringArc" cx="23" cy="23" r="18" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><span id="ringTxt">0/5</span></div>
+        </div>
+        <div><h3 data-i18n="appH"></h3><div class="chiplist" id="appList"></div></div>
+        <div><h3 data-i18n="procH"></h3><ul class="steps" id="steps"></ul></div>
+        <div class="box safety"><h3 data-i18n="safeH"></h3><ul id="safeList"></ul></div>
+      </div>
+      <div class="pane" id="pane-obs" hidden>
+        <div><h3 data-i18n="logH"></h3><div class="log" id="log"></div></div>
+        <div><h3 data-i18n="resG"></h3><div class="tablewrap"><table><thead><tr><th data-i18n="thItem"></th><th data-i18n="thUse"></th><th data-i18n="thAcc"></th></tr></thead><tbody id="tbG"></tbody></table></div></div>
+        <div><h3 data-i18n="resB"></h3><div class="tablewrap"><table><thead><tr><th data-i18n="thObj"></th><th>100 g</th><th>10 g</th><th>1 g</th><th>0.01 g</th><th data-i18n="thMass"></th></tr></thead><tbody id="tbB"></tbody></table></div></div>
+        <div><h3 data-i18n="resM"></h3><div class="tablewrap"><table><thead><tr><th data-i18n="thInst"></th><th data-i18n="thReading"></th></tr></thead><tbody id="tbM"></tbody></table></div></div>
+      </div>
+      <div class="pane" id="pane-colours" hidden>
+        <div><h2 data-i18n="coloursH"></h2><p class="small muted" style="margin-top:4px" data-i18n="noColour"></p></div>
+        <div class="cc">
+          <div class="flow">
+            <div class="st"><small data-i18n="cWater"></small><span class="hatch"></span><span data-i18n="cColourless"></span></div>
+            <div class="arrow"><b>→</b><span data-i18n="cMenL"></span></div>
+            <div class="st"><small data-i18n="cMenS"></small><svg viewBox="0 0 90 64" aria-hidden="true"><rect x="22" y="0" width="46" height="64" fill="#f6fbfd"/><path d="M22 22 Q45 46 68 22 L68 64 L22 64Z" fill="#e6f2f7"/><path d="M22 22 Q45 46 68 22" fill="none" stroke="#3a6a80" stroke-width="2"/><line x1="10" y1="34" x2="80" y2="34" stroke="#b7791f" stroke-width="2" stroke-dasharray="4 3"/><line x1="22" y1="0" x2="22" y2="64" stroke="#7a9aa8"/><line x1="68" y1="0" x2="68" y2="64" stroke="#7a9aa8"/></svg><span data-i18n="cMenRead"></span></div>
+          </div>
+        </div>
+        <div class="cc">
+          <div class="flow">
+            <div class="st"><small data-i18n="cEyeAbove"></small><svg viewBox="0 0 90 64" aria-hidden="true"><rect x="30" y="0" width="30" height="64" fill="#f6fbfd" stroke="#7a9aa8"/><line x1="30" y1="22" x2="60" y2="22" stroke="#1c2a31"/><line x1="30" y1="32" x2="60" y2="32" stroke="#1c2a31"/><line x1="30" y1="42" x2="60" y2="42" stroke="#1c2a31"/><path d="M30 26 Q45 34 60 26" fill="none" stroke="#3a6a80" stroke-width="2"/><circle cx="82" cy="8" r="5" fill="#1c2a31"/><line x1="78" y1="10" x2="30" y2="40" stroke="#c0392b" stroke-dasharray="3 2"/></svg><span data-i18n="cParallax"></span></div>
+            <div class="arrow"><b>→</b><span data-i18n="cMoveEye"></span></div>
+            <div class="st"><small data-i18n="cEyeLevel"></small><svg viewBox="0 0 90 64" aria-hidden="true"><rect x="30" y="0" width="30" height="64" fill="#f6fbfd" stroke="#7a9aa8"/><line x1="30" y1="22" x2="60" y2="22" stroke="#1c2a31"/><line x1="30" y1="32" x2="60" y2="32" stroke="#1c2a31"/><line x1="30" y1="42" x2="60" y2="42" stroke="#1c2a31"/><path d="M30 26 Q45 34 60 26" fill="none" stroke="#3a6a80" stroke-width="2"/><circle cx="82" cy="32" r="5" fill="#1c2a31"/><line x1="77" y1="32" x2="30" y2="32" stroke="#2c7a4d" stroke-dasharray="3 2"/></svg><span data-i18n="cTrue"></span></div>
+          </div>
+        </div>
+        <div class="box" style="display:flex;flex-direction:column;gap:8px">
+          <h3 data-i18n="replayH" style="margin:0"></h3>
+          <p class="small muted" data-i18n="replayIntro"></p>
+          <canvas id="mini" class="replaycv" width="680" height="340" aria-hidden="true"></canvas>
+          <input type="range" id="replay" min="0" max="1000" value="1000" data-i18n-aria="replayH">
+          <div class="row"><button class="btn" id="playBtn"></button><span class="small" id="rname"></span></div>
+        </div>
+      </div>
+      <div class="pane" id="pane-quiz" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <h2 data-i18n="quizH"></h2><span class="score" id="score"></span>
+        </div>
+        <div id="quiz" style="display:flex;flex-direction:column;gap:12px"></div>
+        <button class="btn" id="retryBtn" data-i18n="tryAgain" style="align-self:flex-start"></button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const SIM_ID = "al-exp-03";
+
+// =====================================================================
+// LANGUAGES
+// =====================================================================
+const I18N = {
+en: {
+  eyebrow: "A/L Chemistry · Unit 03 · Chemical calculations · Experiment 3", title: "Handling glassware and the four-beam balance", student: "Student: {name}{cls}", reset: "Reset bench",
+  modeL: "Mode", m1: "1 · Glassware", m2: "2 · Four-beam balance", m3: "3 · Reading a meniscus",
+  lockBal: "Finish step 1 first: identify all the glassware. Knowing your apparatus comes before using it.", lockMen: "Finish the balance first (steps 2–4), then practise reading a meniscus.",
+  binPrecise: "Precise volume", binApprox: "Approximate volume", binHeat: "Heating", binTransfer: "Transfer",
+  binPreciseS: "measures one volume exactly", binApproxS: "rough volumes only", binHeatS: "can be heated directly", binTransferS: "moves liquids or solids",
+  nameSel: "Name it…", pick: "Pick up item {n}", item: "Item {n}",
+  gPrompt: "Name each item, then drag it into the right bin (or tap the picture, then tap a bin). {k} of 10 placed.", gDone: "All 10 items identified. Now go to mode 2, the four-beam balance.",
+  gNoName: "Name it first: choose its name from the list under the picture.", gBadName: "Not quite. Look again: {hint}", gBadBin: "Not that bin. {name}: {use}", gGood: "Correct: {name}, {acc}.",
+  gSelFirst: "Tap a picture first to pick up an item.",
+  g: {
+    beaker: ["Beaker", "Holding, mixing and heating liquids. Its graduations are rough.", "about ±5%", "wide, straight sides with a pouring lip"],
+    conical: ["Conical flask", "Holding and swirling solutions in titrations; the narrow neck stops splashing. Can be heated.", "about ±5%", "wide base narrowing to a neck"],
+    cylinder: ["Measuring cylinder", "Measuring approximate volumes, such as acid or water to add.", "about ±0.5 cm³ (100 cm³ cylinder)", "tall, graduated all the way up, on a foot"],
+    pipette: ["Pipette (with filler)", "Delivering one fixed volume exactly, for example 25.00 cm³. Always use a pipette filler.", "±0.03 cm³ (25 cm³ pipette)", "a bulb in the middle, one ring mark and a rubber filler"],
+    burette: ["Burette", "Delivering a variable volume exactly in titrations.", "±0.05 cm³ per reading", "long graduated tube with a tap at the bottom"],
+    volflask: ["Volumetric flask", "Making up a standard solution to an exact volume.", "±0.2 cm³ (250 cm³ flask)", "round bulb with a long neck and one ring mark"],
+    testtube: ["Test tube", "Small-scale tests and gentle heating.", "not for measuring", "small, narrow tube with a round bottom"],
+    boilingtube: ["Boiling tube", "Heating larger amounts more strongly. Wider and longer than a test tube.", "not for measuring", "a wider, longer tube than a test tube"],
+    watchglass: ["Watch glass", "Weighing and transferring small amounts of solid; covering a beaker; evaporating small volumes.", "not for measuring", "a shallow curved glass dish"],
+    funnel: ["Funnel", "Transferring liquids into narrow necks; filtering with filter paper.", "not for measuring", "a cone with a narrow stem"],
+  },
+  objL: "Object", place: "Place on pan", remove: "Remove from pan", zeroL: "Zero adjust", readL: "Mass", record: "Record mass", ridersZero: "Return riders to zero",
+  objs: { cyl: "metal cylinder", stopper: "rubber stopper", beaker: "empty 100 cm³ beaker", stone: "stone", wg: "watch glass with salt" },
+  beamL: "{b} beam", left: "Move left", right: "Move right",
+  b0: "Zero the balance: the pan must be empty. Turn the zero-adjust knob until the pointer rests on 0.", b0obj: "Take the object off first. A balance is zeroed with the pan empty.",
+  b1: "Choose an object and place it on the pan.", b2: "Move the riders from the largest beam to the smallest until the pointer rests on 0.", b3: "The pointer is at 0. Add up the beams and type the mass.", b4: "Mass recorded. Weigh another object, or go to mode 3.",
+  tZeroObj: "Zero only with the pan empty. Remove the object first.", tPlaceZero: "Zero the balance first, with the pan empty. Otherwise every mass you read is off by the zero error.",
+  tRiderEmpty: "Place the object on the pan before you move the riders.", tCoarse: "Start with the largest beam, then 10 g, 1 g and 0.01 g. Going coarse to fine is much quicker.",
+  tTooFar: "The pointer dropped below 0: that rider is one notch too far. Move it back one notch, then use the next smaller beam.",
+  nNotZero: "The pointer is not resting on 0 yet. Keep adjusting the riders.", nSwing: "Wait for the pointer to stop swinging before you read.", nSum: "Not quite. Add the beams: {a} + {b} + {c} + {d}.",
+  nOk: "Correct: the mass of the {o} is {m} g.", nType: "Type the mass in grams, for example 152.36.", lZero: "Balance zeroed with the pan empty.", lMass: "Mass of {o}: {a} g + {b} g + {c} g + {d} g = {m} g.",
+  chipPtr: "Pointer {s}", ptrSwing: "swinging", ptrZero: "at 0", ptrHigh: "above 0", ptrLow: "below 0", chipPan: "Pan: {o}", panEmpty: "empty",
+  instL: "Instrument", iBur: "Burette", iCyl: "Measuring cylinder", iPip: "Pipette", eyeL: "Eye position", eyeBelow: "below", eyeAbove: "above", eyeDn: "Eye down", eyeUpB: "Eye up",
+  eyeIs: "Eye {p}", eyePosAbove: "above the meniscus", eyePosLevel: "level with the meniscus", eyePosBelow: "below the meniscus",
+  mBur: "Read the burette to 0.05 cm³. Burette numbers increase downwards.", mCyl: "Read the measuring cylinder to the nearest 0.5 cm³.", mPip: "Is the bottom of the meniscus above, on or below the pipette mark?",
+  mCheck: "Check reading", mNew: "New reading", mAbove: "Above the mark", mOn: "On the mark", mBelow: "Below the mark", mType: "Type the reading in cm³.",
+  mParallax: "Your eye is {p}, so the reading is shifted (parallax error). Move your eye level with the bottom of the meniscus first. Then the ring marks look like straight lines.",
+  mBad: "Not quite. Read the bottom of the curved surface, and count the small marks from the nearest number.", mOk: "Correct: {v}.", mOkPip: "Correct: the meniscus is {v}.",
+  lMen: "{i}: read {v} at eye level, at the bottom of the meniscus.", mDoneAll: "All three instruments read correctly.",
+  cvColourless: "colourless (water)", cvEye: "eye", cvSight: "line of sight", cvMark: "mark", cvMenBottom: "bottom of meniscus", cvSide: "side view",
+  tabGuide: "Guide", tabObs: "Observations", tabColours: "Colours", tabQuiz: "Questions",
+  aimH: "Aim", aim: "Identify laboratory glassware and its purpose, and weigh accurately with a four-beam balance.",
+  appH: "Apparatus", app: ["Beaker", "Conical flask", "Measuring cylinder", "Pipette + filler", "Burette", "Volumetric flask", "Test tube", "Boiling tube", "Watch glass", "Funnel", "Four-beam balance", "Objects to weigh"],
+  procH: "Procedure", steps: ["Identify each item of glassware and match it to its use and accuracy", "Zero the four-beam balance with the pan empty", "Place the object; move riders from the largest beam to the smallest until the pointer is at zero", "Read the mass as the sum of the beams", "Read a pipette, burette and measuring cylinder meniscus correctly at eye level ({k}/3)"],
+  safeH: "Safety", safe: ["Carry long glassware (burettes, pipettes) upright with both hands.", "Never pipette by mouth. Always use a pipette filler.", "Do not dry volumetric glassware in an oven: heating changes its calibration.", "Report chipped or cracked glassware. Do not use it."],
+  logH: "Observation log", resG: "Glassware", resB: "Weighings", resM: "Meniscus readings", thItem: "Item", thUse: "Use", thAcc: "Accuracy", thObj: "Object", thMass: "Mass / g", thInst: "Instrument", thReading: "Reading", none: "Nothing recorded yet.",
+  coloursH: "Colours and visible changes", noColour: "There is no colour change in this practical. These cards show what you need to see clearly instead: colourless water and parallax.",
+  cWater: "Water", cColourless: "colourless (hatched so it never looks empty)", cMenL: "look at the surface", cMenS: "Meniscus", cMenRead: "concave: read the bottom of the curve",
+  cEyeAbove: "Eye above", cParallax: "parallax: the reading looks shifted", cMoveEye: "move the eye level", cEyeLevel: "Eye level", cTrue: "true reading",
+  replayH: "Replay: balance pointer settling", replayIntro: "After every rider move the pointer swings and slowly settles. Scrub the last swing with the slider.", play: "Play slowly", pause: "Pause", rNone: "Move a rider on the balance to record a swing.", rAt: "{t} s · pointer {d}",
+  quizH: "Knowledge check", tryAgain: "Try again", best: "best {p}%", scoreLeft: "{n} left", correct: "Correct. ", notQuite: "Not quite. ", tDone: "Practical complete! Now answer the questions in the Questions tab.",
+  canvasBal: "Four-beam balance with a pan on the left, four beams with riders, and a pointer on the right. Drag a rider along its beam.", canvasMen: "Close-up of a tube with a scale and a water meniscus, and a side view showing where your eye is.",
+  quiz: [
+    { q: "Which glassware delivers exactly 25.00 cm³?", o: ["Measuring cylinder", "Beaker", "Pipette", "Conical flask"], e: "A pipette is calibrated to deliver one volume." },
+    { q: "Volumetric glassware should not be dried in an oven because…", o: ["it melts", "heating changes its calibration", "it becomes dirty", "it cracks always"], e: "Expansion alters the calibrated volume." },
+    { q: "On a four-beam balance, riders are moved…", o: ["smallest beam first", "largest beam first", "randomly", "only the smallest"], e: "Coarse to fine." },
+    { q: "A meniscus of water is read at…", o: ["the top, from above", "the bottom, at eye level", "the side", "any angle"], e: "Avoids parallax error." },
+  ],
+},
+si: {
+  eyebrow: "උ.පෙ. රසායන විද්‍යාව · ඒකකය 03 · රසායනික ගණනය කිරීම් · පරීක්ෂණය 3", title: "වීදුරු උපකරණ හැසිරවීම සහ දඬු හතරේ තුලාව", student: "ශිෂ්‍යයා: {name}{cls}", reset: "නැවත අරඹන්න",
+  modeL: "ප්‍රකාරය", m1: "1 · වීදුරු උපකරණ", m2: "2 · දඬු හතරේ තුලාව", m3: "3 · මෙනිස්කසය කියවීම",
+  lockBal: "පළමුව පියවර 1 අවසන් කරන්න: සියලු වීදුරු උපකරණ හඳුනා ගන්න. උපකරණ භාවිතයට පෙර ඒවා හඳුනා ගත යුතුය.", lockMen: "පළමුව තුලාව අවසන් කරන්න (පියවර 2–4), ඉන්පසු මෙනිස්කසය කියවීම පුහුණු වන්න.",
+  binPrecise: "නිශ්චිත පරිමාව", binApprox: "ආසන්න පරිමාව", binHeat: "රත් කිරීම", binTransfer: "මාරු කිරීම",
+  binPreciseS: "එක් පරිමාවක් නිවැරදිව මනී", binApproxS: "දළ පරිමා පමණි", binHeatS: "සෘජුව රත් කළ හැක", binTransferS: "ද්‍රව හෝ ඝන මාරු කරයි",
+  nameSel: "නම තෝරන්න…", pick: "අයිතමය {n} ගන්න", item: "අයිතමය {n}",
+  gPrompt: "සෑම අයිතමයක්ම නම් කර නිවැරදි භාජනයට අදින්න (නැතහොත් රූපය තට්ටු කර, භාජනය තට්ටු කරන්න). 10 න් {k} ක් තබා ඇත.", gDone: "අයිතම 10 ම හඳුනා ගත්තා. දැන් ප්‍රකාරය 2, දඬු හතරේ තුලාවට යන්න.",
+  gNoName: "පළමුව නම් කරන්න: රූපයට පහළින් ඇති ලැයිස්තුවෙන් නම තෝරන්න.", gBadName: "තවම නිවැරදි නැත. නැවත බලන්න: {hint}", gBadBin: "එම භාජනය නොවේ. {name}: {use}", gGood: "නිවැරදියි: {name}, {acc}.",
+  gSelFirst: "අයිතමයක් ගැනීමට පළමුව රූපයක් තට්ටු කරන්න.",
+  g: {
+    beaker: ["බීකරය", "ද්‍රව තබා ගැනීම, මිශ්‍ර කිරීම සහ රත් කිරීම. එහි අංශාංකන දළ ඒවාය.", "ආසන්න වශයෙන් ±5%", "පුළුල්, සෘජු බිත්ති සහ වත් කරන තොල"],
+    conical: ["කේතු ප්ලාස්කුව", "අනුමාපනවලදී ද්‍රාවණ තබා කරකැවීම; පටු බෙල්ල ඉසීම වළක්වයි. රත් කළ හැක.", "ආසන්න වශයෙන් ±5%", "පුළුල් පතුලක සිට බෙල්ලක් දක්වා පටු වේ"],
+    cylinder: ["මිනුම් සිලින්ඩරය", "එක් කළ යුතු අම්ලය හෝ ජලය වැනි ආසන්න පරිමා මැනීම.", "ආසන්න වශයෙන් ±0.5 cm³ (100 cm³ සිලින්ඩරය)", "උස, ඉහළටම අංශාංකිත, පාදයක් මත"],
+    pipette: ["පිපෙට්ටුව (පූරකය සමඟ)", "එක් ස්ථිර පරිමාවක් නිවැරදිව ලබා දීම, උදා. 25.00 cm³. සෑම විටම පිපෙට්ටු පූරකයක් භාවිත කරන්න.", "±0.03 cm³ (25 cm³ පිපෙට්ටුව)", "මැද බල්බයක්, එක් වළලු සලකුණක් සහ රබර් පූරකයක්"],
+    burette: ["බියුරෙට්ටුව", "අනුමාපනවලදී විචල්‍ය පරිමාවක් නිවැරදිව ලබා දීම.", "එක් පාඨාංකයකට ±0.05 cm³", "පතුලේ කරාමයක් ඇති දිගු අංශාංකිත නළයක්"],
+    volflask: ["පරිමාමිතික ප්ලාස්කුව", "සම්මත ද්‍රාවණයක් නිශ්චිත පරිමාවකට සෑදීම.", "±0.2 cm³ (250 cm³ ප්ලාස්කුව)", "දිගු බෙල්ලක් සහ එක් වළලු සලකුණක් ඇති වටකුරු බල්බයක්"],
+    testtube: ["පරීක්ෂා නළය", "කුඩා පරිමාණ පරීක්ෂා සහ මෘදු රත් කිරීම.", "මැනීම සඳහා නොවේ", "වටකුරු පතුලක් ඇති කුඩා පටු නළයක්"],
+    boilingtube: ["තාපන නළය", "වැඩි ප්‍රමාණ වඩා තදින් රත් කිරීම. පරීක්ෂා නළයකට වඩා පළල සහ දිගය.", "මැනීම සඳහා නොවේ", "පරීක්ෂා නළයකට වඩා පළල, දිග නළයක්"],
+    watchglass: ["ඔරලෝසු වීදුරුව", "ඝන ද්‍රව්‍ය කුඩා ප්‍රමාණ කිරා මාරු කිරීම; බීකරයක් වැසීම; කුඩා පරිමා වාෂ්ප කිරීම.", "මැනීම සඳහා නොවේ", "නොගැඹුරු වක්‍ර වීදුරු පිඟානක්"],
+    funnel: ["පුනීලය", "පටු බෙල්ලකට ද්‍රව මාරු කිරීම; පෙරහන් කඩදාසි සමඟ පෙරීම.", "මැනීම සඳහා නොවේ", "පටු දණ්ඩක් ඇති කේතුවක්"],
+  },
+  objL: "වස්තුව", place: "තැටිය මත තබන්න", remove: "තැටියෙන් ඉවත් කරන්න", zeroL: "ශුන්‍ය සීරුමාරුව", readL: "ස්කන්ධය", record: "ස්කන්ධය සටහන් කරන්න", ridersZero: "සර්පණ බර ශුන්‍යයට ගෙන එන්න",
+  objs: { cyl: "ලෝහ සිලින්ඩරය", stopper: "රබර් ඇබය", beaker: "හිස් 100 cm³ බීකරය", stone: "ගල", wg: "ලුණු සහිත ඔරලෝසු වීදුරුව" },
+  beamL: "{b} දණ්ඩ", left: "වමට ගෙන යන්න", right: "දකුණට ගෙන යන්න",
+  b0: "තුලාව ශුන්‍ය කරන්න: තැටිය හිස් විය යුතුය. දර්ශකය 0 මත නැවතෙන තුරු ශුන්‍ය සීරුමාරු ඇණය කරකවන්න.", b0obj: "පළමුව වස්තුව ඉවත් කරන්න. තුලාවක් ශුන්‍ය කරන්නේ තැටිය හිස්ව තිබියදීය.",
+  b1: "වස්තුවක් තෝරා එය තැටිය මත තබන්න.", b2: "දර්ශකය 0 මත නැවතෙන තුරු විශාලතම දණ්ඩේ සිට කුඩාතම දණ්ඩ දක්වා සර්පණ බර ගෙන යන්න.", b3: "දර්ශකය 0 හි ඇත. දඬුවල අගයන් එකතු කර ස්කන්ධය ටයිප් කරන්න.", b4: "ස්කන්ධය සටහන් විය. තවත් වස්තුවක් කිරන්න, නැතහොත් ප්‍රකාරය 3 ට යන්න.",
+  tZeroObj: "ශුන්‍ය කරන්නේ තැටිය හිස්ව ඇති විට පමණි. පළමුව වස්තුව ඉවත් කරන්න.", tPlaceZero: "පළමුව තැටිය හිස්ව තුලාව ශුන්‍ය කරන්න. නැතහොත් ඔබ කියවන සෑම ස්කන්ධයකම ශුන්‍ය දෝෂය ඇතුළත් වේ.",
+  tRiderEmpty: "සර්පණ බර චලනය කිරීමට පෙර වස්තුව තැටිය මත තබන්න.", tCoarse: "විශාලතම දණ්ඩෙන් පටන් ගෙන, ඉන්පසු 10 g, 1 g සහ 0.01 g. විශාලයේ සිට කුඩාට යාම වඩා ඉක්මන්ය.",
+  tTooFar: "දර්ශකය 0 ට පහළට වැටුණා: එම සර්පණ බර එක් කාණ්ඩයකින් වැඩියි. එය එක් කාණ්ඩයක් ආපසු ගෙන ගොස් ඊළඟ කුඩා දණ්ඩ භාවිත කරන්න.",
+  nNotZero: "දර්ශකය තවම 0 මත නැවතී නැත. දිගටම සර්පණ බර සීරුමාරු කරන්න.", nSwing: "කියවීමට පෙර දර්ශකය පැද්දීම නවතින තුරු රැඳී සිටින්න.", nSum: "තවම නිවැරදි නැත. දඬු එකතු කරන්න: {a} + {b} + {c} + {d}.",
+  nOk: "නිවැරදියි: {o} හි ස්කන්ධය {m} g.", nType: "ස්කන්ධය ග්‍රෑම්වලින් ටයිප් කරන්න, උදා. 152.36.", lZero: "තැටිය හිස්ව තුලාව ශුන්‍ය කරන ලදී.", lMass: "{o} හි ස්කන්ධය: {a} g + {b} g + {c} g + {d} g = {m} g.",
+  chipPtr: "දර්ශකය {s}", ptrSwing: "පැද්දෙමින්", ptrZero: "0 හි", ptrHigh: "0 ට ඉහළින්", ptrLow: "0 ට පහළින්", chipPan: "තැටිය: {o}", panEmpty: "හිස්",
+  instL: "උපකරණය", iBur: "බියුරෙට්ටුව", iCyl: "මිනුම් සිලින්ඩරය", iPip: "පිපෙට්ටුව", eyeL: "ඇසේ පිහිටීම", eyeBelow: "පහළ", eyeAbove: "ඉහළ", eyeDn: "ඇස පහළට", eyeUpB: "ඇස ඉහළට",
+  eyeIs: "ඇස {p}", eyePosAbove: "මෙනිස්කසයට ඉහළින්", eyePosLevel: "මෙනිස්කසයට සමතලව", eyePosBelow: "මෙනිස්කසයට පහළින්",
+  mBur: "බියුරෙට්ටුව 0.05 cm³ දක්වා කියවන්න. බියුරෙට්ටු අංක පහළට වැඩි වේ.", mCyl: "මිනුම් සිලින්ඩරය ආසන්නතම 0.5 cm³ ට කියවන්න.", mPip: "මෙනිස්කසයේ පහළ කෙළවර පිපෙට්ටු සලකුණට ඉහළින්ද, මතද, පහළින්ද?",
+  mCheck: "පාඨාංකය පරීක්ෂා කරන්න", mNew: "නව පාඨාංකයක්", mAbove: "සලකුණට ඉහළින්", mOn: "සලකුණ මත", mBelow: "සලකුණට පහළින්", mType: "පාඨාංකය cm³ වලින් ටයිප් කරන්න.",
+  mParallax: "ඔබේ ඇස {p} ඇති නිසා පාඨාංකය විස්ථාපනය වී ඇත (ලම්බන දෝෂය). පළමුව ඔබේ ඇස මෙනිස්කසයේ පහළ කෙළවරට සමතලව තබන්න. එවිට වළලු සලකුණු සරල රේඛා ලෙස පෙනේ.",
+  mBad: "තවම නිවැරදි නැත. වක්‍ර පෘෂ්ඨයේ පහළ කෙළවර කියවා, ආසන්නතම අංකයේ සිට කුඩා සලකුණු ගණන් කරන්න.", mOk: "නිවැරදියි: {v}.", mOkPip: "නිවැරදියි: මෙනිස්කසය {v}.",
+  lMen: "{i}: ඇස් මට්ටමේදී, මෙනිස්කසයේ පහළ කෙළවරින් {v} කියවන ලදී.", mDoneAll: "උපකරණ තුනම නිවැරදිව කියවා ඇත.",
+  cvColourless: "අවර්ණ (ජලය)", cvEye: "ඇස", cvSight: "දෘෂ්ටි රේඛාව", cvMark: "සලකුණ", cvMenBottom: "මෙනිස්කසයේ පහළ කෙළවර", cvSide: "පැති දර්ශනය",
+  tabGuide: "මාර්ගෝපදේශය", tabObs: "නිරීක්ෂණ", tabColours: "වර්ණ", tabQuiz: "ප්‍රශ්න",
+  aimH: "අරමුණ", aim: "විද්‍යාගාර වීදුරු උපකරණ සහ ඒවායේ කාර්යය හඳුනා ගැනීම සහ දඬු හතරේ තුලාවකින් නිවැරදිව කිරීම.",
+  appH: "උපකරණ", app: ["බීකරය", "කේතු ප්ලාස්කුව", "මිනුම් සිලින්ඩරය", "පිපෙට්ටුව + පූරකය", "බියුරෙට්ටුව", "පරිමාමිතික ප්ලාස්කුව", "පරීක්ෂා නළය", "තාපන නළය", "ඔරලෝසු වීදුරුව", "පුනීලය", "දඬු හතරේ තුලාව", "කිරීමට වස්තු"],
+  procH: "ක්‍රියා පිළිවෙළ", steps: ["සෑම වීදුරු උපකරණයක්ම හඳුනාගෙන එහි භාවිතය සහ නිරවද්‍යතාව සමඟ ගළපන්න", "තැටිය හිස්ව දඬු හතරේ තුලාව ශුන්‍ය කරන්න", "වස්තුව තබා, දර්ශකය ශුන්‍යයට එන තුරු විශාලතම දණ්ඩේ සිට කුඩාතම දණ්ඩ දක්වා සර්පණ බර ගෙන යන්න", "දඬුවල එකතුව ලෙස ස්කන්ධය කියවන්න", "පිපෙට්ටුවක, බියුරෙට්ටුවක සහ මිනුම් සිලින්ඩරයක මෙනිස්කසය ඇස් මට්ටමේදී නිවැරදිව කියවන්න ({k}/3)"],
+  safeH: "ආරක්ෂාව", safe: ["දිගු වීදුරු උපකරණ (බියුරෙට්ටු, පිපෙට්ටු) දෑතින්ම සෘජුව රැගෙන යන්න.", "කිසිවිටෙක මුඛයෙන් පිපෙට්ටු නොකරන්න. සෑම විටම පිපෙට්ටු පූරකයක් භාවිත කරන්න.", "පරිමාමිතික වීදුරු උපකරණ උඳුනක වියළා නොගන්න: රත් කිරීමෙන් ඒවායේ ක්‍රමාංකනය වෙනස් වේ.", "කැඩුණු හෝ ඉරිතැලුණු වීදුරු උපකරණ දැනුම් දෙන්න. ඒවා භාවිත නොකරන්න."],
+  logH: "නිරීක්ෂණ සටහන", resG: "වීදුරු උපකරණ", resB: "කිරීම්", resM: "මෙනිස්කස පාඨාංක", thItem: "අයිතමය", thUse: "භාවිතය", thAcc: "නිරවද්‍යතාව", thObj: "වස්තුව", thMass: "ස්කන්ධය / g", thInst: "උපකරණය", thReading: "පාඨාංකය", none: "තවම කිසිවක් සටහන් කර නැත.",
+  coloursH: "වර්ණ සහ දෘශ්‍යමාන වෙනස්කම්", noColour: "මෙම ප්‍රායෝගිකයේ වර්ණ වෙනසක් නැත. ඒ වෙනුවට ඔබ පැහැදිලිව දැකිය යුතු දේ මෙම කාඩ්පත්වල ඇත: අවර්ණ ජලය සහ ලම්බන දෝෂය.",
+  cWater: "ජලය", cColourless: "අවර්ණ (හිස්ව පෙනීම වැළැක්වීමට රේඛා ඇඳ ඇත)", cMenL: "පෘෂ්ඨය බලන්න", cMenS: "මෙනිස්කසය", cMenRead: "අවතල: වක්‍රයේ පහළ කෙළවර කියවන්න",
+  cEyeAbove: "ඇස ඉහළින්", cParallax: "ලම්බන දෝෂය: පාඨාංකය විස්ථාපනය වී පෙනේ", cMoveEye: "ඇස සමතලයට ගෙන එන්න", cEyeLevel: "ඇස් මට්ටම", cTrue: "සත්‍ය පාඨාංකය",
+  replayH: "නැවත බැලීම: තුලා දර්ශකය නිශ්චල වීම", replayIntro: "සෑම සර්පණ බර චලනයකටම පසු දර්ශකය පැද්දී සෙමින් නිශ්චල වේ. අවසන් පැද්දීම ස්ලයිඩරයෙන් බලන්න.", play: "සෙමින් ධාවනය", pause: "නවතන්න", rNone: "පැද්දීමක් සටහන් කිරීමට තුලාවේ සර්පණ බරක් චලනය කරන්න.", rAt: "තත්. {t} · දර්ශකය {d}",
+  quizH: "දැනුම පරීක්ෂාව", tryAgain: "නැවත උත්සාහ කරන්න", best: "උපරිම {p}%", scoreLeft: "ඉතිරි {n}", correct: "නිවැරදියි. ", notQuite: "තවම නිවැරදි නැත. ", tDone: "ප්‍රායෝගිකය අවසන්! දැන් ප්‍රශ්න ටැබයේ ප්‍රශ්නවලට පිළිතුරු දෙන්න.",
+  canvasBal: "වම් පසින් තැටියක්, සර්පණ බර සහිත දඬු හතරක් සහ දකුණු පසින් දර්ශකයක් ඇති දඬු හතරේ තුලාව. සර්පණ බරක් එහි දණ්ඩ දිගේ අදින්න.", canvasMen: "පරිමාණයක් සහ ජල මෙනිස්කසයක් ඇති නළයක සමීප දර්ශනය, සහ ඔබේ ඇස පිහිටන තැන පෙන්වන පැති දර්ශනයක්.",
+  quiz: [
+    { q: "හරියටම 25.00 cm³ ලබා දෙන වීදුරු උපකරණය කුමක්ද?", o: ["මිනුම් සිලින්ඩරය", "බීකරය", "පිපෙට්ටුව", "කේතු ප්ලාස්කුව"], e: "පිපෙට්ටුවක් එක් පරිමාවක් ලබා දීමට ක්‍රමාංකනය කර ඇත." },
+    { q: "පරිමාමිතික වීදුරු උපකරණ උඳුනක වියළා නොගත යුත්තේ…", o: ["එය දියවන නිසා", "රත් කිරීමෙන් එහි ක්‍රමාංකනය වෙනස් වන නිසා", "එය අපිරිසිදු වන නිසා", "එය සැමවිටම ඉරිතැලෙන නිසා"], e: "ප්‍රසාරණය ක්‍රමාංකිත පරිමාව වෙනස් කරයි." },
+    { q: "දඬු හතරේ තුලාවක සර්පණ බර ගෙන යන්නේ…", o: ["කුඩාතම දණ්ඩෙන් පළමුව", "විශාලතම දණ්ඩෙන් පළමුව", "අහඹු ලෙස", "කුඩාතම දණ්ඩේ පමණි"], e: "විශාලයේ සිට කුඩාට." },
+    { q: "ජල මෙනිස්කසයක් කියවන්නේ…", o: ["ඉහළ කෙළවර, ඉහළ සිට", "පහළ කෙළවර, ඇස් මට්ටමේදී", "පැත්තෙන්", "ඕනෑම කෝණයකින්"], e: "ලම්බන දෝෂය වළක්වයි." },
+  ],
+},
+ta: {
+  eyebrow: "க.பொ.த (உ/த) இரசாயனவியல் · அலகு 03 · இரசாயனக் கணிப்புகள் · பரிசோதனை 3", title: "கண்ணாடி உபகரணங்களைக் கையாளலும் நான்கு கோல் தராசும்", student: "மாணவர்: {name}{cls}", reset: "மீண்டும் தொடங்கு",
+  modeL: "முறை", m1: "1 · கண்ணாடி உபகரணங்கள்", m2: "2 · நான்கு கோல் தராசு", m3: "3 · பிறை வாசித்தல்",
+  lockBal: "முதலில் படி 1 ஐ முடிக்க: எல்லாக் கண்ணாடி உபகரணங்களையும் இனங்காண்க. பயன்படுத்தும் முன் உபகரணங்களை அறிய வேண்டும்.", lockMen: "முதலில் தராசை முடிக்க (படிகள் 2–4), பின் பிறை வாசிப்பைப் பயிற்சி செய்க.",
+  binPrecise: "துல்லியக் கனவளவு", binApprox: "அண்ணளவுக் கனவளவு", binHeat: "வெப்பமாக்கல்", binTransfer: "இடமாற்றல்",
+  binPreciseS: "ஒரு கனவளவைச் சரியாக அளக்கும்", binApproxS: "அண்ணளவான கனவளவுகள் மட்டும்", binHeatS: "நேரடியாக வெப்பமாக்கலாம்", binTransferS: "திரவங்களை அல்லது திண்மங்களை மாற்றும்",
+  nameSel: "பெயரைத் தெரிவு…", pick: "உருப்படி {n} ஐ எடு", item: "உருப்படி {n}",
+  gPrompt: "ஒவ்வோர் உருப்படியையும் பெயரிட்டுச் சரியான பெட்டிக்குள் இழுக்கவும் (அல்லது படத்தைத் தட்டிப் பின் பெட்டியைத் தட்டவும்). 10 இல் {k} வைக்கப்பட்டுள்ளன.", gDone: "10 உருப்படிகளும் இனங்காணப்பட்டன. இப்போது முறை 2, நான்கு கோல் தராசுக்குச் செல்க.",
+  gNoName: "முதலில் பெயரிடுக: படத்தின் கீழுள்ள பட்டியலிலிருந்து பெயரைத் தெரிவு செய்க.", gBadName: "சரியில்லை. மீண்டும் பாருங்கள்: {hint}", gBadBin: "அந்தப் பெட்டி அல்ல. {name}: {use}", gGood: "சரி: {name}, {acc}.",
+  gSelFirst: "உருப்படியை எடுக்க முதலில் ஒரு படத்தைத் தட்டவும்.",
+  g: {
+    beaker: ["முகவை", "திரவங்களை வைத்திருத்தல், கலத்தல், வெப்பமாக்கல். அதன் அளவீடுகள் அண்ணளவானவை.", "சுமார் ±5%", "ஊற்றும் விளிம்புடன் அகலமான நேர் சுவர்கள்"],
+    conical: ["கூம்புக் குடுவை", "நியமிப்பில் கரைசல்களை வைத்துச் சுழற்றல்; ஒடுங்கிய கழுத்து தெறிப்பதைத் தடுக்கும். வெப்பமாக்கலாம்.", "சுமார் ±5%", "அகன்ற அடியிலிருந்து கழுத்தை நோக்கி ஒடுங்குகிறது"],
+    cylinder: ["அளவு உருளை", "சேர்க்க வேண்டிய அமிலம் அல்லது நீர் போன்ற அண்ணளவான கனவளவுகளை அளத்தல்.", "சுமார் ±0.5 cm³ (100 cm³ உருளை)", "உயரமானது, மேல்வரை அளவீடு செய்யப்பட்டது, அடித்தளத்தில் நிற்கிறது"],
+    pipette: ["குழாயி (நிரப்பியுடன்)", "ஒரு நிலையான கனவளவைச் சரியாக வழங்குதல், உ-ம் 25.00 cm³. எப்போதும் குழாயி நிரப்பியைப் பயன்படுத்துக.", "±0.03 cm³ (25 cm³ குழாயி)", "நடுவில் குமிழ், ஒரு வளையக் குறி, இறப்பர் நிரப்பி"],
+    burette: ["அளவி", "நியமிப்பில் மாறும் கனவளவைச் சரியாக வழங்குதல்.", "ஒரு வாசிப்புக்கு ±0.05 cm³", "அடியில் அடைப்பானுள்ள நீண்ட அளவீட்டுக் குழாய்"],
+    volflask: ["அளவீட்டுக் குடுவை", "நியமக் கரைசலைச் சரியான கனவளவுக்குத் தயாரித்தல்.", "±0.2 cm³ (250 cm³ குடுவை)", "நீண்ட கழுத்தும் ஒரு வளையக் குறியுமுள்ள உருண்டைக் குமிழ்"],
+    testtube: ["சோதனைக் குழாய்", "சிறிய அளவுச் சோதனைகளும் மெதுவான வெப்பமாக்கலும்.", "அளப்பதற்கல்ல", "உருண்டை அடியுள்ள சிறிய ஒடுங்கிய குழாய்"],
+    boilingtube: ["கொதிகுழாய்", "அதிக அளவுகளைக் கூடுதலாக வெப்பமாக்கல். சோதனைக் குழாயை விட அகலமும் நீளமும் கூடியது.", "அளப்பதற்கல்ல", "சோதனைக் குழாயை விட அகலமான, நீளமான குழாய்"],
+    watchglass: ["கடிகாரக் கண்ணாடி", "சிறிய அளவுத் திண்மங்களை நிறுத்தலும் மாற்றலும்; முகவையை மூடுதல்; சிறிய கனவளவுகளை ஆவியாக்கல்.", "அளப்பதற்கல்ல", "ஆழமற்ற வளைந்த கண்ணாடித் தட்டு"],
+    funnel: ["புனல்", "ஒடுங்கிய கழுத்துகளுக்குள் திரவங்களை மாற்றல்; வடிதாளுடன் வடித்தல்.", "அளப்பதற்கல்ல", "ஒடுங்கிய தண்டுடைய கூம்பு"],
+  },
+  objL: "பொருள்", place: "தட்டில் வை", remove: "தட்டிலிருந்து அகற்று", zeroL: "பூச்சியச் சீராக்கம்", readL: "திணிவு", record: "திணிவைப் பதி", ridersZero: "நகர் படிகளைப் பூச்சியத்துக்குக் கொண்டுவா",
+  objs: { cyl: "உலோக உருளை", stopper: "இறப்பர் அடைப்பான்", beaker: "வெற்று 100 cm³ முகவை", stone: "கல்", wg: "உப்புடன் கடிகாரக் கண்ணாடி" },
+  beamL: "{b} கோல்", left: "இடப்புறம் நகர்த்து", right: "வலப்புறம் நகர்த்து",
+  b0: "தராசைப் பூச்சியமாக்குக: தட்டு வெறுமையாக இருக்க வேண்டும். சுட்டி 0 இல் நிற்கும் வரை பூச்சியச் சீராக்கத் திருகைச் சுழற்றுக.", b0obj: "முதலில் பொருளை அகற்றுக. தட்டு வெறுமையாக இருக்கும்போதே தராசு பூச்சியமாக்கப்படும்.",
+  b1: "ஒரு பொருளைத் தெரிவு செய்து தட்டில் வைக்க.", b2: "சுட்டி 0 இல் நிற்கும் வரை பெரிய கோலிலிருந்து சிறிய கோல் வரை நகர் படிகளை நகர்த்துக.", b3: "சுட்டி 0 இல் உள்ளது. கோல்களைக் கூட்டித் திணிவை உள்ளிடுக.", b4: "திணிவு பதியப்பட்டது. வேறொரு பொருளை நிறுக்க, அல்லது முறை 3 இற்குச் செல்க.",
+  tZeroObj: "தட்டு வெறுமையாக இருக்கும்போது மட்டும் பூச்சியமாக்குக. முதலில் பொருளை அகற்றுக.", tPlaceZero: "முதலில் தட்டு வெறுமையாக இருக்கும்போது தராசைப் பூச்சியமாக்குக. இல்லையெனில் ஒவ்வொரு திணிவிலும் பூச்சிய வழு சேரும்.",
+  tRiderEmpty: "நகர் படிகளை நகர்த்தும் முன் பொருளைத் தட்டில் வைக்க.", tCoarse: "பெரிய கோலிலிருந்து தொடங்கிப் பின் 10 g, 1 g, 0.01 g. பெரியதிலிருந்து சிறியதுக்குச் செல்வது விரைவானது.",
+  tTooFar: "சுட்டி 0 இற்குக் கீழே விழுந்தது: அந்த நகர் படி ஒரு பள்ளம் அதிகம். அதை ஒரு பள்ளம் பின்னுக்கு நகர்த்தி, அடுத்த சிறிய கோலைப் பயன்படுத்துக.",
+  nNotZero: "சுட்டி இன்னும் 0 இல் நிற்கவில்லை. நகர் படிகளைத் தொடர்ந்து சீராக்குக.", nSwing: "வாசிக்கும் முன் சுட்டி ஆடுவது நிற்கும் வரை காத்திருக்க.", nSum: "சரியில்லை. கோல்களைக் கூட்டுக: {a} + {b} + {c} + {d}.",
+  nOk: "சரி: {o} இன் திணிவு {m} g.", nType: "திணிவைக் கிராமில் உள்ளிடுக, உ-ம் 152.36.", lZero: "தட்டு வெறுமையாக இருக்கத் தராசு பூச்சியமாக்கப்பட்டது.", lMass: "{o} இன் திணிவு: {a} g + {b} g + {c} g + {d} g = {m} g.",
+  chipPtr: "சுட்டி {s}", ptrSwing: "ஆடுகிறது", ptrZero: "0 இல்", ptrHigh: "0 இற்கு மேல்", ptrLow: "0 இற்குக் கீழ்", chipPan: "தட்டு: {o}", panEmpty: "வெறுமை",
+  instL: "உபகரணம்", iBur: "அளவி", iCyl: "அளவு உருளை", iPip: "குழாயி", eyeL: "கண் நிலை", eyeBelow: "கீழ்", eyeAbove: "மேல்", eyeDn: "கண் கீழே", eyeUpB: "கண் மேலே",
+  eyeIs: "கண் {p}", eyePosAbove: "பிறைக்கு மேலே", eyePosLevel: "பிறையின் மட்டத்தில்", eyePosBelow: "பிறைக்குக் கீழே",
+  mBur: "அளவியை 0.05 cm³ வரை வாசிக்க. அளவியின் எண்கள் கீழ்நோக்கி அதிகரிக்கின்றன.", mCyl: "அளவு உருளையை அண்மித்த 0.5 cm³ இற்கு வாசிக்க.", mPip: "பிறையின் அடிப்பகுதி குழாயிக் குறிக்கு மேலேயா, குறியிலா, கீழேயா?",
+  mCheck: "வாசிப்பைச் சரிபார்", mNew: "புதிய வாசிப்பு", mAbove: "குறிக்கு மேலே", mOn: "குறியில்", mBelow: "குறிக்குக் கீழே", mType: "வாசிப்பை cm³ இல் உள்ளிடுக.",
+  mParallax: "உங்கள் கண் {p} இருப்பதால் வாசிப்பு இடம் பெயர்ந்துள்ளது (இடமாறு தோற்றவழு). முதலில் கண்ணைப் பிறையின் அடிப்பகுதியின் மட்டத்துக்குக் கொண்டுவருக. அப்போது வளையக் குறிகள் நேர்கோடுகளாகத் தெரியும்.",
+  mBad: "சரியில்லை. வளைந்த மேற்பரப்பின் அடிப்பகுதியை வாசித்து, அண்மித்த எண்ணிலிருந்து சிறிய குறிகளை எண்ணுக.", mOk: "சரி: {v}.", mOkPip: "சரி: பிறை {v}.",
+  lMen: "{i}: கண் மட்டத்தில், பிறையின் அடிப்பகுதியில் {v} வாசிக்கப்பட்டது.", mDoneAll: "மூன்று உபகரணங்களும் சரியாக வாசிக்கப்பட்டன.",
+  cvColourless: "நிறமற்றது (நீர்)", cvEye: "கண்", cvSight: "பார்வைக் கோடு", cvMark: "குறி", cvMenBottom: "பிறையின் அடிப்பகுதி", cvSide: "பக்கத் தோற்றம்",
+  tabGuide: "வழிகாட்டி", tabObs: "அவதானிப்புகள்", tabColours: "நிறங்கள்", tabQuiz: "வினாக்கள்",
+  aimH: "நோக்கம்", aim: "ஆய்வுகூடக் கண்ணாடி உபகரணங்களையும் அவற்றின் பயன்பாட்டையும் இனங்காணலும் நான்கு கோல் தராசால் துல்லியமாக நிறுத்தலும்.",
+  appH: "உபகரணங்கள்", app: ["முகவை", "கூம்புக் குடுவை", "அளவு உருளை", "குழாயி + நிரப்பி", "அளவி", "அளவீட்டுக் குடுவை", "சோதனைக் குழாய்", "கொதிகுழாய்", "கடிகாரக் கண்ணாடி", "புனல்", "நான்கு கோல் தராசு", "நிறுக்க வேண்டிய பொருட்கள்"],
+  procH: "செய்முறை", steps: ["ஒவ்வொரு கண்ணாடி உபகரணத்தையும் இனங்கண்டு அதன் பயன்பாட்டுடனும் துல்லியத்துடனும் பொருத்துக", "தட்டு வெறுமையாக இருக்க நான்கு கோல் தராசைப் பூச்சியமாக்குக", "பொருளை வைத்து, சுட்டி பூச்சியத்தில் வரும் வரை பெரிய கோலிலிருந்து சிறிய கோல் வரை நகர் படிகளை நகர்த்துக", "கோல்களின் கூட்டுத்தொகையாகத் திணிவை வாசிக்க", "குழாயி, அளவி, அளவு உருளை ஆகியவற்றின் பிறையைக் கண் மட்டத்தில் சரியாக வாசிக்க ({k}/3)"],
+  safeH: "பாதுகாப்பு", safe: ["நீண்ட கண்ணாடி உபகரணங்களை (அளவி, குழாயி) இரு கைகளாலும் நிமிர்த்திக் கொண்டுசெல்க.", "ஒருபோதும் வாயால் உறிஞ்சாதீர். எப்போதும் குழாயி நிரப்பியைப் பயன்படுத்துக.", "அளவீட்டுக் கண்ணாடி உபகரணங்களை அடுப்பில் உலர்த்தாதீர்: வெப்பம் அவற்றின் அளவுகோலை மாற்றும்.", "உடைந்த அல்லது வெடித்த கண்ணாடி உபகரணங்களை அறிவிக்க. அவற்றைப் பயன்படுத்தாதீர்."],
+  logH: "அவதானிப்புப் பதிவு", resG: "கண்ணாடி உபகரணங்கள்", resB: "நிறுவைகள்", resM: "பிறை வாசிப்புகள்", thItem: "உருப்படி", thUse: "பயன்பாடு", thAcc: "துல்லியம்", thObj: "பொருள்", thMass: "திணிவு / g", thInst: "உபகரணம்", thReading: "வாசிப்பு", none: "இதுவரை எதுவும் பதியப்படவில்லை.",
+  coloursH: "நிறங்களும் காணக்கூடிய மாற்றங்களும்", noColour: "இச்செய்முறையில் நிறமாற்றம் இல்லை. அதற்குப் பதிலாக நீங்கள் தெளிவாகக் காண வேண்டியவை இந்த அட்டைகளில் உள்ளன: நிறமற்ற நீரும் இடமாறு தோற்றவழுவும்.",
+  cWater: "நீர்", cColourless: "நிறமற்றது (வெறுமையாகத் தோன்றாதிருக்கக் கோடிடப்பட்டது)", cMenL: "மேற்பரப்பைப் பாருங்கள்", cMenS: "பிறை", cMenRead: "குழிவு: வளைவின் அடிப்பகுதியை வாசிக்க",
+  cEyeAbove: "கண் மேலே", cParallax: "இடமாறு தோற்றவழு: வாசிப்பு இடம்பெயர்ந்து தெரிகிறது", cMoveEye: "கண்ணை மட்டத்துக்குக் கொண்டுவா", cEyeLevel: "கண் மட்டம்", cTrue: "உண்மையான வாசிப்பு",
+  replayH: "மீண்டும் பார்: தராசுச் சுட்டி நிலைபெறுதல்", replayIntro: "ஒவ்வொரு நகர் படி நகர்வுக்குப் பின்னும் சுட்டி ஆடிப் பின் மெதுவாக நிலைபெறுகிறது. கடைசி ஆட்டத்தை வழுக்கியால் பாருங்கள்.", play: "மெதுவாக இயக்கு", pause: "நிறுத்து", rNone: "ஓர் ஆட்டத்தைப் பதிவு செய்யத் தராசின் நகர் படியை நகர்த்துக.", rAt: "{t} செக். · சுட்டி {d}",
+  quizH: "அறிவுச் சோதனை", tryAgain: "மீண்டும் முயல்க", best: "அதிகூடியது {p}%", scoreLeft: "{n} மீதம்", correct: "சரி. ", notQuite: "சரியில்லை. ", tDone: "செய்முறை முடிந்தது! இப்போது வினாக்கள் தாவலில் உள்ள வினாக்களுக்கு விடையளிக்க.",
+  canvasBal: "இடப்புறம் தட்டு, நகர் படிகளுடன் நான்கு கோல்கள், வலப்புறம் சுட்டி உள்ள நான்கு கோல் தராசு. நகர் படியை அதன் கோல் வழியே இழுக்கவும்.", canvasMen: "அளவுகோலும் நீர்ப் பிறையும் உள்ள குழாயின் அண்மைத் தோற்றம், உங்கள் கண் இருக்குமிடத்தைக் காட்டும் பக்கத் தோற்றம்.",
+  quiz: [
+    { q: "சரியாக 25.00 cm³ ஐ வழங்கும் கண்ணாடி உபகரணம் எது?", o: ["அளவு உருளை", "முகவை", "குழாயி", "கூம்புக் குடுவை"], e: "குழாயி ஒரு கனவளவை வழங்குமாறு அளவுகோலிடப்பட்டுள்ளது." },
+    { q: "அளவீட்டுக் கண்ணாடி உபகரணங்களை அடுப்பில் உலர்த்தக் கூடாது, ஏனெனில்…", o: ["அது உருகும்", "வெப்பம் அதன் அளவுகோலை மாற்றும்", "அது அழுக்காகும்", "அது எப்போதும் வெடிக்கும்"], e: "விரிவு அளவுகோலிட்ட கனவளவை மாற்றுகிறது." },
+    { q: "நான்கு கோல் தராசில் நகர் படிகள் நகர்த்தப்படுவது…", o: ["சிறிய கோல் முதலில்", "பெரிய கோல் முதலில்", "எழுமாறாக", "சிறிய கோல் மட்டும்"], e: "பெரியதிலிருந்து சிறியதுக்கு." },
+    { q: "நீரின் பிறை வாசிக்கப்படுவது…", o: ["மேற்பகுதியில், மேலிருந்து", "அடிப்பகுதியில், கண் மட்டத்தில்", "பக்கத்திலிருந்து", "எந்தக் கோணத்திலும்"], e: "இடமாறு தோற்றவழுவைத் தவிர்க்கிறது." },
+  ],
+},
+};
+const QUIZ_ANS = [2, 1, 1, 1];
+let LANG = "en";
+try { const s = localStorage.getItem("svl-lang") || localStorage.getItem("kmno4-lang"); if (s && I18N[s]) LANG = s; else { const n = (navigator.language || "").slice(0, 2); if (I18N[n]) LANG = n; } } catch (e) {}
+function t(key, p) { let s = I18N[LANG][key]; if (s === undefined) s = I18N.en[key]; if (s === undefined) return key; if (p && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (_, k) => p[k] ?? ""); return s; }
+const G = id => (I18N[LANG].g || I18N.en.g)[id], OBJ = id => (I18N[LANG].objs || I18N.en.objs)[id];
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// =====================================================================
+// GLASSWARE DATA + DRAWINGS
+// =====================================================================
+const ST = 'stroke="#4f6b78" stroke-width="2" fill="rgba(214,234,242,.55)" stroke-linejoin="round"';
+const GR = (x1, x2, ys) => ys.map(y => `<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="#4f6b78" stroke-width="1"/>`).join("");
+const SVG = {
+  beaker: `<path d="M12 18 L12 98 Q12 104 18 104 L46 104 Q52 104 52 98 L52 18 L56 13" ${ST}/><path d="M12 18 L9 14" ${ST}/>${GR(14, 22, [40, 55, 70, 85])}`,
+  conical: `<path d="M25 10 L25 40 L7 98 Q6 104 13 104 L51 104 Q58 104 57 98 L39 40 L39 10" ${ST}/><path d="M23 10 L41 10" stroke="#4f6b78" stroke-width="3"/>${GR(20, 26, [70, 85])}`,
+  cylinder: `<path d="M24 4 L24 94 L40 94 L40 4 L43 1" ${ST}/><path d="M12 94 L52 94 L50 104 L14 104 Z" ${ST}/>${GR(24, 30, [14, 20, 26, 32, 38, 44, 50, 56, 62, 68, 74, 80, 86])}${GR(24, 35, [14, 44, 74])}`,
+  pipette: `<ellipse cx="32" cy="9" rx="7" ry="8" fill="#c0392b" stroke="#7a1f16" stroke-width="1.5"/><path d="M30 16 L30 44 Q22 50 22 60 Q22 72 30 76 L31 106 L33 106 L34 76 Q42 72 42 60 Q42 50 34 44 L34 16 Z" ${ST}/><line x1="28" y1="30" x2="36" y2="30" stroke="#1c2a31" stroke-width="1.6"/>`,
+  burette: `<path d="M28 2 L28 88 L36 88 L36 2" ${ST}/>${GR(28, 33, [10, 18, 26, 34, 42, 50, 58, 66, 74, 82])}<rect x="22" y="88" width="20" height="7" rx="3" fill="#e9eef0" stroke="#4f6b78"/><rect x="40" y="89" width="12" height="5" rx="2" fill="#2b353b"/><path d="M30 95 L31 108 L33 108 L34 95" ${ST}/>`,
+  volflask: `<path d="M28 4 L28 64 Q10 70 10 86 Q10 106 32 106 Q54 106 54 86 Q54 70 36 64 L36 4" ${ST}/><rect x="26" y="0" width="12" height="6" rx="2" fill="#3b4a52"/><line x1="26" y1="30" x2="38" y2="30" stroke="#1c2a31" stroke-width="1.6"/>`,
+  testtube: `<path d="M26 40 L26 92 Q26 100 32 100 Q38 100 38 92 L38 40" ${ST}/><path d="M24 40 L40 40" stroke="#4f6b78" stroke-width="3"/>`,
+  boilingtube: `<path d="M21 8 L21 96 Q21 106 32 106 Q43 106 43 96 L43 8" ${ST}/><path d="M19 8 L45 8" stroke="#4f6b78" stroke-width="3"/>`,
+  watchglass: `<path d="M4 60 Q32 82 60 60 Q32 74 4 60 Z" ${ST}/><path d="M10 64 Q32 76 54 64" stroke="rgba(255,255,255,.9)" stroke-width="1.5" fill="none"/>`,
+  funnel: `<path d="M6 26 L58 26 L35 58 L35 104 L29 104 L29 58 Z" ${ST}/><path d="M12 30 L30 54" stroke="rgba(255,255,255,.9)" stroke-width="2"/>`,
+};
+const svgOf = id => `<svg viewBox="0 0 64 110" aria-hidden="true">${SVG[id]}</svg>`;
+const GLASS = [
+  { id: "beaker", bins: ["approx", "heat"] }, { id: "conical", bins: ["approx", "heat"] }, { id: "cylinder", bins: ["approx"] }, { id: "pipette", bins: ["precise"] },
+  { id: "burette", bins: ["precise"] }, { id: "volflask", bins: ["precise"] }, { id: "testtube", bins: ["heat"] }, { id: "boilingtube", bins: ["heat"] },
+  { id: "watchglass", bins: ["transfer"] }, { id: "funnel", bins: ["transfer"] },
+];
+const BINS = [["precise", "binPrecise", "binPreciseS"], ["approx", "binApprox", "binApproxS"], ["heat", "binHeat", "binHeatS"], ["transfer", "binTransfer", "binTransferS"]];
+
+// =====================================================================
+// STATE
+// =====================================================================
+const BEAMS = [{ lab: "100 g", steps: 2, unit: 10000 }, { lab: "10 g", steps: 10, unit: 1000 }, { lab: "1 g", steps: 10, unit: 100 }, { lab: "0.01 g", steps: 100, unit: 1 }];
+const OBJS = [["cyl", 15000, 25000], ["stopper", 2000, 6000], ["beaker", 4500, 6200], ["stone", 8000, 22000], ["wg", 2200, 3600]];
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+let S;
+function freshState() {
+  const order = GLASS.map(g => g.id).sort(() => Math.random() - .5);
+  const masses = {}; OBJS.forEach(([k, a, b]) => masses[k] = ri(a, b));
+  return {
+    mode: "glass", order, names: {}, placed: {}, sel: null, ev: {}, logs: [], answered: {}, done: false, confetti: [],
+    bal: { off: (Math.random() < .5 ? -1 : 1) * ri(25, 80), knob: 0, obj: null, r: [0, 0, 0, 0], th: 0, w: 0, masses, coarseWarned: false, farWarned: false, zeroed: false, hist: [], histOn: false, histT: 0, tries: 0 },
+    men: { inst: "burette", eye: .7, vals: {}, done: {}, tries: 0 },
+    results: { g: [], b: [], m: [] },
+  };
+}
+function newMen(inst) {
+  if (inst === "burette") return +(ri(10, 960) * .05).toFixed(2);
+  if (inst === "cylinder") return ri(20, 180) * .5;
+  return ["above", "on", "below"][ri(0, 2)];
+}
+
+// =====================================================================
+// GLASSWARE MODE (HTML)
+// =====================================================================
+function renderGlass() {
+  const k = Object.keys(S.placed).length;
+  $("bins").innerHTML = BINS.map(([b, n, s]) => `<button class="bin ${S.sel ? "armed" : ""}" data-bin="${b}"><b>${esc(t(n))}</b><small>${esc(t(s))}</small>${Object.entries(S.placed).filter(([, bb]) => bb === b).map(([id]) => `<span class="placed">${svgOf(id)}<span>${esc(G(id)[0])} · ${esc(G(id)[2])}</span></span>`).join("")}</button>`).join("");
+  $("cards").innerHTML = S.order.filter(id => !S.placed[id]).map(id => { const n = S.order.indexOf(id) + 1;
+    return `<div class="gcard ${S.sel === id ? "sel" : ""}" data-id="${id}"><span class="num">${esc(t("item", { n }))}</span><button class="gpic" data-pic="${id}" aria-label="${esc(t("pick", { n }))}">${svgOf(id)}</button>
+      <select data-name="${id}" aria-label="${esc(t("item", { n }))}"><option value="">${esc(t("nameSel"))}</option>${GLASS.map(g => `<option value="${g.id}" ${S.names[id] === g.id ? "selected" : ""}>${esc(G(g.id)[0])}</option>`).sort().join("")}</select></div>`; }).join("");
+  $("cards").querySelectorAll("select[data-name]").forEach(s => s.onchange = () => { S.names[s.dataset.name] = s.value; });
+  $("cards").querySelectorAll(".gpic").forEach(wirePic);
+  $("bins").querySelectorAll(".bin").forEach(b => b.onclick = () => { if (!S.sel) return toast("gSelFirst", "warn"); dropOn(S.sel, b.dataset.bin); });
+}
+function dropOn(id, bin) {
+  const nm = S.names[id];
+  if (!nm) return toast("gNoName", "warn", 3800);
+  if (nm !== id) return toast("gBadName", "warn", 4600, { hint: G(id)[3] });
+  const g = GLASS.find(x => x.id === id);
+  if (!g.bins.includes(bin)) return toast("gBadBin", "warn", 5200, { name: G(id)[0], use: G(id)[1] });
+  S.placed[id] = bin; S.sel = null; S.results.g.push(id); log(["gGood", { id }]); toast("gGood", "good", 3000, { name: G(id)[0], acc: G(id)[2] });
+  if (Object.keys(S.placed).length === 10 && !S.ev.glass) { S.ev.glass = 1; }
+  renderAllLite();
+}
+function wirePic(btn) {
+  let st = null, ghost = null;
+  btn.addEventListener("pointerdown", e => { st = { x: e.clientX, y: e.clientY }; try { btn.setPointerCapture(e.pointerId); } catch (_) {} });
+  btn.addEventListener("pointermove", e => { if (!st) return; if (!ghost && Math.hypot(e.clientX - st.x, e.clientY - st.y) > 6) { ghost = document.createElement("div"); ghost.className = "ghost"; ghost.innerHTML = svgOf(btn.dataset.pic); document.body.append(ghost); }
+    if (ghost) { ghost.style.left = e.clientX + "px"; ghost.style.top = e.clientY + "px"; $("bins").querySelectorAll(".bin").forEach(b => { const r = b.getBoundingClientRect(); b.classList.toggle("hot", e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom); }); } });
+  btn.addEventListener("pointerup", e => { if (!st) return; const moved = !!ghost; if (ghost) ghost.remove(); ghost = null; st = null;
+    $("bins").querySelectorAll(".bin").forEach(b => b.classList.remove("hot"));
+    if (!moved) { S.sel = S.sel === btn.dataset.pic ? null : btn.dataset.pic; renderGlass(); return; }
+    const hit = [...$("bins").querySelectorAll(".bin")].find(b => { const r = b.getBoundingClientRect(); return e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom; });
+    if (hit) dropOn(btn.dataset.pic, hit.dataset.bin); });
+  btn.addEventListener("pointercancel", () => { if (ghost) ghost.remove(); ghost = null; st = null; });
+  btn.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); S.sel = S.sel === btn.dataset.pic ? null : btn.dataset.pic; renderGlass(); } });
+}
+
+// =====================================================================
+// CANVAS
+// =====================================================================
+const W = 960, H = 540;
+const cv = $("cv"), ctx = cv.getContext("2d"), vp = $("viewport");
+let dpr = 1, cw = 0, ch = 0, sc = 1, ox = 0, oy = 0, T = {};
+function resize() { const r = vp.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2.5); cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); sc = Math.min(cw / W, ch / H); ox = (cw - W * sc) / 2; oy = (ch - H * sc) / 2; }
+function readTokens() { const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim(); T = { wallTop: g("--wall-top"), wallBot: g("--wall-bot"), bench: g("--bench"), benchEdge: g("--bench-edge"), glass: g("--glass"), ink: g("--ink"), muted: g("--muted"), accent: g("--accent"), current: g("--current") }; }
+new ResizeObserver(resize).observe(vp);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTokens);
+new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const FONT = (w, s) => `${w} ${s}px 'IBM Plex Sans','Noto Sans Sinhala','Noto Sans Tamil',sans-serif`;
+const MONO = (w, s) => `${w} ${s}px 'IBM Plex Mono', monospace`;
+function rr(c, x, y, w, h, r) { c.beginPath(); c.roundRect(x, y, w, h, r); }
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let hatch = null;
+function makeHatch(c) { const h = document.createElement("canvas"); h.width = h.height = 10; const x = h.getContext("2d"); x.strokeStyle = "rgba(60,90,110,.3)"; x.lineWidth = 1; x.beginPath(); x.moveTo(0, 10); x.lineTo(10, 0); x.stroke(); return c.createPattern(h, "repeat"); }
+
+// ---------- balance geometry ----------
+const PIV = { x: 250, y: 300 }, BX0 = 90, BX1 = 590, BEAM_Y = [-66, -30, 6, 42], PAN_X = -110, PTR_X = 660;
+const riderX = (i, n) => BX0 + 30 + (n / BEAMS[i].steps) * (BX1 - BX0 - 60);
+const riderSum = () => S.bal.r.reduce((a, n, i) => a + n * BEAMS[i].unit, 0);
+const diffH = () => (S.bal.obj ? S.bal.masses[S.bal.obj] : 0) + S.bal.off + S.bal.knob - riderSum();
+const fmtG = h => (h / 100).toFixed(2);
+function drawBalance() {
+  const b = S.bal, th = b.th;
+  // bench
+  ctx.fillStyle = T.bench; ctx.fillRect(-ox / sc, 470, (cw) / sc + 10, (ch - oy) / sc - 470 + 10); ctx.fillStyle = T.benchEdge; ctx.fillRect(-ox / sc, 470, cw / sc + 10, 4);
+  // base
+  ctx.fillStyle = "#2f3a40"; rr(ctx, 90, 418, 830, 54, 10); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,.1)"; ctx.fillRect(96, 420, 818, 3);
+  ctx.fillStyle = "#3b4a52"; ctx.beginPath(); ctx.moveTo(PIV.x - 26, 420); ctx.lineTo(PIV.x - 8, PIV.y + 6); ctx.lineTo(PIV.x + 8, PIV.y + 6); ctx.lineTo(PIV.x + 26, 420); ctx.closePath(); ctx.fill();
+  // pointer scale plate
+  const sx = PIV.x + PTR_X + 14; ctx.fillStyle = "#e9eef0"; rr(ctx, sx, PIV.y - 70, 46, 140, 6); ctx.fill(); ctx.strokeStyle = "#7d878c"; ctx.stroke();
+  ctx.strokeStyle = "#1c2a31"; for (let k = -10; k <= 10; k++) { const y = PIV.y + k * 6; ctx.lineWidth = k === 0 ? 2.5 : 1; ctx.beginPath(); ctx.moveTo(sx + 4, y); ctx.lineTo(sx + (k === 0 ? 30 : k % 5 === 0 ? 22 : 14), y); ctx.stroke(); }
+  ctx.fillStyle = "#1c2a31"; ctx.font = MONO(700, 12); ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText("0", sx + 33, PIV.y);
+  ctx.fillStyle = "#2f3a40"; ctx.fillRect(sx + 40, PIV.y - 70, 8, 160);
+  // rotating assembly
+  ctx.save(); ctx.translate(PIV.x, PIV.y); ctx.rotate(-th);
+  // pan hanger
+  ctx.strokeStyle = "#7d878c"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(PAN_X, 0); ctx.lineTo(PAN_X, -78); ctx.stroke();
+  ctx.fillStyle = "#4a5359"; rr(ctx, PAN_X - 10, -4, 210, 14, 4); ctx.fill();
+  // beams
+  BEAMS.forEach((bm, i) => { const y = BEAM_Y[i];
+    const g = ctx.createLinearGradient(0, y - 7, 0, y + 9); g.addColorStop(0, "#e3e8ea"); g.addColorStop(.5, "#b9c3c8"); g.addColorStop(1, "#7f8a90");
+    ctx.fillStyle = g; rr(ctx, BX0, y - 7, PTR_X - BX0 - 20, 16, 3); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,.25)"; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = "#1c2a31"; ctx.font = MONO(600, 11); ctx.textAlign = "right"; ctx.fillText(bm.lab, BX0 - 6, y + 1);
+    // graduations
+    for (let n = 0; n <= bm.steps; n++) { const x = riderX(i, n);
+      if (i < 3) { ctx.fillStyle = "#2b353b"; ctx.beginPath(); ctx.moveTo(x - 4, y - 7); ctx.lineTo(x + 4, y - 7); ctx.lineTo(x, y - 2); ctx.closePath(); ctx.fill();
+        ctx.font = MONO(500, 9.5); ctx.textAlign = "center"; ctx.fillStyle = "#1c2a31"; ctx.fillText(String(i === 0 ? n * 100 : i === 1 ? n * 10 : n), x, y + 4.5); }
+      else { const big = n % 10 === 0, mid = n % 5 === 0; ctx.strokeStyle = "#1c2a31"; ctx.lineWidth = big ? 1.4 : .7; ctx.beginPath(); ctx.moveTo(x, y + 9); ctx.lineTo(x, y + 9 - (big ? 9 : mid ? 6 : 3.5)); ctx.stroke();
+        if (big) { ctx.font = MONO(500, 9); ctx.textAlign = "center"; ctx.fillStyle = "#1c2a31"; ctx.fillText((n / 100).toFixed(1), x, y - 2); } } }
+    // rider
+    const x = riderX(i, b.r[i]), hot = drag && drag.i === i;
+    ctx.fillStyle = hot ? "#c98a00" : "#d9a441"; ctx.strokeStyle = "#5c4a1c"; ctx.lineWidth = 1.2;
+    if (i < 2) { ctx.beginPath(); ctx.moveTo(x - 9, y - 16); ctx.lineTo(x + 9, y - 16); ctx.lineTo(x + 9, y + 12); ctx.lineTo(x + 3, y + 18); ctx.lineTo(x - 3, y + 18); ctx.lineTo(x - 9, y + 12); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.fillStyle = "#3b2c0c"; ctx.beginPath(); ctx.moveTo(x - 3, y - 16); ctx.lineTo(x + 3, y - 16); ctx.lineTo(x, y - 9); ctx.closePath(); ctx.fill(); }
+    else { rr(ctx, x - 7, y - 12, 14, 26, 3); ctx.fill(); ctx.stroke(); ctx.strokeStyle = "#c0392b"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, y - 12); ctx.lineTo(x, y + 14); ctx.stroke(); }
+  });
+  // pointer arm
+  ctx.fillStyle = "#4a5359"; ctx.beginPath(); ctx.moveTo(PTR_X - 30, -4); ctx.lineTo(PTR_X + 20, -1); ctx.lineTo(PTR_X + 20, 1); ctx.lineTo(PTR_X - 30, 4); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#c0392b"; ctx.beginPath(); ctx.moveTo(PTR_X + 20, -3); ctx.lineTo(PTR_X + 30, 0); ctx.lineTo(PTR_X + 20, 3); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#1c2a31"; ctx.beginPath(); ctx.arc(0, 0, 6, 0, 7); ctx.fill();
+  // pan
+  const pg = ctx.createLinearGradient(PAN_X - 90, 0, PAN_X + 90, 0); pg.addColorStop(0, "#9aa5ab"); pg.addColorStop(.5, "#eef2f4"); pg.addColorStop(1, "#8a959b");
+  ctx.fillStyle = pg; ctx.beginPath(); ctx.ellipse(PAN_X, -82, 88, 14, 0, 0, 7); ctx.fill(); ctx.strokeStyle = "#5b666c"; ctx.lineWidth = 1.2; ctx.stroke();
+  if (b.obj) drawObject(b.obj, PAN_X, -88);
+  ctx.restore();
+  // zero knob (fixed to base, under pan)
+  const kx = PIV.x + PAN_X, ky = 400; ctx.fillStyle = "#1c2a31"; ctx.beginPath(); ctx.ellipse(kx, ky, 18, 10, 0, 0, 7); ctx.fill();
+  ctx.strokeStyle = "#9aa5ab"; ctx.lineWidth = 1.5; for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3 + b.knob * .12; ctx.beginPath(); ctx.moveTo(kx + Math.cos(a) * 6, ky + Math.sin(a) * 3.3); ctx.lineTo(kx + Math.cos(a) * 16, ky + Math.sin(a) * 9); ctx.stroke(); }
+  ctx.fillStyle = "#dfe6e8"; ctx.font = FONT(600, 11); ctx.textAlign = "center"; ctx.fillText(t("zeroL"), kx, ky + 26);
+  // labels
+  ctx.fillText(t("readL") + ": 100 g + 10 g + 1 g + 0.01 g", PIV.x + 300, 448);
+}
+function drawObject(k, x, y) {
+  ctx.save();
+  if (k === "cyl") { const g = ctx.createLinearGradient(x - 26, 0, x + 26, 0); g.addColorStop(0, "#6f7a80"); g.addColorStop(.45, "#e6ebee"); g.addColorStop(1, "#5f6a70"); ctx.fillStyle = g; ctx.fillRect(x - 26, y - 70, 52, 70); ctx.fillStyle = "#cfd6da"; ctx.beginPath(); ctx.ellipse(x, y - 70, 26, 6, 0, 0, 7); ctx.fill(); }
+  else if (k === "stopper") { ctx.fillStyle = "#c86a2c"; ctx.beginPath(); ctx.moveTo(x - 22, y); ctx.lineTo(x + 22, y); ctx.lineTo(x + 28, y - 34); ctx.lineTo(x - 28, y - 34); ctx.closePath(); ctx.fill(); ctx.fillStyle = "#a95520"; ctx.beginPath(); ctx.ellipse(x, y - 34, 28, 6, 0, 0, 7); ctx.fill(); }
+  else if (k === "beaker") { ctx.fillStyle = "rgba(214,234,242,.6)"; ctx.strokeStyle = "#4f6b78"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(x - 30, y - 74); ctx.lineTo(x - 30, y - 4); ctx.quadraticCurveTo(x - 30, y, x - 26, y); ctx.lineTo(x + 26, y); ctx.quadraticCurveTo(x + 30, y, x + 30, y - 4); ctx.lineTo(x + 30, y - 74); ctx.fill(); ctx.stroke(); }
+  else if (k === "stone") { ctx.fillStyle = "#7d7468"; ctx.beginPath(); ctx.ellipse(x, y - 22, 40, 24, .1, 0, 7); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,.18)"; ctx.beginPath(); ctx.ellipse(x - 12, y - 32, 14, 7, -.3, 0, 7); ctx.fill(); }
+  else { ctx.fillStyle = "rgba(214,234,242,.7)"; ctx.strokeStyle = "#4f6b78"; ctx.beginPath(); ctx.moveTo(x - 46, y - 10); ctx.quadraticCurveTo(x, y + 6, x + 46, y - 10); ctx.quadraticCurveTo(x, y - 2, x - 46, y - 10); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#f4f4f2"; ctx.beginPath(); ctx.ellipse(x, y - 8, 22, 6, 0, 0, Math.PI, true); ctx.fill(); }
+  ctx.restore();
+}
+
+// ---------- meniscus ----------
+const MEN = { x0: 150, x1: 470, y0: 30, y1: 500, cx: 310, cy: 265, tw: 120 };
+function eyePos() { const e = S.men.eye; return Math.abs(e) <= .06 ? "eyePosLevel" : e > 0 ? "eyePosAbove" : "eyePosBelow"; }
+function menInfo() {
+  const m = S.men, inst = m.inst, v = m.vals[inst];
+  if (inst === "burette") return { ppu: 140, dir: 1, minor: .1, num: 1, v, center: v + m.jit };
+  if (inst === "cylinder") return { ppu: 36, dir: -1, minor: 1, num: 5, v, center: v + m.jit * 4 };
+  return { pip: true, off: v === "above" ? -16 : v === "below" ? 16 : 0 };
+}
+function drawMen() {
+  const m = S.men, I = menInfo(), e = m.eye, K = 26;
+  ctx.fillStyle = "#ffffff"; rr(ctx, 110, 18, 400, 494, 14); ctx.fill(); ctx.strokeStyle = "#cbd5d4"; ctx.stroke();
+  ctx.save(); rr(ctx, 110, 18, 400, 494, 14); ctx.clip();
+  const x0 = MEN.cx - MEN.tw, x1 = MEN.cx + MEN.tw;
+  // true meniscus bottom y (screen) and apparent
+  let yTrue; const valToY = v => MEN.cy + (v - I.center) * I.ppu * I.dir;
+  if (I.pip) yTrue = MEN.cy + I.off; else yTrue = valToY(I.v);
+  const yApp = yTrue - e * K;
+  // liquid below meniscus
+  const ry = Math.abs(e) * 10;
+  ctx.fillStyle = "rgba(225,240,247,.85)"; ctx.fillRect(x0, yApp - 22, x1 - x0, 600);
+  ctx.fillStyle = hatch; ctx.fillRect(x0, yApp - 22, x1 - x0, 600);
+  // meniscus curve (concave)
+  ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.moveTo(x0, yApp - 22); ctx.bezierCurveTo(x0 + 40, yApp + 2, x1 - 40, yApp + 2, x1, yApp - 22); ctx.lineTo(x1, yApp - 40); ctx.lineTo(x0, yApp - 40); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "#3a6a80"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x0, yApp - 22); ctx.bezierCurveTo(x0 + 40, yApp + 2, x1 - 40, yApp + 2, x1, yApp - 22); ctx.stroke();
+  if (ry > .5) { ctx.strokeStyle = "rgba(58,106,128,.45)"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(MEN.cx, yApp - 12, MEN.tw - 4, ry, 0, e > 0 ? Math.PI : 0, e > 0 ? 2 * Math.PI : Math.PI); ctx.stroke(); }
+  ctx.fillStyle = "#3a6a80"; ctx.font = FONT(600, 13); ctx.textAlign = "center"; ctx.fillText(t("cvColourless"), MEN.cx, Math.min(490, yApp + 70));
+  // scale
+  ctx.textAlign = "left"; ctx.textBaseline = "middle";
+  const ring = (y, solid) => { ctx.strokeStyle = "#1c2a31"; ctx.lineWidth = solid ? 2 : 1.3; ctx.beginPath(); if (ry < .5) { ctx.moveTo(x0, y); ctx.lineTo(x1, y); ctx.stroke(); return; }
+    ctx.ellipse(MEN.cx, y, MEN.tw, ry, 0, e > 0 ? 0 : Math.PI, e > 0 ? Math.PI : 2 * Math.PI); ctx.stroke(); ctx.setLineDash([4, 4]); ctx.strokeStyle = "rgba(28,42,49,.4)"; ctx.beginPath(); ctx.ellipse(MEN.cx, y, MEN.tw, ry, 0, e > 0 ? Math.PI : 0, e > 0 ? 2 * Math.PI : Math.PI); ctx.stroke(); ctx.setLineDash([]); };
+  if (I.pip) { ring(MEN.cy, true); ctx.fillStyle = "#1c2a31"; ctx.font = FONT(600, 13); ctx.fillText(t("cvMark"), x1 + 10, MEN.cy); ctx.font = MONO(500, 11); ctx.fillText("25 cm³ · 20 °C", x0 + 6, MEN.cy - 120); }
+  else {
+    const lo = I.center - 260 / (I.ppu), hi = I.center + 260 / (I.ppu);
+    for (let k = Math.ceil(lo / I.minor); k <= Math.floor(hi / I.minor); k++) { const v = +(k * I.minor).toFixed(2); if (v < 0 || v > (I.dir > 0 ? 50 : 100)) continue; const y = valToY(v), whole = Math.abs(v - Math.round(v)) < 1e-6;
+      const major = I.dir > 0 ? whole : (Math.round(v) % 5 === 0), half = I.dir > 0 && Math.abs(v * 2 - Math.round(v * 2)) < 1e-6;
+      if (I.dir > 0 && whole) ring(y, true);
+      else { ctx.strokeStyle = "#1c2a31"; ctx.lineWidth = major ? 2 : 1.2; ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0 + (major ? 70 : half ? 46 : 30), y); ctx.stroke(); }
+      if ((I.dir > 0 && whole) || (I.dir < 0 && Math.round(v) % 5 === 0)) { ctx.fillStyle = "#1c2a31"; ctx.font = MONO(600, 16); ctx.fillText(String(Math.round(v)), x0 + 78, y - (I.dir > 0 ? 10 : 0)); } }
+  }
+  // glass walls
+  ctx.strokeStyle = "#7a9aa8"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x0, 18); ctx.lineTo(x0, 512); ctx.moveTo(x1, 18); ctx.lineTo(x1, 512); ctx.stroke();
+  ctx.fillStyle = "rgba(255,255,255,.5)"; ctx.fillRect(x0 + 8, 18, 8, 494);
+  ctx.restore();
+  ctx.fillStyle = T.ink; ctx.font = FONT(600, 12); ctx.textAlign = "center"; ctx.fillText(t(m.inst === "burette" ? "iBur" : m.inst === "cylinder" ? "iCyl" : "iPip") + " · ×10", 310, 526);
+  // side view
+  const sx = 700, sy = 265; ctx.fillStyle = "#ffffff"; rr(ctx, 560, 60, 380, 410, 14); ctx.fill(); ctx.strokeStyle = "#cbd5d4"; ctx.stroke();
+  ctx.fillStyle = "#1c2a31"; ctx.font = FONT(600, 12); ctx.textAlign = "left"; ctx.fillText(t("cvSide"), 576, 80);
+  ctx.fillStyle = "rgba(225,240,247,.9)"; ctx.fillRect(sx - 18, sy - 6, 36, 180); ctx.fillStyle = hatch; ctx.fillRect(sx - 18, sy - 6, 36, 180);
+  ctx.strokeStyle = "#3a6a80"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(sx - 18, sy - 6); ctx.quadraticCurveTo(sx, sy + 4, sx + 18, sy - 6); ctx.stroke();
+  ctx.strokeStyle = "#7a9aa8"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(sx - 18, 100); ctx.lineTo(sx - 18, 440); ctx.moveTo(sx + 18, 100); ctx.lineTo(sx + 18, 440); ctx.stroke();
+  const ey = sy - e * 150, ex = 880, lvl = Math.abs(e) <= .06;
+  ctx.strokeStyle = lvl ? "#2c7a4d" : "#c0392b"; ctx.lineWidth = 2; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(ex - 16, ey); ctx.lineTo(sx, sy - 1); ctx.lineTo(sx - 100, sy - 1 + (sy - 1 - ey) * (100 / (ex - 16 - sx))); ctx.stroke(); ctx.setLineDash([]);
+  // eye
+  ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#1c2a31"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(ex - 22, ey); ctx.quadraticCurveTo(ex, ey - 16, ex + 22, ey); ctx.quadraticCurveTo(ex, ey + 16, ex - 22, ey); ctx.closePath(); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#1c2a31"; ctx.beginPath(); ctx.arc(ex - 6, ey, 6, 0, 7); ctx.fill();
+  ctx.font = FONT(600, 12); ctx.textAlign = "center"; ctx.fillStyle = lvl ? "#2c7a4d" : "#c0392b"; ctx.fillText(t("eyeIs", { p: t(eyePos()) }), 750, 450);
+  ctx.fillStyle = "#1c2a31"; ctx.textAlign = "left"; ctx.fillText(t("cvMenBottom"), sx + 26, sy + 4);
+}
+
+// ---------- loop ----------
+let time = 0, last = performance.now(), uiT = 0, drag = null;
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt;
+  stepBalance(dt);
+  if (S.mode !== "glass") {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    const g = ctx.createLinearGradient(0, 0, 0, ch); g.addColorStop(0, T.wallTop); g.addColorStop(1, T.wallBot); ctx.fillStyle = g; ctx.fillRect(0, 0, cw, ch);
+    ctx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, dpr * oy);
+    if (!hatch) hatch = makeHatch(ctx);
+    if (S.mode === "balance") drawBalance(); else drawMen();
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    S.confetti.forEach(p => { p.vy += 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-3, -1.5, 6, 3); ctx.restore(); });
+    S.confetti = S.confetti.filter(p => p.y < ch + 20);
+  }
+  if (playing) { const v = Math.min(1000, +$("replay").value + dt / 6 * 1000); $("replay").value = v; if (v >= 1000) { playing = false; renderReplayCtl(); } }
+  uiT += dt; if (uiT > .12) { uiT = 0; renderLive(); if (!$("pane-colours").hidden) drawMini(); }
+  requestAnimationFrame(frame);
+}
+function stepBalance(dt) {
+  const b = S.bal, d = diffH(), target = Math.max(-.075, Math.min(.075, d * .0021)), w0 = 4, z = .25;
+  const n = 4, h = dt / n; for (let i = 0; i < n; i++) { const acc = -w0 * w0 * (b.th - target) - 2 * z * w0 * b.w; b.w += acc * h; b.th += b.w * h; }
+  if (reduceMotion) { b.th = target; b.w = 0; }
+  if (b.histOn) { b.histT += dt; if (b.histT >= .05) { b.histT = 0; b.hist.push(b.th); if (b.hist.length >= 160) b.histOn = false; } }
+  const settled = Math.abs(b.w) < .004 && Math.abs(b.th - target) < .002;
+  b.settled = settled;
+  if (!b.obj && d === 0 && settled && !S.ev.zero) { S.ev.zero = 1; b.zeroed = true; log(["lZero"]); toast("lZero", "good"); render(); }
+  if (b.obj && S.ev.zero && d === 0 && settled && !b.balancedOnce) { b.balancedOnce = true; S.ev.balance = 1; render(); }
+}
+function startHist() { const b = S.bal; b.hist = [b.th]; b.histOn = true; b.histT = 0; }
+
+// =====================================================================
+// BALANCE ACTIONS
+// =====================================================================
+function needsGlass() { if (!S.ev.glass) { toast("lockBal", "warn", 4500); return true; } return false; }
+function setKnob(v) {
+  if (S.bal.obj) { toast("tZeroObj", "warn"); $("zero").value = S.bal.knob; return; }
+  S.bal.knob = Math.max(-100, Math.min(100, v)); $("zero").value = S.bal.knob; startHist(); if (diffH() !== 0 && S.ev.zero) { /* zero lost */ }
+}
+function placeObj() {
+  if (!S.ev.zero) return toast("tPlaceZero", "warn", 4600);
+  if (S.bal.obj) return;
+  S.bal.obj = $("objSel").value; S.bal.balancedOnce = false; S.bal.coarseWarned = false; S.bal.farWarned = false; S.bal.tries = 0; startHist(); render();
+}
+function removeObj() { S.bal.obj = null; startHist(); render(); }
+function moveRider(i, n) {
+  const b = S.bal; n = Math.max(0, Math.min(BEAMS[i].steps, n)); if (n === b.r[i]) return;
+  if (!b.obj && S.ev.zero) { toast("tRiderEmpty", "warn"); return; }
+  if (!b.obj) { toast("tPlaceZero", "warn"); return; }
+  // coarse-to-fine hint
+  const m = b.masses[b.obj], want = [Math.floor(m / 10000), Math.floor(m % 10000 / 1000), Math.floor(m % 1000 / 100), m % 100];
+  if (!b.coarseWarned) for (let j = 0; j < i; j++) if (b.r[j] !== want[j]) { b.coarseWarned = true; toast("tCoarse", "warn", 4600); break; }
+  b.r[i] = n; b.balancedOnce = false; startHist();
+  if (diffH() < 0 && !b.farWarned) { b.farWarned = true; setTimeout(() => toast("tTooFar", "warn", 4800), 400); }
+  renderBeamCtl();
+}
+function recordMass() {
+  const b = S.bal, note = $("balNote"), say = (c, k, p) => { b.note = [c, k, p]; renderBalNote(); };
+  if (!b.obj) return say("bad", "b1");
+  const v = parseFloat($("massIn").value); if (!isFinite(v)) return say("bad", "nType");
+  if (!b.settled) return say("bad", "nSwing");
+  if (diffH() !== 0) return say("bad", "nNotZero");
+  const sum = riderSum(), parts = { a: b.r[0] * 100, b: b.r[1] * 10, c: b.r[2], d: (b.r[3] / 100).toFixed(2) };
+  if (Math.round(v * 100) !== sum) { b.tries++; return say("bad", b.tries >= 2 ? "nSum" : "nNotZero2", parts); }
+  const o = OBJ(b.obj); say("ok", "nOk", { o, m: fmtG(sum) });
+  S.results.b.push({ obj: b.obj, r: b.r.slice(), m: sum }); S.ev.read = 1; log(["lMass", { ...parts, mObj: b.obj, m: fmtG(sum) }]); $("massIn").value = ""; render();
+}
+I18N.en.nNotZero2 = "Not quite. Read each beam where its rider sits, then add them together."; I18N.si.nNotZero2 = "තවම නිවැරදි නැත. එක් එක් දණ්ඩේ සර්පණ බර ඇති ස්ථානය කියවා, ඒවා එකතු කරන්න."; I18N.ta.nNotZero2 = "சரியில்லை. ஒவ்வொரு கோலிலும் நகர் படி உள்ள இடத்தை வாசித்து, அவற்றைக் கூட்டுக.";
+function renderBalNote() { const n = S.bal.note; $("balNote").innerHTML = n ? `<div class="note ${n[0]}">${esc(t(n[1], n[2]))}</div>` : ""; }
+function renderBeamCtl() {
+  $("beamctl").innerHTML = BEAMS.map((bm, i) => `<div><button class="btn sm" data-b="${i}" data-d="-1" aria-label="${esc(t("beamL", { b: bm.lab }) + ": " + t("left"))}">◀</button><span>${esc(t("beamL", { b: bm.lab }))}<br>${i === 3 ? (S.bal.r[3] / 100).toFixed(2) : S.bal.r[i] * [100, 10, 1][i]} g</span><button class="btn sm" data-b="${i}" data-d="1" aria-label="${esc(t("beamL", { b: bm.lab }) + ": " + t("right"))}">▶</button></div>`).join("");
+  $("beamctl").querySelectorAll("button").forEach(btn => btn.onclick = () => moveRider(+btn.dataset.b, S.bal.r[+btn.dataset.b] + +btn.dataset.d));
+}
+
+// =====================================================================
+// MENISCUS ACTIONS
+// =====================================================================
+function setInst(i) { S.men.inst = i; if (S.men.vals[i] === undefined) S.men.vals[i] = newMen(i); S.men.jit = (Math.random() - .5) * .6; S.men.note = null; render(); }
+function setEye(v) { S.men.eye = Math.max(-1, Math.min(1, v)); $("eye").value = Math.round(S.men.eye * 100); }
+function checkMen(ans) {
+  const m = S.men, inst = m.inst, val = m.vals[inst], lvl = Math.abs(m.eye) <= .06, say = (c, k, p) => { m.note = [c, k, p]; renderMenNote(); };
+  if (!lvl) return say("bad", "mParallax", { p: t(eyePos()) });
+  let ok, shown;
+  if (inst === "pipette") { ok = ans === val; shown = t(val === "above" ? "mAbove" : val === "on" ? "mOn" : "mBelow").toLowerCase(); }
+  else { const v = parseFloat(ans); if (!isFinite(v)) return say("bad", "mType"); ok = Math.abs(v - val) <= (inst === "burette" ? .051 : .51); shown = val.toFixed(inst === "burette" ? 2 : 1) + " cm³"; }
+  if (!ok) return say("bad", "mBad");
+  say("ok", inst === "pipette" ? "mOkPip" : "mOk", { v: shown });
+  m.done[inst] = 1; S.results.m.push({ inst, v: shown }); log(["lMen", { instK: inst, v: shown }]);
+  m.vals[inst] = newMen(inst); m.jit = (Math.random() - .5) * .6; setEye(.55 * (Math.random() < .5 ? -1 : 1));
+  if (Object.keys(m.done).length === 3) S.ev.men = 1;
+  render();
+}
+function renderMenNote() { const n = S.men.note; $("menNote").innerHTML = n ? `<div class="note ${n[0]}">${esc(t(n[1], n[2]))}</div>` : ""; }
+function renderMenAnswer() {
+  const inst = S.men.inst;
+  $("menAnswer").innerHTML = inst === "pipette"
+    ? `<button class="btn" data-pa="above">${esc(t("mAbove"))}</button><button class="btn" data-pa="on">${esc(t("mOn"))}</button><button class="btn" data-pa="below">${esc(t("mBelow"))}</button><button class="btn" id="menNew">${esc(t("mNew"))}</button>`
+    : `<label class="label" for="menIn">${esc(t("thReading"))}</label><input type="number" id="menIn" step="${inst === "burette" ? .05 : .5}" inputmode="decimal" placeholder="${inst === "burette" ? "0.00" : "0.0"}"><span class="small">cm³</span><button class="btn primary" id="menCheck">${esc(t("mCheck"))}</button><button class="btn" id="menNew">${esc(t("mNew"))}</button>`;
+  $("menAnswer").querySelectorAll("[data-pa]").forEach(b => b.onclick = () => checkMen(b.dataset.pa));
+  if ($("menCheck")) { $("menCheck").onclick = () => checkMen($("menIn").value); $("menIn").onkeydown = e => { if (e.key === "Enter") checkMen($("menIn").value); }; }
+  $("menNew").onclick = () => { S.men.vals[inst] = newMen(inst); S.men.jit = (Math.random() - .5) * .6; S.men.note = null; renderMenNote(); };
+}
+
+// =====================================================================
+// UI
+// =====================================================================
+let toastT;
+function toast(k, kind = "", ms = 3600, p) { const el = $("toast"); el.textContent = t(k, p); el.className = "toast show " + kind; clearTimeout(toastT); toastT = setTimeout(() => el.className = "toast " + kind, ms); }
+function log(...parts) { S.logs.unshift({ time: new Date().toTimeString().slice(0, 8), parts }); renderLog(); }
+function logText(parts) {
+  return parts.map(([k, p]) => {
+    if (k === "gGood") return t("gGood", { name: G(p.id)[0], acc: G(p.id)[2] }) + " " + G(p.id)[1];
+    if (k === "lMass") return t(k, { ...p, o: OBJ(p.mObj) });
+    if (k === "lMen") return t(k, { ...p, i: t(p.instK === "burette" ? "iBur" : p.instK === "cylinder" ? "iCyl" : "iPip") });
+    return t(k, p);
+  }).join(" ");
+}
+function renderLog() { const box = $("log"); box.innerHTML = ""; S.logs.forEach(e => { const d = document.createElement("div"), s = document.createElement("span"), m = document.createElement("div"); s.textContent = e.time; m.textContent = logText(e.parts); d.append(s, m); box.append(d); }); }
+function stepsDone() { return [!!S.ev.glass, !!S.ev.zero, !!S.ev.balance, !!S.ev.read, !!S.ev.men]; }
+function promptText() {
+  if (S.mode === "glass") return S.ev.glass ? t("gDone") : t("gPrompt", { k: Object.keys(S.placed).length });
+  if (S.mode === "balance") { const b = S.bal; if (!S.ev.zero) return t(b.obj ? "b0obj" : "b0"); if (!b.obj) return t(S.ev.read ? "b4" : "b1"); return diffH() === 0 && b.settled ? t("b3") : t("b2"); }
+  return t(S.men.inst === "burette" ? "mBur" : S.men.inst === "cylinder" ? "mCyl" : "mPip") + (S.ev.men ? " " + t("mDoneAll") : "");
+}
+function setMode(m) {
+  if (m === "balance" && !S.ev.glass) return toast("lockBal", "warn", 4500);
+  if (m === "men" && !S.ev.read) return toast(S.ev.glass ? "lockMen" : "lockBal", "warn", 4500);
+  S.mode = m; render(); resize();
+}
+function render() {
+  const done = stepsDone(), cur = done.indexOf(false), k = done.filter(Boolean).length;
+  document.querySelectorAll("#modeSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.m === S.mode)));
+  $("glassArea").hidden = S.mode !== "glass"; $("viewport").hidden = S.mode === "glass"; $("dockBalance").hidden = S.mode !== "balance"; $("dockMen").hidden = S.mode !== "men";
+  cv.setAttribute("aria-label", t(S.mode === "men" ? "canvasMen" : "canvasBal"));
+  $("prompt").textContent = promptText();
+  $("steps").innerHTML = t("steps").map((s, i) => `<li class="${done[i] ? "done" : i === cur ? "now" : ""}"><span class="tick">${done[i] ? "✓" : i + 1}</span><span>${esc(i === 4 ? s.replace("{k}", Object.keys(S.men.done).length) : s)}</span></li>`).join("");
+  $("ringTxt").textContent = `${k}/5`; $("ringArc").style.strokeDashoffset = String(113.1 * (1 - k / 5));
+  document.querySelectorAll("#instSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.i === S.men.inst)));
+  ["placeBtn", "removeBtn"].forEach(id => $(id).classList.remove("next"));
+  $("placeBtn").disabled = !!S.bal.obj; $("removeBtn").disabled = !S.bal.obj; $("objSel").disabled = !!S.bal.obj;
+  if (S.ev.zero && !S.bal.obj && !S.ev.read) $("placeBtn").classList.add("next");
+  if (S.mode === "glass") renderGlass();
+  renderBeamCtl(); renderBalNote(); renderMenAnswer(); renderMenNote(); renderTables(); renderLive();
+  if (!S.done && done.every(Boolean)) { S.done = true; celebrate(); }
+}
+function renderAllLite() { render(); }
+function renderLive() {
+  if (S.mode === "glass") { $("chips").innerHTML = ""; const pt = promptText(); if ($("prompt").textContent !== pt) $("prompt").textContent = pt; return; }
+  let c = [];
+  if (S.mode === "balance") { const b = S.bal, d = diffH(); c.push(`<span class="chip">${esc(t("chipPan", { o: b.obj ? OBJ(b.obj) : t("panEmpty") }))}</span>`);
+    const s = !b.settled ? "ptrSwing" : d === 0 ? "ptrZero" : d > 0 ? "ptrHigh" : "ptrLow"; c.push(`<span class="chip ${s === "ptrZero" ? "ok" : ""}">${esc(t("chipPtr", { s: t(s) }))}</span>`); }
+  else { c.push(`<span class="chip ${eyePos() === "eyePosLevel" ? "ok" : ""}">${esc(t("eyeIs", { p: t(eyePos()) }))}</span>`); }
+  const h = c.join(""); if ($("chips").innerHTML !== h) $("chips").innerHTML = h;
+  const pt = promptText(); if ($("prompt").textContent !== pt) $("prompt").textContent = pt;
+}
+function renderTables() {
+  const none = n => `<tr><td colspan="${n}" class="muted">${esc(t("none"))}</td></tr>`;
+  $("tbG").innerHTML = S.results.g.length ? S.results.g.map(id => `<tr><td>${esc(G(id)[0])}</td><td>${esc(G(id)[1])}</td><td>${esc(G(id)[2])}</td></tr>`).join("") : none(3);
+  $("tbB").innerHTML = S.results.b.length ? S.results.b.map(r => `<tr><td>${esc(OBJ(r.obj))}</td><td class="num">${r.r[0] * 100}</td><td class="num">${r.r[1] * 10}</td><td class="num">${r.r[2]}</td><td class="num">${(r.r[3] / 100).toFixed(2)}</td><td class="num"><b>${fmtG(r.m)}</b></td></tr>`).join("") : none(6);
+  $("tbM").innerHTML = S.results.m.length ? S.results.m.map(r => `<tr><td>${esc(t(r.inst === "burette" ? "iBur" : r.inst === "cylinder" ? "iCyl" : "iPip"))}</td><td class="num">${esc(r.v)}</td></tr>`).join("") : none(2);
+}
+function celebrate() {
+  toast("tDone", "party", 5200); $("quizTab").classList.add("ping");
+  if (!reduceMotion && S.mode !== "glass") { const cols = ["#d9a441", "#4BA3E3", "#9fe6b8", "#b08cec"]; for (let i = 0; i < 90; i++) S.confetti.push({ x: cw / 2 + (Math.random() - .5) * 200, y: ch * .3, vx: (Math.random() - .5) * 340, vy: -150 - Math.random() * 220, rot: Math.random() * 6, vr: (Math.random() - .5) * 10, c: cols[i % cols.length] }); }
+}
+// replay mini (pointer settling)
+const mini = $("mini"), mctx = mini.getContext("2d"); let playing = false;
+function drawMini() {
+  const w = mini.width, h = mini.height, hs = S.bal.hist, ok = hs.length > 10; mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.fillStyle = "#ffffff"; mctx.fillRect(0, 0, w, h);
+  mctx.strokeStyle = "#e1e7e7"; mctx.lineWidth = 1; for (let k = -2; k <= 2; k++) { const y = h / 2 + k * 50; mctx.beginPath(); mctx.moveTo(40, y); mctx.lineTo(w - 120, y); mctx.stroke(); }
+  mctx.strokeStyle = "#1c2a31"; mctx.lineWidth = 2; mctx.beginPath(); mctx.moveTo(40, h / 2); mctx.lineTo(w - 120, h / 2); mctx.stroke();
+  mctx.fillStyle = "#56666c"; mctx.font = "13px 'IBM Plex Mono', monospace"; mctx.fillText("0", 20, h / 2 + 4);
+  if (!ok) { $("rname").textContent = t("rNone"); return; }
+  const idx = Math.min(hs.length - 1, Math.round(+$("replay").value / 1000 * (hs.length - 1))), X = i => 40 + i / (hs.length - 1) * (w - 160), Y = th => h / 2 - Math.max(-.075, Math.min(.075, th)) * 1800;
+  mctx.strokeStyle = "rgba(139,29,111,.25)"; mctx.lineWidth = 2; mctx.beginPath(); hs.forEach((th, i) => i ? mctx.lineTo(X(i), Y(th)) : mctx.moveTo(X(i), Y(th))); mctx.stroke();
+  mctx.strokeStyle = "#8b1d6f"; mctx.lineWidth = 3; mctx.beginPath(); hs.slice(0, idx + 1).forEach((th, i) => i ? mctx.lineTo(X(i), Y(th)) : mctx.moveTo(X(i), Y(th))); mctx.stroke();
+  mctx.fillStyle = "#c0392b"; mctx.beginPath(); mctx.arc(X(idx), Y(hs[idx]), 6, 0, 7); mctx.fill();
+  // pointer + scale at the right
+  const px = w - 70; mctx.fillStyle = "#e9eef0"; mctx.fillRect(px - 10, 40, 50, h - 80); mctx.strokeStyle = "#1c2a31"; for (let k = -10; k <= 10; k++) { const y = h / 2 + k * 12; mctx.lineWidth = k === 0 ? 3 : 1; mctx.beginPath(); mctx.moveTo(px - 10, y); mctx.lineTo(px + (k === 0 ? 30 : 12), y); mctx.stroke(); }
+  mctx.fillStyle = "#c0392b"; mctx.beginPath(); const py = Y(hs[idx]); mctx.moveTo(px - 30, py - 5); mctx.lineTo(px - 8, py); mctx.lineTo(px - 30, py + 5); mctx.closePath(); mctx.fill();
+  const settled = idx > 5 && Math.abs(hs[idx]) < .002 && Math.abs(hs[idx] - hs[idx - 1]) < .0005;
+  $("rname").textContent = t("rAt", { t: (idx * .05).toFixed(1), d: t(settled ? "ptrZero" : "ptrSwing") });
+}
+function renderReplayCtl() { const ok = S.bal.hist.length > 10; $("replay").disabled = !ok; $("playBtn").disabled = !ok; $("playBtn").textContent = t(playing ? "pause" : "play"); }
+// quiz
+function readScores() { try { return JSON.parse(localStorage.getItem("svl-scores") || "{}") || {}; } catch (e) { return {}; } }
+function saveScore(pct) { try { const s = readScores(); if (!(s[SIM_ID] >= pct)) { s[SIM_ID] = pct; localStorage.setItem("svl-scores", JSON.stringify(s)); } } catch (e) {} }
+function renderQuiz() {
+  const Q = t("quiz"), L = ["A", "B", "C", "D"];
+  $("quiz").innerHTML = Q.map((q, i) => `<div class="q" id="q${i}"><p>${i + 1}. ${esc(q.q)}</p>${q.o.map((o, j) => `<button data-q="${i}" data-o="${j}">${L[j]}) ${esc(o)}</button>`).join("")}<div class="exp"></div></div>`).join("");
+  Object.entries(S.answered).forEach(([i, j]) => markAnswer(+i, j)); score();
+}
+function markAnswer(i, j) {
+  const ok = j === QUIZ_ANS[i];
+  $("q" + i).querySelectorAll("button").forEach((x, k) => { x.disabled = true; if (k === QUIZ_ANS[i]) x.classList.add("right"); else if (k === j) x.classList.add("wrong"); });
+  const d = document.createElement("div"); d.className = "note " + (ok ? "ok" : "bad"); d.textContent = t(ok ? "correct" : "notQuite") + t("quiz")[i].e;
+  const ex = $("q" + i).querySelector(".exp"); ex.innerHTML = ""; ex.append(d);
+}
+$("quiz").onclick = e => { const b = e.target.closest("button[data-q]"); if (!b) return; const i = +b.dataset.q, j = +b.dataset.o; if (i in S.answered) return; S.answered[i] = j; markAnswer(i, j); score(); };
+function score() {
+  const n = Object.keys(S.answered).length, s = Object.entries(S.answered).filter(([i, j]) => j === QUIZ_ANS[+i]).length, N = QUIZ_ANS.length;
+  if (n === N) saveScore(Math.round(s / N * 100));
+  const best = readScores()[SIM_ID];
+  $("score").textContent = `${s} / ${N}` + (n < N ? " · " + t("scoreLeft", { n: N - n }) : "") + (best !== undefined ? " · " + t("best", { p: best }) : "");
+}
+$("retryBtn").onclick = () => { S.answered = {}; renderQuiz(); };
+function applyStatic() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("#langSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  $("appList").innerHTML = t("app").map(a => `<span>${esc(a)}</span>`).join("");
+  $("safeList").innerHTML = t("safe").map(a => `<li>${esc(a)}</li>`).join("");
+  const ov = $("objSel").value; $("objSel").innerHTML = OBJS.map(([k]) => `<option value="${k}">${esc(OBJ(k))}</option>`).join(""); if (ov) $("objSel").value = ov;
+  try { const st = JSON.parse(localStorage.getItem("svl-student") || "null"); if (st && st.name) { $("student").hidden = false; $("student").textContent = t("student", { name: st.name, cls: st.cls ? " · " + st.cls : "" }); } } catch (e) {}
+}
+function renderAll() { applyStatic(); render(); renderLog(); renderQuiz(); renderReplayCtl(); }
+function applyLang(l) { LANG = l; try { localStorage.setItem("svl-lang", l); } catch (e) {} renderAll(); }
+document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  ["guide", "obs", "colours", "quiz"].forEach(id => $("pane-" + id).hidden = id !== b.dataset.tab);
+  if (b.dataset.tab === "quiz") b.classList.remove("ping");
+  if (b.dataset.tab === "colours") { renderReplayCtl(); drawMini(); }
+});
+
+// controls
+document.querySelectorAll("#modeSeg button").forEach(b => b.onclick = () => setMode(b.dataset.m));
+$("resetBtn").onclick = () => { const ans = S.answered; S = freshState(); S.answered = ans; S.men.vals = { burette: newMen("burette"), cylinder: newMen("cylinder"), pipette: newMen("pipette") }; S.men.jit = 0; $("zero").value = 0; $("eye").value = 70; $("quizTab").classList.remove("ping"); renderAll(); };
+$("placeBtn").onclick = placeObj; $("removeBtn").onclick = removeObj;
+$("zero").oninput = e => setKnob(+e.target.value);
+$("zMinus").onclick = () => setKnob(S.bal.knob - 1); $("zPlus").onclick = () => setKnob(S.bal.knob + 1);
+$("massBtn").onclick = recordMass; $("massIn").addEventListener("keydown", e => { if (e.key === "Enter") recordMass(); });
+$("ridersZero").onclick = () => { S.bal.r = [0, 0, 0, 0]; startHist(); renderBeamCtl(); };
+document.querySelectorAll("#instSeg button").forEach(b => b.onclick = () => setInst(b.dataset.i));
+$("eye").oninput = e => { S.men.eye = +e.target.value / 100; };
+$("eyeUp").onclick = () => setEye(S.men.eye + .05); $("eyeDown").onclick = () => setEye(S.men.eye - .05);
+$("replay").oninput = () => { playing = false; renderReplayCtl(); drawMini(); };
+$("playBtn").onclick = () => { playing = !playing; if (playing && +$("replay").value >= 1000) $("replay").value = 0; renderReplayCtl(); };
+
+// canvas: drag riders / drag eye
+function toLogical(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left - ox) / sc, y: (e.clientY - r.top - oy) / sc }; }
+function toBeamLocal(p) { const th = S.bal.th, dx = p.x - PIV.x, dy = p.y - PIV.y, c = Math.cos(th), s = Math.sin(th); return { x: dx * c - dy * s, y: dx * s + dy * c }; }
+function xToN(i, x) { return Math.round((x - BX0 - 30) / (BX1 - BX0 - 60) * BEAMS[i].steps); }
+cv.addEventListener("pointerdown", e => {
+  const p = toLogical(e);
+  if (S.mode === "balance") { const q = toBeamLocal(p); for (let i = 0; i < 4; i++) { if (Math.abs(q.y - BEAM_Y[i]) < 18 && Math.abs(q.x - riderX(i, S.bal.r[i])) < 18) { drag = { i }; cv.setPointerCapture(e.pointerId); return; } }
+    if (Math.hypot(p.x - (PIV.x + PAN_X), p.y - 400) < 26) toast("zeroL"); }
+  else if (S.mode === "men") { if (p.x > 560) { drag = { eye: true }; cv.setPointerCapture(e.pointerId); setEye((265 - p.y) / 150); } }
+});
+cv.addEventListener("pointermove", e => { if (!drag) return; const p = toLogical(e);
+  if (drag.eye) { setEye((265 - p.y) / 150); return; }
+  const q = toBeamLocal(p), n = Math.max(0, Math.min(BEAMS[drag.i].steps, xToN(drag.i, q.x))); if (n !== S.bal.r[drag.i]) moveRider(drag.i, n); });
+["pointerup", "pointercancel"].forEach(ev => cv.addEventListener(ev, () => { drag = null; }));
+
+readTokens(); resize(); S = freshState(); S.men.vals = { burette: newMen("burette"), cylinder: newMen("cylinder"), pipette: newMen("pipette") }; S.men.jit = 0;
+renderAll(); requestAnimationFrame(frame);
+})();
+</script>

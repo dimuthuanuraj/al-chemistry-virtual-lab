@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Collect and measure oxygen from heating KMnO₄ and calculate the molar volume of oxygen.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+.svlnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:#0E1A2B;background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:28px 28px;color:#F4F1EA;font:500 14px/1.2 "IBM Plex Sans","Noto Sans Sinhala","Noto Sans Tamil",system-ui,sans-serif}
+.svlnav .in{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.svlnav a{color:#F4F1EA;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1.5px solid rgba(212,196,255,.45);border-radius:999px}
+.svlnav a:hover{background:rgba(212,196,255,.14)}
+.svlnav a:focus-visible{outline:3px solid #FFC857;outline-offset:2px}
+.svlnav .pos{color:#D4C4FF;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;margin-left:auto}
+.svlnav .pn{display:flex;gap:8px}
+@media (max-width:560px){.svlnav .lbl{display:none}.svlnav .pos{margin-left:0}}
+</style>
+<title>Molar Volume Bench</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap">
+<style>
+
+/* Layout: bench stage (balance / volumetric flask / pipette views) with a step-by-step action dock, working notebook on the right. Same system as the KMnO₄ bench. */
+:root{
+  --bg:#e7eceb; --surface:#f8faf9; --surface-2:#eef2f1; --ink:#162127; --muted:#56666c; --line:#cbd5d4;
+  --accent:#8b1d6f; --accent-soft:#f3dcea; --on-accent:#ffffff; --current:#b7791f;
+  --ok:#2c7a4d; --ok-soft:#dcefe3; --warn:#9a520a; --warn-soft:#f8e8d5; --bad:#a3302b; --bad-soft:#f6dedc;
+  --wall-top:#dde5e4; --wall-bot:#c5d0cf; --bench:#2a3236; --bench-edge:#1b2124; --glass:rgba(40,60,70,.55);
+  --f-display:"Bricolage Grotesque", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", "Noto Sans Sinhala", "Noto Sans Tamil", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 28px}
+:lang(si) body,:lang(ta) body{line-height:1.65}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.top > div:first-child{min-width:0}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+:lang(si) .eyebrow,:lang(ta) .eyebrow{letter-spacing:.02em;font-size:12.5px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 6px;text-wrap:balance;letter-spacing:-.01em}
+:lang(si) h1,:lang(ta) h1{letter-spacing:0;font-size:clamp(22px,2.6vw,32px);line-height:1.3}
+.sub{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.top-actions{display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap}
+.student{font-size:13px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;min-height:44px;font-weight:500;font-size:14px;transition:background .15s,border-color .15s,transform .05s;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.next{border-color:var(--current);box-shadow:0 0 0 3px color-mix(in srgb,var(--current) 30%,transparent)}
+.btn.sm{min-height:40px;padding:6px 10px}
+.btn[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.btn.hold{touch-action:none;user-select:none;-webkit-user-select:none}
+.btn.hold.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface-2)}
+.seg button{border:0;background:transparent;padding:8px 12px;min-height:42px;font-size:14px;font-weight:500;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.lang button{min-height:36px}
+.lang button[lang="si"]{font-family:"Noto Sans Sinhala",var(--f-body)}
+.lang button[lang="ta"]{font-family:"Noto Sans Tamil",var(--f-body)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.modebar{display:flex;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.prompt{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.prompt .dot{width:9px;height:9px;border-radius:50%;background:var(--current);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--current) 25%,transparent)}
+.prompt p{margin:0;font-weight:500;min-width:0}
+.viewport{position:relative;height:clamp(320px,calc(100vh - 470px),560px);background:var(--wall-bot);user-select:none;-webkit-user-select:none}
+@media (max-width:980px){.viewport{height:clamp(260px,62vw,520px)}}
+canvas#cv{display:block;width:100%;height:100%;touch-action:none}
+.chips{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;max-width:60%}
+.chip{font-family:var(--f-mono);font-size:12.5px;background:#0E1A2B;color:#D4C4FF;border:1px solid rgba(212,196,255,.25);padding:3px 10px;border-radius:999px}
+.chip.ok{color:#9fe6b8;border-color:#2c7a4d}
+.chip.bad{color:#ffb4ab;border-color:#a3302b}
+.toast{position:absolute;left:50%;bottom:14px;transform:translate(-50%,10px);opacity:0;transition:opacity .25s,transform .25s;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 28px);width:max-content;pointer-events:none;text-align:center;z-index:5}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.toast.good{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.toast.party{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);font-weight:600}
+.dock{display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.panelbox{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:10px}
+.panelbox > p{margin:0;font-weight:500}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-right:2px}
+:lang(si) .label,:lang(ta) .label{letter-spacing:0;font-size:12.5px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.fields label{display:flex;flex-direction:column;gap:4px;font-size:13px;min-width:0}
+input[type=number]{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:15px;font-family:var(--f-mono);max-width:100%}
+input.ok{border-color:var(--ok);background:var(--ok-soft)}
+input.bad{border-color:var(--bad);background:var(--bad-soft)}
+.slider{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-width:0;max-width:420px}
+.slider input{flex:1;min-width:0}
+input[type=range]{accent-color:var(--accent);min-height:30px}
+.beamctl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.beamctl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.beamctl div{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:9px;padding:4px;background:var(--surface);min-width:0}
+.beamctl span{flex:1;text-align:center;font-family:var(--f-mono);font-size:12.5px;min-width:0}
+.note{font-size:13.5px;padding:8px 10px;border-radius:8px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.note.info{background:var(--surface);border:1px solid var(--line)}
+.calcline{font-family:var(--f-mono);font-size:13px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.tabs button{flex:1;min-width:0;border:0;background:transparent;padding:12px 4px;min-height:46px;font-weight:600;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;line-height:1.3;position:relative}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs button.ping::after{content:"";position:absolute;top:8px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--current)}
+.pane{padding:16px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:980px){.pane{max-height:none}}
+h2{font-family:var(--f-display);font-size:18px;font-weight:700;margin:0}
+h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+:lang(si) h3,:lang(ta) h3{letter-spacing:0;font-size:13px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2)}
+.box.safety{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.box.safety h3{color:var(--warn)}
+.box.safety ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ring{position:relative;width:46px;height:46px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;font-weight:500}
+.chiplist{display:flex;flex-wrap:wrap;gap:6px}
+.chiplist span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;background:var(--surface)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid transparent}
+.steps li .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-family:var(--f-mono);color:var(--muted);margin-top:2px}
+.steps li.done{color:var(--muted)}
+.steps li.done .tick{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.steps li.now{background:var(--surface);border-color:var(--current)}
+.steps li.now .tick{border-color:var(--current);color:var(--current)}
+.log{font-size:13.5px;display:flex;flex-direction:column;gap:5px;max-height:240px;overflow:auto}
+.log > div{display:grid;grid-template-columns:58px 1fr;gap:6px}
+.log span{font-family:var(--f-mono);color:var(--muted);font-size:11.5px;padding-top:2px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:7px 8px;background:var(--surface-2);font-weight:600}
+:lang(si) th,:lang(ta) th{letter-spacing:0;font-size:12px}
+td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+td.num{font-family:var(--f-mono);white-space:nowrap;text-align:right}
+.cc{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px}
+.cc .ttl{display:flex;justify-content:flex-end}
+.cc .ttl em{font-style:normal;font-weight:500;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.cc .ttl em.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.cc .flow{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start}
+.cc .st{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:13px;min-width:0}
+.cc .st small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+:lang(si) .cc .st small,:lang(ta) .cc .st small{letter-spacing:0}
+.cc .arrow{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);padding-top:14px;max-width:110px;text-align:center}
+.cc .arrow b{font-size:20px;color:var(--ink);line-height:1}
+.cc svg{width:90px;height:60px;border-radius:8px;border:1px solid var(--line);background:#ffffff}
+.cc .via{font-size:12.5px;color:var(--muted);text-align:center}
+.replaycv{width:100%;max-width:100%;aspect-ratio:3/2;border-radius:10px;border:1px solid var(--line);display:block;background:#ffffff}
+.q{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}
+.q p{margin:0 0 4px;font-weight:600}
+.q button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px}
+.q button:hover:not(:disabled){border-color:var(--accent)}
+.q button.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.q button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.q button:disabled{cursor:default}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--accent);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+.vpt{border-collapse:collapse;font-size:13px;width:100%}
+.vpt td,.vpt th{padding:4px 8px;border-top:1px solid var(--line);text-align:center;font-family:var(--f-mono)}
+.vpt tr.hl td{background:var(--accent-soft);color:var(--ink);font-weight:600}
+.cstep{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13.5px;padding:6px 0;border-top:1px solid var(--line)}
+.cstep:first-child{border-top:0}
+.cstep b{font-family:var(--f-mono);font-weight:500;color:var(--ok)}
+.cstep .row input{width:130px}
+.errlist{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.big{font-family:var(--f-mono);font-size:22px}
+</style>
+</head>
+<body>
+<nav class="svlnav" aria-label="Practicals">
+<div class="in"><a href="../index.html#practicals">← <span data-svlnav="home">A/L labs</span></a>
+<span class="pos">Exp 5 · 5 / 22</span>
+<span class="pn"><a href="standard-solutions.html" rel="prev">‹ <span class="lbl" data-svlnav="prev">Previous</span></a><a href="magnesium-ar.html" rel="next"><span class="lbl" data-svlnav="next">Next</span> ›</a></span></div>
+</nav>
+<script>
+(function(){var L={en:{home:"All practicals",prev:"Previous",next:"Next"},si:{home:"සියලු ප්‍රායෝගික",prev:"පෙර",next:"ඊළඟ"},ta:{home:"எல்லாச் செய்முறைகளும்",prev:"முந்தையது",next:"அடுத்தது"}};
+function lang(){try{var l=localStorage.getItem("svl-lang");if(L[l])return l;}catch(e){}return "en";}
+function apply(){var l=lang();document.querySelectorAll("[data-svlnav]").forEach(function(e){e.textContent=L[l][e.getAttribute("data-svlnav")];});}
+apply();document.addEventListener("click",function(){setTimeout(apply,60);});})();
+</script>
+
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1 data-i18n="title"></h1>
+      <div class="sub">NIE Practical Handbook (2018) · al-exp-05 · 2KMnO₄ → K₂MnO₄ + MnO₂ + O₂</div>
+    </div>
+    <div class="top-actions">
+      <span class="student" id="student" hidden></span>
+      <div class="seg lang" role="group" aria-label="Language / භාෂාව / மொழி" id="langSeg">
+        <button data-lang="si" lang="si" aria-pressed="false">සිංහල</button>
+        <button data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button data-lang="ta" lang="ta" aria-pressed="false">தமிழ்</button>
+      </div>
+      <button class="btn" id="resetBtn" data-i18n="reset"></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="modebar">
+        <span class="label" data-i18n="readL"></span>
+        <span class="chip" id="chipT" style="font-family:var(--f-mono)"></span>
+        <span class="chip" id="chipP" style="font-family:var(--f-mono)"></span>
+        <span style="flex:1"></span>
+        <button class="btn" id="gogBtn" aria-pressed="false"></button>
+      </div>
+      <div class="prompt"><span class="dot"></span><p id="prompt" aria-live="polite"></p></div>
+      <div class="viewport" id="viewport">
+        <canvas id="cv" role="img" tabindex="0"></canvas>
+        <div class="chips" id="chips"></div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+      <div class="dock"><div class="panelbox" id="panel" aria-live="polite"></div></div>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="guide" data-i18n="tabGuide"></button>
+        <button role="tab" aria-selected="false" data-tab="obs" data-i18n="tabObs"></button>
+        <button role="tab" aria-selected="false" data-tab="colours" data-i18n="tabColours"></button>
+        <button role="tab" aria-selected="false" data-tab="quiz" data-i18n="tabQuiz" id="quizTab"></button>
+      </div>
+      <div class="pane" id="pane-guide">
+        <div class="headrow">
+          <div><h3 data-i18n="aimH"></h3><p class="small" data-i18n="aim"></p></div>
+          <div class="ring" aria-hidden="true"><svg width="46" height="46"><circle cx="23" cy="23" r="18" fill="none" stroke="var(--line)" stroke-width="4"/><circle id="ringArc" cx="23" cy="23" r="18" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><span id="ringTxt">0/6</span></div>
+        </div>
+        <div><h3 data-i18n="appH"></h3><div class="chiplist" id="appList"></div></div>
+        <div><h3 data-i18n="procH"></h3><ul class="steps" id="steps"></ul></div>
+        <div class="box safety"><h3 data-i18n="safeH"></h3><ul id="safeList"></ul></div>
+      </div>
+      <div class="pane" id="pane-obs" hidden>
+        <div><h3 data-i18n="logH"></h3><div class="log" id="log"></div></div>
+        <div><h3 data-i18n="resH"></h3><div class="tablewrap"><table><tbody id="tbR"></tbody></table></div></div>
+        <div><h3 data-i18n="vpH"></h3><div class="tablewrap" id="vpObs"></div></div>
+      </div>
+      <div class="pane" id="pane-colours" hidden>
+        <div><h2 data-i18n="coloursH"></h2><p class="small muted" style="margin-top:4px" data-i18n="coloursIntro"></p></div>
+        <div id="cards" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div class="box" style="display:flex;flex-direction:column;gap:8px">
+          <h3 data-i18n="replayH" style="margin:0"></h3>
+          <canvas id="mini" class="replaycv" width="600" height="400" aria-hidden="true"></canvas>
+          <input type="range" id="replay" min="0" max="1000" value="1000" data-i18n-aria="replayH">
+          <div class="row"><button class="btn" id="playBtn"></button><span class="small" id="rname"></span></div>
+        </div>
+      </div>
+      <div class="pane" id="pane-quiz" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <h2 data-i18n="quizH"></h2><span class="score" id="score"></span>
+        </div>
+        <div id="quiz" style="display:flex;flex-direction:column;gap:12px"></div>
+        <button class="btn" id="retryBtn" data-i18n="tryAgain" style="align-self:flex-start"></button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const SIM_ID = "al-exp-05";
+
+// =====================================================================
+// LANGUAGES
+// =====================================================================
+const I18N = {
+en: {
+  eyebrow: "A/L Chemistry · Unit 04 · Gaseous state · Experiment 5", title: "Molar volume of a gas (oxygen from KMnO₄)", student: "Student: {name}{cls}", reset: "Reset bench",
+  readL: "Room", chipT: "Water {t} °C", chipP: "Barometer {p} mmHg", gog: "Put on goggles", gogOn: "Goggles on", record: "Record", check: "Check",
+  p_weigh1: "Weigh the boiling tube containing KMnO₄ on the balance and record the mass, m₁.", fM1: "m₁ (tube + KMnO₄) / g",
+  mBad: "Not quite. Type the reading exactly as the display shows it, to 0.01 g.", mType: "Type the mass in grams, for example 36.84.",
+  p_fill: "Fill the measuring cylinder completely with water.", fill: "Fill cylinder with water",
+  p_invert: "Cover the mouth, turn the cylinder upside down in the trough of water and clamp it.", invert: "Invert into trough", tInvertFirst: "Fill it right to the top first. Any air left inside would be counted as oxygen.",
+  p_connect: "Clamp the boiling tube, fit the bung and delivery tube, and put the end of the delivery tube under the cylinder.", clamp: "Clamp tube and fit delivery tube", under: "Put delivery tube under cylinder", tClampFirst: "Fit the bung and delivery tube to the boiling tube first.",
+  p_heat: "Heat gently. Collect at least 150 cm³ of oxygen, then take the delivery tube out of the water before you turn off the burner.", flameL: "Burner flame", removeT: "Take delivery tube out of water",
+  tGog: "Put on safety goggles before heating. Hot KMnO₄ can spit out of the tube.", tStrong: "Heat gently. A very strong flame makes the crystals spit and can crack the tube.",
+  tFull: "The cylinder is nearly full. More gas will escape round the mouth. Take the delivery tube out now.", tLow: "Collect at least 150 cm³ first. A small volume gives a large reading error.",
+  tSuck: "Take the delivery tube out of the water before turning off the burner. As the tube cools, cold water would be sucked back into the hot tube and crack it.",
+  p_off: "Now turn the burner off (flame to 0).",
+  p_level: "Raise or lower the cylinder until the water level inside equals the level outside. Then read the volume of gas.", levelL: "Cylinder height", lower: "Lower", raise: "Raise",
+  lvEq: "Levels equal", lvIn: "Inside level {d} mm {w} the outside level", above: "above", below: "below", fV: "Volume of gas, V / cm³",
+  vNotEq: "Equalise the levels first. Only then is the gas pressure equal to atmospheric pressure. {why}", whyHigh: "Now the inside level is higher, so the gas is below atmospheric pressure and its volume reads too large.", whyLow: "Now the inside level is lower, so the gas is squeezed above atmospheric pressure and its volume reads too small.",
+  vBad: "Not quite. Read where the water surface meets the scale, to the nearest 1 cm³. The numbers increase downwards because the cylinder is upside down.",
+  p_cool: "Let the boiling tube cool to room temperature before reweighing.", cool: "Let it cool", cooling: "Cooling…",
+  p_reweigh: "Disconnect the boiling tube and reweigh it. Record the mass, m₂.", fM2: "m₂ (tube + residue) / g", tHot: "Let the tube cool first. A hot tube sets up air currents that upset the balance reading.",
+  p_calc: "Work through the calculation one step at a time, using your own readings.",
+  c1: "Mass of O₂ = m₁ − m₂ (g)", c2: "Amount of O₂, n = mass ÷ 32 (mol)", c3: "Water vapour pressure at {T} °C, P(H₂O) (mmHg) from the table", c4: "P(O₂) = P(atm) − P(H₂O) (mmHg)", c5: "Volume at STP = V × (P(O₂) ÷ 760) × (273 ÷ T) (cm³)", c6: "Molar volume = V(STP) ÷ n (dm³ mol⁻¹)",
+  h1: "Subtract: {a} − {b}.", h2: "Divide the mass of O₂ by 32 g mol⁻¹ (the molar mass of O₂, not O).", h3: "Find {T} °C in the vapour pressure table.", h4: "{a} − {b}.", h5: "Use T in kelvin: {T} °C = {K} K. So V(STP) = {v} × ({p} ÷ 760) × (273 ÷ {K}).", h6: "Change cm³ to dm³ (÷ 1000) before dividing by n.",
+  vpH: "Vapour pressure of water", thT: "T / °C", thP: "P(H₂O) / mmHg",
+  resultT: "Your molar volume of O₂ at STP is {v} dm³ mol⁻¹. The accepted value is 22.4 dm³ mol⁻¹. Percentage error: {e} %.",
+  errH: "Why your value is not exactly 22.4", errs: ["The balance reads only to 0.01 g, and the mass loss is small (about 0.3 g), so ±0.01 g alone is about ±3 %.", "A little oxygen dissolves in the water in the trough, so the volume collected is slightly low.", "Fine KMnO₄ dust carried out with the gas adds to the mass loss.", "The gas may not be exactly at the water temperature, and the levels may not be exactly equal."],
+  pDone: "All steps done. Now try the Questions tab.",
+  chipTube: "Tube {t} °C", chipFlame: "Flame {f}%",
+  cvWater: "water", cvO2: "colourless gas (O₂)", cvCrystals: "purple-black crystals", cvResidue: "green-black residue", cvMid: "darkening crystals", cvOut: "outside level", cvIn: "inside level", cvZoom: "cylinder scale · ×3", cvBalance: "top-pan balance", cvBar: "barometer", cvTherm: "thermometer", cvTrough: "trough",
+  lM1: "Mass of boiling tube + KMnO₄, m₁ = {m} g.", lSetup: "Measuring cylinder filled with water and inverted in the trough; delivery tube placed under it.",
+  lHeat: "On heating, the purple-black crystals crackle and turn black (green-black residue). A colourless gas is given off and collects over water, pushing the water level down.",
+  lRemove: "Delivery tube taken out of the water before the burner was turned off, to prevent suck-back.", lV: "Water levels inside and outside equalised. Volume of gas collected, V = {v} cm³ at {T} °C and {P} mmHg.",
+  lM2: "Mass after heating and cooling, m₂ = {m} g.", lCalc: "Molar volume of O₂ at STP = {v} dm³ mol⁻¹ (error {e} %).", lEscape: "Some gas escaped round the mouth of the full cylinder.",
+  tabGuide: "Guide", tabObs: "Observations", tabColours: "Colours", tabQuiz: "Questions",
+  aimH: "Aim", aim: "Collect and measure oxygen from heating KMnO₄ and calculate the molar volume of oxygen.",
+  appH: "Apparatus and chemicals", app: ["Boiling tube with KMnO₄(s)", "Delivery tube", "Trough", "Inverted measuring cylinder full of water", "Burner", "Balance", "Thermometer", "Barometer", "Table of water vapour pressure"],
+  procH: "Procedure", steps: ["Weigh the tube + KMnO₄", "Set up water-displacement collection with a full inverted cylinder", "Heat gently; collect O₂", "Equalise water levels inside and outside the cylinder; read the volume", "Cool and reweigh; mass loss = mass of O₂", "Correct for water vapour pressure (P(O₂) = P(atm) − P(H₂O)) and convert to STP with the combined gas law; divide by moles of O₂"],
+  safeH: "Safety", safe: ["Wear safety goggles. Heated KMnO₄ can spit out of the tube.", "Heat gently and move the flame along the tube.", "Take the delivery tube out of the water before you stop heating, to prevent suck-back.", "KMnO₄ is an oxidiser: keep it away from paper and other flammable materials."],
+  logH: "Observation log", resH: "Results", none: "Nothing recorded yet.",
+  rM1: "Mass of tube + KMnO₄, m₁", rM2: "Mass after heating, m₂", rMO: "Mass of O₂", rT: "Temperature", rP: "Atmospheric pressure", rV: "Volume of gas collected, V", rPw: "P(H₂O)", rPO: "P(O₂)", rVs: "Volume at STP", rN: "Amount of O₂", rVm: "Molar volume at STP", rE: "Percentage error",
+  coloursH: "Colour changes", coloursIntro: "Each card shows the state before and after, with its textbook name. Heat the tube on the bench to record it, then replay it slowly below.",
+  k1b: "purple-black crystals (KMnO₄)", k1r: "heat", k1a: "black / green-black residue (K₂MnO₄ + MnO₂)", k1v: "Seen on the way: crystals crackle and darken; green-black specks appear",
+  k2b: "cylinder full of water", k2r: "gas bubbles in", k2a: "colourless gas (O₂) at the top", k2v: "The gas is colourless: watch the water level fall, not a colour",
+  before: "Before", after: "After", seen: "Recorded", notYet: "Not done yet",
+  replayH: "Replay: crystals darkening", play: "Play slowly", pause: "Pause", rNone: "Heat the tube to record the colour change.", rAt: "Decomposed: {p}% · {c}",
+  quizH: "Knowledge check", tryAgain: "Try again", best: "best {p}%", scoreLeft: "{n} left", correct: "Correct. ", notQuite: "Not quite. ", tDone: "Practical complete! Now answer the questions in the Questions tab.",
+  canvasAria: "Bench with a boiling tube of KMnO₄ clamped over a burner, a delivery tube leading to a trough of water, and an inverted measuring cylinder collecting gas. A balance is shown when weighing.",
+  quiz: [
+    { q: "2KMnO₄ → K₂MnO₄ + MnO₂ + O₂. Why is this reaction convenient?", o: ["O₂ is the only gas, so mass loss = mass of O₂", "it is fast", "it is cheap", "it is colourless"], e: "Single gaseous product." },
+    { q: "Why subtract the vapour pressure of water?", o: ["The gas collected is wet O₂", "Water is heavy", "To correct temperature", "It is not needed"], e: "Dalton's law of partial pressures." },
+    { q: "Why equalise the water levels?", o: ["So the gas pressure equals atmospheric pressure", "To cool the gas", "To stop leaks", "To dry the gas"], e: "Then P(total) = P(atm)." },
+    { q: "Molar volume at STP (0 °C, 1 atm) is about…", o: ["24.0 dm³", "22.4 dm³", "1 dm³", "8.31 dm³"], e: "Standard value." },
+  ],
+},
+si: {
+  eyebrow: "උ.පෙ. රසායන විද්‍යාව · ඒකකය 04 · වායු අවස්ථාව · පරීක්ෂණය 5", title: "වායුවක මවුලික පරිමාව (KMnO₄ වලින් ඔක්සිජන්)", student: "ශිෂ්‍යයා: {name}{cls}", reset: "නැවත අරඹන්න",
+  readL: "කාමරය", chipT: "ජලය {t} °C", chipP: "වායුපීඩනමානය {p} mmHg", gog: "ආරක්ෂිත කණ්ණාඩි පළඳින්න", gogOn: "කණ්ණාඩි පැළඳ ඇත", record: "සටහන් කරන්න", check: "පරීක්ෂා කරන්න",
+  p_weigh1: "KMnO₄ සහිත තාපන නළය තුලාවේ කිරා ස්කන්ධය m₁ සටහන් කරන්න.", fM1: "m₁ (නළය + KMnO₄) / g",
+  mBad: "තවම නිවැරදි නැත. සංදර්ශකයේ පෙන්වන ආකාරයටම 0.01 g දක්වා පාඨාංකය ටයිප් කරන්න.", mType: "ස්කන්ධය ග්‍රෑම්වලින් ටයිප් කරන්න, උදා. 36.84.",
+  p_fill: "මිනුම් සිලින්ඩරය සම්පූර්ණයෙන්ම ජලයෙන් පුරවන්න.", fill: "සිලින්ඩරය ජලයෙන් පුරවන්න",
+  p_invert: "කට වසා, සිලින්ඩරය ජල ද්‍රෝණිය තුළ යටිකුරු කර, එය කලම්පයකින් සවි කරන්න.", invert: "ද්‍රෝණිය තුළ යටිකුරු කරන්න", tInvertFirst: "පළමුව එය මුදුන දක්වාම පුරවන්න. ඇතුළත ඉතිරි වන ඕනෑම වාතයක් ඔක්සිජන් ලෙස ගණන් වේ.",
+  p_connect: "තාපන නළය කලම්පයකින් සවි කර, ඇබය සහ වායු ගෙන යන නළය සවි කර, එම නළයේ කෙළවර සිලින්ඩරය යටට දමන්න.", clamp: "නළය සවි කර වායු නළය සම්බන්ධ කරන්න", under: "වායු නළය සිලින්ඩරය යටට දමන්න", tClampFirst: "පළමුව තාපන නළයට ඇබය සහ වායු ගෙන යන නළය සවි කරන්න.",
+  p_heat: "මෘදුව රත් කරන්න. අවම වශයෙන් ඔක්සිජන් 150 cm³ ක් එක්රැස් කර, දාහකය නිවා දැමීමට පෙර වායු නළය ජලයෙන් ඉවතට ගන්න.", flameL: "දාහක දැල්ල", removeT: "වායු නළය ජලයෙන් ඉවතට ගන්න",
+  tGog: "රත් කිරීමට පෙර ආරක්ෂිත කණ්ණාඩි පළඳින්න. රත් වූ KMnO₄ නළයෙන් පිටතට විසිවිය හැක.", tStrong: "මෘදුව රත් කරන්න. ඉතා තද දැල්ලක් නිසා ස්ඵටික විසිවන අතර නළය ඉරිතැලිය හැක.",
+  tFull: "සිලින්ඩරය පිරෙන්නට ආසන්නයි. තවත් වායුව කට වටා පිටවී යයි. දැන් වායු නළය ඉවතට ගන්න.", tLow: "පළමුව අවම වශයෙන් 150 cm³ ක් එක්රැස් කරන්න. කුඩා පරිමාවක් විශාල පාඨාංක දෝෂයක් ලබා දෙයි.",
+  tSuck: "දාහකය නිවා දැමීමට පෙර වායු නළය ජලයෙන් ඉවතට ගන්න. නළය සිසිල් වන විට සීතල ජලය රත් වූ නළයට ආපසු ඇදී ගොස් එය ඉරිතලයි.",
+  p_off: "දැන් දාහකය නිවා දමන්න (දැල්ල 0 ට).",
+  p_level: "සිලින්ඩරය තුළ ජල මට්ටම පිටත මට්ටමට සමාන වන තුරු සිලින්ඩරය ඉහළ හෝ පහළ කරන්න. ඉන්පසු වායු පරිමාව කියවන්න.", levelL: "සිලින්ඩරයේ උස", lower: "පහත් කරන්න", raise: "ඉහළ නංවන්න",
+  lvEq: "මට්ටම් සමානයි", lvIn: "ඇතුළත මට්ටම පිටත මට්ටමට වඩා {d} mm {w}", above: "ඉහළින්", below: "පහළින්", fV: "වායු පරිමාව, V / cm³",
+  vNotEq: "පළමුව මට්ටම් සමාන කරන්න. එවිට පමණක් වායු පීඩනය වායුගෝලීය පීඩනයට සමාන වේ. {why}", whyHigh: "දැන් ඇතුළත මට්ටම ඉහළින් ඇති නිසා වායුව වායුගෝලීය පීඩනයට වඩා අඩු පීඩනයක පවතින අතර පරිමාව වැඩියෙන් කියවේ.", whyLow: "දැන් ඇතුළත මට්ටම පහළින් ඇති නිසා වායුව වායුගෝලීය පීඩනයට වඩා සම්පීඩනය වී ඇති අතර පරිමාව අඩුවෙන් කියවේ.",
+  vBad: "තවම නිවැරදි නැත. ජල පෘෂ්ඨය පරිමාණය හමුවන තැන ආසන්නතම 1 cm³ ට කියවන්න. සිලින්ඩරය යටිකුරු නිසා අංක පහළට වැඩි වේ.",
+  p_cool: "නැවත කිරීමට පෙර තාපන නළය කාමර උෂ්ණත්වයට සිසිල් වීමට ඉඩ දෙන්න.", cool: "සිසිල් වීමට ඉඩ දෙන්න", cooling: "සිසිල් වෙමින්…",
+  p_reweigh: "තාපන නළය ගලවා නැවත කිරන්න. ස්කන්ධය m₂ සටහන් කරන්න.", fM2: "m₂ (නළය + අවශේෂය) / g", tHot: "පළමුව නළය සිසිල් වීමට ඉඩ දෙන්න. රත් වූ නළයක් තුලාවේ පාඨාංකය වෙනස් කරන වායු ධාරා ඇති කරයි.",
+  p_calc: "ඔබේම පාඨාංක භාවිතයෙන් ගණනය පියවරෙන් පියවර කරන්න.",
+  c1: "O₂ ස්කන්ධය = m₁ − m₂ (g)", c2: "O₂ ප්‍රමාණය, n = ස්කන්ධය ÷ 32 (mol)", c3: "{T} °C හිදී ජල වාෂ්ප පීඩනය, P(H₂O) (mmHg) වගුවෙන්", c4: "P(O₂) = P(වායුගෝලීය) − P(H₂O) (mmHg)", c5: "STP හිදී පරිමාව = V × (P(O₂) ÷ 760) × (273 ÷ T) (cm³)", c6: "මවුලික පරිමාව = V(STP) ÷ n (dm³ mol⁻¹)",
+  h1: "අඩු කරන්න: {a} − {b}.", h2: "O₂ ස්කන්ධය 32 g mol⁻¹ න් බෙදන්න (O නොව O₂ හි මවුලික ස්කන්ධය).", h3: "වාෂ්ප පීඩන වගුවේ {T} °C සොයන්න.", h4: "{a} − {b}.", h5: "T කෙල්වින්වලින් ගන්න: {T} °C = {K} K. එබැවින් V(STP) = {v} × ({p} ÷ 760) × (273 ÷ {K}).", h6: "n න් බෙදීමට පෙර cm³ dm³ බවට හරවන්න (÷ 1000).",
+  vpH: "ජල වාෂ්ප පීඩනය", thT: "T / °C", thP: "P(H₂O) / mmHg",
+  resultT: "STP හිදී O₂ හි ඔබේ මවුලික පරිමාව {v} dm³ mol⁻¹. පිළිගත් අගය 22.4 dm³ mol⁻¹. ප්‍රතිශත දෝෂය: {e} %.",
+  errH: "ඔබේ අගය හරියටම 22.4 නොවන්නේ ඇයි", errs: ["තුලාව කියවන්නේ 0.01 g දක්වා පමණක් වන අතර ස්කන්ධ හානිය කුඩාය (ආසන්න වශයෙන් 0.3 g), එබැවින් ±0.01 g පමණක් ආසන්න වශයෙන් ±3 % කි.", "ද්‍රෝණියේ ජලයේ ඔක්සිජන් ස්වල්පයක් දිය වන නිසා එක්රැස් කළ පරිමාව මඳක් අඩුය.", "වායුව සමඟ පිටවන සියුම් KMnO₄ දූවිලි ස්කන්ධ හානියට එකතු වේ.", "වායුව හරියටම ජල උෂ්ණත්වයේ නොතිබිය හැකි අතර මට්ටම් හරියටම සමාන නොවිය හැක."],
+  pDone: "සියලු පියවර අවසන්. දැන් ප්‍රශ්න ටැබය උත්සාහ කරන්න.",
+  chipTube: "නළය {t} °C", chipFlame: "දැල්ල {f}%",
+  cvWater: "ජලය", cvO2: "අවර්ණ වායුව (O₂)", cvCrystals: "දම්-කළු ස්ඵටික", cvResidue: "කොළ-කළු අවශේෂය", cvMid: "අඳුරු වන ස්ඵටික", cvOut: "පිටත මට්ටම", cvIn: "ඇතුළත මට්ටම", cvZoom: "සිලින්ඩර පරිමාණය · ×3", cvBalance: "තැටි තුලාව", cvBar: "වායුපීඩනමානය", cvTherm: "උෂ්ණත්වමානය", cvTrough: "ද්‍රෝණිය",
+  lM1: "තාපන නළය + KMnO₄ ස්කන්ධය, m₁ = {m} g.", lSetup: "මිනුම් සිලින්ඩරය ජලයෙන් පුරවා ද්‍රෝණිය තුළ යටිකුරු කරන ලදී; වායු නළය එය යටට දමන ලදී.",
+  lHeat: "රත් කිරීමේදී දම්-කළු ස්ඵටික කිරිස් හඬ නගමින් කළු (කොළ-කළු අවශේෂය) පැහැ වේ. අවර්ණ වායුවක් පිට වී ජලය මත එක්රැස් වන අතර ජල මට්ටම පහළට තල්ලු කරයි.",
+  lRemove: "ආපසු ඇදීම වැළැක්වීමට දාහකය නිවීමට පෙර වායු නළය ජලයෙන් ඉවතට ගන්නා ලදී.", lV: "ඇතුළත සහ පිටත ජල මට්ටම් සමාන කරන ලදී. {T} °C සහ {P} mmHg හිදී එක්රැස් වූ වායු පරිමාව, V = {v} cm³.",
+  lM2: "රත් කර සිසිල් කළ පසු ස්කන්ධය, m₂ = {m} g.", lCalc: "STP හිදී O₂ හි මවුලික පරිමාව = {v} dm³ mol⁻¹ (දෝෂය {e} %).", lEscape: "පිරුණු සිලින්ඩරයේ කට වටා වායුව ස්වල්පයක් පිටවී ගියේය.",
+  tabGuide: "මාර්ගෝපදේශය", tabObs: "නිරීක්ෂණ", tabColours: "වර්ණ", tabQuiz: "ප්‍රශ්න",
+  aimH: "අරමුණ", aim: "KMnO₄ රත් කිරීමෙන් ඔක්සිජන් එක්රැස් කර මැන ඔක්සිජන්හි මවුලික පරිමාව ගණනය කිරීම.",
+  appH: "උපකරණ සහ රසායන ද්‍රව්‍ය", app: ["KMnO₄(s) සහිත තාපන නළය", "වායු ගෙන යන නළය", "ද්‍රෝණිය", "ජලයෙන් පිරුණු යටිකුරු මිනුම් සිලින්ඩරය", "දාහකය", "තුලාව", "උෂ්ණත්වමානය", "වායුපීඩනමානය", "ජල වාෂ්ප පීඩන වගුව"],
+  procH: "ක්‍රියා පිළිවෙළ", steps: ["නළය + KMnO₄ කිරන්න", "පිරුණු යටිකුරු සිලින්ඩරයක් සමඟ ජල විස්ථාපන එක්රැස් කිරීම සකසන්න", "මෘදුව රත් කරන්න; O₂ එක්රැස් කරන්න", "සිලින්ඩරය ඇතුළත සහ පිටත ජල මට්ටම් සමාන කරන්න; පරිමාව කියවන්න", "සිසිල් කර නැවත කිරන්න; ස්කන්ධ හානිය = O₂ ස්කන්ධය", "ජල වාෂ්ප පීඩනය සඳහා නිවැරදි කර (P(O₂) = P(වායුගෝලීය) − P(H₂O)) සංයුක්ත වායු නියමයෙන් STP බවට හරවන්න; O₂ මවුල ගණනින් බෙදන්න"],
+  safeH: "ආරක්ෂාව", safe: ["ආරක්ෂිත කණ්ණාඩි පළඳින්න. රත් වූ KMnO₄ නළයෙන් විසිවිය හැක.", "මෘදුව රත් කර දැල්ල නළය දිගේ චලනය කරන්න.", "ආපසු ඇදීම වැළැක්වීමට රත් කිරීම නැවැත්වීමට පෙර වායු නළය ජලයෙන් ඉවතට ගන්න.", "KMnO₄ ඔක්සිකාරකයකි: කඩදාසි සහ වෙනත් දහනශීලී ද්‍රව්‍යවලින් ඈත් කර තබන්න."],
+  logH: "නිරීක්ෂණ සටහන", resH: "ප්‍රතිඵල", none: "තවම කිසිවක් සටහන් කර නැත.",
+  rM1: "නළය + KMnO₄ ස්කන්ධය, m₁", rM2: "රත් කළ පසු ස්කන්ධය, m₂", rMO: "O₂ ස්කන්ධය", rT: "උෂ්ණත්වය", rP: "වායුගෝලීය පීඩනය", rV: "එක්රැස් වූ වායු පරිමාව, V", rPw: "P(H₂O)", rPO: "P(O₂)", rVs: "STP හිදී පරිමාව", rN: "O₂ ප්‍රමාණය", rVm: "STP හිදී මවුලික පරිමාව", rE: "ප්‍රතිශත දෝෂය",
+  coloursH: "වර්ණ වෙනස්වීම්", coloursIntro: "සෑම කාඩ්පතකම පෙර සහ පසු තත්ත්වය පෙළපොතේ නාමය සමඟ දැක්වේ. එය සටහන් කිරීමට මේසය මත නළය රත් කරන්න, ඉන්පසු පහතින් සෙමින් නැවත බලන්න.",
+  k1b: "දම්-කළු ස්ඵටික (KMnO₄)", k1r: "රත් කිරීම", k1a: "කළු / කොළ-කළු අවශේෂය (K₂MnO₄ + MnO₂)", k1v: "අතරමැදදී දකින්නේ: ස්ඵටික කිරිස් හඬ නගමින් අඳුරු වේ; කොළ-කළු ලප දිස් වේ",
+  k2b: "ජලයෙන් පිරුණු සිලින්ඩරය", k2r: "වායු බුබුළු ඇතුළු වේ", k2a: "මුදුනේ අවර්ණ වායුව (O₂)", k2v: "වායුව අවර්ණයි: වර්ණයක් නොව ජල මට්ටම පහළ බසින අයුරු බලන්න",
+  before: "පෙර", after: "පසු", seen: "සටහන් විය", notYet: "තවම කර නැත",
+  replayH: "නැවත බැලීම: ස්ඵටික අඳුරු වීම", play: "සෙමින් ධාවනය", pause: "නවතන්න", rNone: "වර්ණ වෙනස සටහන් කිරීමට නළය රත් කරන්න.", rAt: "වියෝජනය: {p}% · {c}",
+  quizH: "දැනුම පරීක්ෂාව", tryAgain: "නැවත උත්සාහ කරන්න", best: "උපරිම {p}%", scoreLeft: "ඉතිරි {n}", correct: "නිවැරදියි. ", notQuite: "තවම නිවැරදි නැත. ", tDone: "ප්‍රායෝගිකය අවසන්! දැන් ප්‍රශ්න ටැබයේ ප්‍රශ්නවලට පිළිතුරු දෙන්න.",
+  canvasAria: "දාහකයක් ඉහළින් සවි කළ KMnO₄ තාපන නළයක්, ජල ද්‍රෝණියකට යන වායු නළයක් සහ වායුව එක්රැස් කරන යටිකුරු මිනුම් සිලින්ඩරයක් ඇති මේසය. කිරීමේදී තුලාවක් පෙන්වයි.",
+  quiz: [
+    { q: "2KMnO₄ → K₂MnO₄ + MnO₂ + O₂. මෙම ප්‍රතික්‍රියාව පහසු වන්නේ ඇයි?", o: ["O₂ එකම වායුව නිසා ස්කන්ධ හානිය = O₂ ස්කන්ධය", "එය වේගවත් නිසා", "එය ලාභදායී නිසා", "එය අවර්ණ නිසා"], e: "එකම වායුමය ඵලය." },
+    { q: "ජලයේ වාෂ්ප පීඩනය අඩු කරන්නේ ඇයි?", o: ["එක්රැස් කළ වායුව තෙත් O₂ නිසා", "ජලය බර නිසා", "උෂ්ණත්වය නිවැරදි කිරීමට", "එය අවශ්‍ය නැත"], e: "ඩෝල්ටන්ගේ ආංශික පීඩන නියමය." },
+    { q: "ජල මට්ටම් සමාන කරන්නේ ඇයි?", o: ["වායු පීඩනය වායුගෝලීය පීඩනයට සමාන වීමට", "වායුව සිසිල් කිරීමට", "කාන්දු වීම නැවැත්වීමට", "වායුව වියළීමට"], e: "එවිට P(මුළු) = P(වායුගෝලීය)." },
+    { q: "STP (0 °C, 1 atm) හිදී මවුලික පරිමාව ආසන්න වශයෙන්…", o: ["24.0 dm³", "22.4 dm³", "1 dm³", "8.31 dm³"], e: "සම්මත අගය." },
+  ],
+},
+ta: {
+  eyebrow: "க.பொ.த (உ/த) இரசாயனவியல் · அலகு 04 · வாயு நிலை · பரிசோதனை 5", title: "வாயுவின் மூலர்க் கனவளவு (KMnO₄ இலிருந்து ஒட்சிசன்)", student: "மாணவர்: {name}{cls}", reset: "மீண்டும் தொடங்கு",
+  readL: "அறை", chipT: "நீர் {t} °C", chipP: "பாரமானி {p} mmHg", gog: "பாதுகாப்புக் கண்ணாடி அணி", gogOn: "கண்ணாடி அணிந்துள்ளீர்", record: "பதி", check: "சரிபார்",
+  p_weigh1: "KMnO₄ உள்ள கொதிகுழாயைத் தராசில் நிறுத்துத் திணிவு m₁ ஐப் பதிக.", fM1: "m₁ (குழாய் + KMnO₄) / g",
+  mBad: "சரியில்லை. காட்சியில் உள்ளவாறே 0.01 g வரை வாசிப்பை உள்ளிடுக.", mType: "திணிவைக் கிராமில் உள்ளிடுக, உ-ம் 36.84.",
+  p_fill: "அளவு உருளையை முழுமையாக நீரால் நிரப்புக.", fill: "உருளையை நீரால் நிரப்பு",
+  p_invert: "வாயை மூடி, உருளையை நீர்த் தொட்டிக்குள் தலைகீழாக்கி, கவ்வியால் பொருத்துக.", invert: "தொட்டிக்குள் தலைகீழாக்கு", tInvertFirst: "முதலில் அதை மேல் வரை முழுமையாக நிரப்புக. உள்ளே எஞ்சும் காற்று ஒட்சிசனாகக் கணக்கிடப்படும்.",
+  p_connect: "கொதிகுழாயைக் கவ்வியில் பொருத்தி, அடைப்பையும் விநியோகக் குழாயையும் பொருத்தி, விநியோகக் குழாயின் முனையை உருளைக்குக் கீழே வைக்க.", clamp: "குழாயைப் பொருத்தி விநியோகக் குழாயை இணை", under: "விநியோகக் குழாயை உருளைக்குக் கீழே வை", tClampFirst: "முதலில் கொதிகுழாய்க்கு அடைப்பையும் விநியோகக் குழாயையும் பொருத்துக.",
+  p_heat: "மெதுவாக வெப்பமாக்குக. குறைந்தது 150 cm³ ஒட்சிசனைச் சேகரித்து, சுடரடுப்பை அணைக்கும் முன் விநியோகக் குழாயை நீரிலிருந்து எடுக்க.", flameL: "சுடரடுப்புச் சுவாலை", removeT: "விநியோகக் குழாயை நீரிலிருந்து எடு",
+  tGog: "வெப்பமாக்கும் முன் பாதுகாப்புக் கண்ணாடி அணிக. சூடான KMnO₄ குழாயிலிருந்து தெறிக்கலாம்.", tStrong: "மெதுவாக வெப்பமாக்குக. மிகப் பெரிய சுவாலை படிகங்களைத் தெறிக்கச் செய்யும்; குழாய் வெடிக்கலாம்.",
+  tFull: "உருளை நிரம்பும் நிலையில் உள்ளது. மேலதிக வாயு வாயைச் சுற்றி வெளியேறும். இப்போது விநியோகக் குழாயை எடுக்க.", tLow: "முதலில் குறைந்தது 150 cm³ சேகரிக்க. சிறிய கனவளவு பெரிய வாசிப்பு வழுவைத் தரும்.",
+  tSuck: "சுடரடுப்பை அணைக்கும் முன் விநியோகக் குழாயை நீரிலிருந்து எடுக்க. குழாய் குளிரும்போது குளிர்ந்த நீர் சூடான குழாய்க்குள் பின்னோக்கி உறிஞ்சப்பட்டு அதை வெடிக்கச் செய்யும்.",
+  p_off: "இப்போது சுடரடுப்பை அணைக்க (சுவாலை 0).",
+  p_level: "உருளைக்குள் உள்ள நீர் மட்டம் வெளி மட்டத்துக்குச் சமமாகும் வரை உருளையை உயர்த்துக அல்லது தாழ்த்துக. பின் வாயுவின் கனவளவை வாசிக்க.", levelL: "உருளையின் உயரம்", lower: "தாழ்த்து", raise: "உயர்த்து",
+  lvEq: "மட்டங்கள் சமம்", lvIn: "உள் மட்டம் வெளி மட்டத்தை விட {d} mm {w}", above: "மேலே", below: "கீழே", fV: "வாயுவின் கனவளவு, V / cm³",
+  vNotEq: "முதலில் மட்டங்களைச் சமமாக்குக. அப்போது மட்டுமே வாயு அமுக்கம் வளிமண்டல அமுக்கத்துக்குச் சமமாகும். {why}", whyHigh: "இப்போது உள் மட்டம் உயரமாக உள்ளதால் வாயு வளிமண்டல அமுக்கத்தை விடக் குறைந்த அமுக்கத்தில் உள்ளது; கனவளவு அதிகமாக வாசிக்கப்படும்.", whyLow: "இப்போது உள் மட்டம் தாழ்வாக உள்ளதால் வாயு வளிமண்டல அமுக்கத்தை விட நெருக்கப்பட்டுள்ளது; கனவளவு குறைவாக வாசிக்கப்படும்.",
+  vBad: "சரியில்லை. நீர் மேற்பரப்பு அளவுகோலைச் சந்திக்கும் இடத்தை அண்மித்த 1 cm³ இற்கு வாசிக்க. உருளை தலைகீழாக இருப்பதால் எண்கள் கீழ்நோக்கி அதிகரிக்கின்றன.",
+  p_cool: "மீண்டும் நிறுக்கும் முன் கொதிகுழாயை அறை வெப்பநிலைக்குக் குளிர விடுக.", cool: "குளிர விடு", cooling: "குளிர்கிறது…",
+  p_reweigh: "கொதிகுழாயைக் கழற்றி மீண்டும் நிறுக்க. திணிவு m₂ ஐப் பதிக.", fM2: "m₂ (குழாய் + மீதி) / g", tHot: "முதலில் குழாயைக் குளிர விடுக. சூடான குழாய் தராசு வாசிப்பைக் குழப்பும் வளி ஓட்டங்களை ஏற்படுத்தும்.",
+  p_calc: "உங்கள் சொந்த வாசிப்புகளைப் பயன்படுத்திக் கணிப்பைப் படிப்படியாகச் செய்க.",
+  c1: "O₂ இன் திணிவு = m₁ − m₂ (g)", c2: "O₂ இன் அளவு, n = திணிவு ÷ 32 (mol)", c3: "{T} °C இல் நீராவி அமுக்கம், P(H₂O) (mmHg) அட்டவணையிலிருந்து", c4: "P(O₂) = P(வளிமண்டலம்) − P(H₂O) (mmHg)", c5: "STP இல் கனவளவு = V × (P(O₂) ÷ 760) × (273 ÷ T) (cm³)", c6: "மூலர்க் கனவளவு = V(STP) ÷ n (dm³ mol⁻¹)",
+  h1: "கழிக்க: {a} − {b}.", h2: "O₂ இன் திணிவை 32 g mol⁻¹ ஆல் வகுக்க (O அல்ல, O₂ இன் மூலர்த் திணிவு).", h3: "நீராவி அமுக்க அட்டவணையில் {T} °C ஐக் காண்க.", h4: "{a} − {b}.", h5: "T ஐக் கெல்வினில் எடுக்க: {T} °C = {K} K. எனவே V(STP) = {v} × ({p} ÷ 760) × (273 ÷ {K}).", h6: "n ஆல் வகுக்கும் முன் cm³ ஐ dm³ ஆக மாற்றுக (÷ 1000).",
+  vpH: "நீரின் ஆவியமுக்கம்", thT: "T / °C", thP: "P(H₂O) / mmHg",
+  resultT: "STP இல் O₂ இன் உங்கள் மூலர்க் கனவளவு {v} dm³ mol⁻¹. ஏற்றுக்கொள்ளப்பட்ட பெறுமானம் 22.4 dm³ mol⁻¹. சதவீத வழு: {e} %.",
+  errH: "உங்கள் பெறுமானம் சரியாக 22.4 அல்லாததற்குக் காரணம்", errs: ["தராசு 0.01 g வரை மட்டுமே வாசிக்கிறது; திணிவு இழப்பு சிறியது (சுமார் 0.3 g), எனவே ±0.01 g மட்டுமே சுமார் ±3 %.", "தொட்டியிலுள்ள நீரில் சிறிதளவு ஒட்சிசன் கரைவதால் சேகரித்த கனவளவு சற்றுக் குறைவு.", "வாயுவுடன் வெளியேறும் நுண்ணிய KMnO₄ தூசு திணிவு இழப்பைக் கூட்டுகிறது.", "வாயு சரியாக நீரின் வெப்பநிலையில் இல்லாதிருக்கலாம்; மட்டங்களும் சரியாகச் சமமாக இல்லாதிருக்கலாம்."],
+  pDone: "எல்லாப் படிகளும் முடிந்தன. இப்போது வினாக்கள் தாவலை முயல்க.",
+  chipTube: "குழாய் {t} °C", chipFlame: "சுவாலை {f}%",
+  cvWater: "நீர்", cvO2: "நிறமற்ற வாயு (O₂)", cvCrystals: "ஊதா-கருப்புப் படிகங்கள்", cvResidue: "பச்சை-கருப்பு மீதி", cvMid: "கருமையாகும் படிகங்கள்", cvOut: "வெளி மட்டம்", cvIn: "உள் மட்டம்", cvZoom: "உருளை அளவுகோல் · ×3", cvBalance: "மேற்றட்டுத் தராசு", cvBar: "பாரமானி", cvTherm: "வெப்பமானி", cvTrough: "தொட்டி",
+  lM1: "கொதிகுழாய் + KMnO₄ இன் திணிவு, m₁ = {m} g.", lSetup: "அளவு உருளை நீரால் நிரப்பப்பட்டுத் தொட்டிக்குள் தலைகீழாக்கப்பட்டது; விநியோகக் குழாய் அதன் கீழே வைக்கப்பட்டது.",
+  lHeat: "வெப்பமாக்கும்போது ஊதா-கருப்புப் படிகங்கள் வெடித்துக் கருப்பாகின்றன (பச்சை-கருப்பு மீதி). நிறமற்ற வாயு வெளியேறி நீரின் மேல் சேகரிக்கப்பட்டு நீர் மட்டத்தைக் கீழே தள்ளுகிறது.",
+  lRemove: "பின்னோக்கி உறிஞ்சலைத் தடுக்கச் சுடரடுப்பை அணைக்கும் முன் விநியோகக் குழாய் நீரிலிருந்து எடுக்கப்பட்டது.", lV: "உருளையின் உள்ளும் வெளியும் நீர் மட்டங்கள் சமமாக்கப்பட்டன. {T} °C, {P} mmHg இல் சேகரித்த வாயுவின் கனவளவு, V = {v} cm³.",
+  lM2: "வெப்பமாக்கிக் குளிர்வித்த பின் திணிவு, m₂ = {m} g.", lCalc: "STP இல் O₂ இன் மூலர்க் கனவளவு = {v} dm³ mol⁻¹ (வழு {e} %).", lEscape: "நிரம்பிய உருளையின் வாயைச் சுற்றி சிறிது வாயு வெளியேறியது.",
+  tabGuide: "வழிகாட்டி", tabObs: "அவதானிப்புகள்", tabColours: "நிறங்கள்", tabQuiz: "வினாக்கள்",
+  aimH: "நோக்கம்", aim: "KMnO₄ ஐ வெப்பமாக்கிப் பெறும் ஒட்சிசனைச் சேகரித்து அளந்து, ஒட்சிசனின் மூலர்க் கனவளவைக் கணித்தல்.",
+  appH: "உபகரணங்களும் இரசாயனங்களும்", app: ["KMnO₄(s) உள்ள கொதிகுழாய்", "விநியோகக் குழாய்", "தொட்டி", "நீர் நிறைந்த தலைகீழ் அளவு உருளை", "சுடரடுப்பு", "தராசு", "வெப்பமானி", "பாரமானி", "நீராவி அமுக்க அட்டவணை"],
+  procH: "செய்முறை", steps: ["குழாய் + KMnO₄ ஐ நிறுக்க", "நீர் நிறைந்த தலைகீழ் உருளையுடன் நீர் இடப்பெயர்ச்சிச் சேகரிப்பை அமைக்க", "மெதுவாக வெப்பமாக்குக; O₂ ஐச் சேகரிக்க", "உருளையின் உள்ளும் வெளியும் நீர் மட்டங்களைச் சமமாக்குக; கனவளவை வாசிக்க", "குளிர்வித்து மீண்டும் நிறுக்க; திணிவு இழப்பு = O₂ இன் திணிவு", "நீராவி அமுக்கத்துக்குத் திருத்தி (P(O₂) = P(வளிமண்டலம்) − P(H₂O)) சேர்த்த வாயு விதியால் STP க்கு மாற்றுக; O₂ மூல்களால் வகுக்க"],
+  safeH: "பாதுகாப்பு", safe: ["பாதுகாப்புக் கண்ணாடி அணிக. சூடான KMnO₄ குழாயிலிருந்து தெறிக்கலாம்.", "மெதுவாக வெப்பமாக்கி, சுவாலையைக் குழாய் வழியே நகர்த்துக.", "பின்னோக்கி உறிஞ்சலைத் தடுக்க வெப்பமாக்கலை நிறுத்தும் முன் விநியோகக் குழாயை நீரிலிருந்து எடுக்க.", "KMnO₄ ஒட்சியேற்றி: காகிதம் போன்ற எரியக்கூடிய பொருட்களிலிருந்து விலக்கி வைக்க."],
+  logH: "அவதானிப்புப் பதிவு", resH: "முடிவுகள்", none: "இதுவரை எதுவும் பதியப்படவில்லை.",
+  rM1: "குழாய் + KMnO₄ இன் திணிவு, m₁", rM2: "வெப்பமாக்கிய பின் திணிவு, m₂", rMO: "O₂ இன் திணிவு", rT: "வெப்பநிலை", rP: "வளிமண்டல அமுக்கம்", rV: "சேகரித்த வாயுவின் கனவளவு, V", rPw: "P(H₂O)", rPO: "P(O₂)", rVs: "STP இல் கனவளவு", rN: "O₂ இன் அளவு", rVm: "STP இல் மூலர்க் கனவளவு", rE: "சதவீத வழு",
+  coloursH: "நிறமாற்றங்கள்", coloursIntro: "ஒவ்வொரு அட்டையும் முன்னும் பின்னுமான நிலையைப் பாடநூல் பெயருடன் காட்டுகிறது. பதிவு செய்ய மேசையில் குழாயை வெப்பமாக்கி, பின் கீழே மெதுவாக மீண்டும் பாருங்கள்.",
+  k1b: "ஊதா-கருப்புப் படிகங்கள் (KMnO₄)", k1r: "வெப்பம்", k1a: "கருப்பு / பச்சை-கருப்பு மீதி (K₂MnO₄ + MnO₂)", k1v: "இடையில் காண்பது: படிகங்கள் வெடித்துக் கருமையாகின்றன; பச்சை-கருப்புப் புள்ளிகள் தோன்றுகின்றன",
+  k2b: "நீர் நிறைந்த உருளை", k2r: "வாயுக் குமிழிகள் உட்செல்கின்றன", k2a: "மேலே நிறமற்ற வாயு (O₂)", k2v: "வாயு நிறமற்றது: நிறத்தையல்ல, நீர் மட்டம் இறங்குவதைப் பாருங்கள்",
+  before: "முன்", after: "பின்", seen: "பதியப்பட்டது", notYet: "இன்னும் செய்யவில்லை",
+  replayH: "மீண்டும் பார்: படிகங்கள் கருமையாதல்", play: "மெதுவாக இயக்கு", pause: "நிறுத்து", rNone: "நிறமாற்றத்தைப் பதிவு செய்யக் குழாயை வெப்பமாக்குக.", rAt: "பிரிகையடைந்தது: {p}% · {c}",
+  quizH: "அறிவுச் சோதனை", tryAgain: "மீண்டும் முயல்க", best: "அதிகூடியது {p}%", scoreLeft: "{n} மீதம்", correct: "சரி. ", notQuite: "சரியில்லை. ", tDone: "செய்முறை முடிந்தது! இப்போது வினாக்கள் தாவலில் உள்ள வினாக்களுக்கு விடையளிக்க.",
+  canvasAria: "சுடரடுப்பின் மேல் பொருத்திய KMnO₄ கொதிகுழாய், நீர்த் தொட்டிக்குச் செல்லும் விநியோகக் குழாய், வாயுவைச் சேகரிக்கும் தலைகீழ் அளவு உருளை உள்ள மேசை. நிறுக்கும்போது தராசு காட்டப்படும்.",
+  quiz: [
+    { q: "2KMnO₄ → K₂MnO₄ + MnO₂ + O₂. இத்தாக்கம் ஏன் வசதியானது?", o: ["O₂ மட்டுமே வாயு என்பதால் திணிவு இழப்பு = O₂ இன் திணிவு", "அது விரைவானது", "அது மலிவானது", "அது நிறமற்றது"], e: "ஒரே வாயு விளைபொருள்." },
+    { q: "நீரின் ஆவியமுக்கத்தை ஏன் கழிக்க வேண்டும்?", o: ["சேகரித்த வாயு ஈரமான O₂", "நீர் பாரமானது", "வெப்பநிலையைத் திருத்த", "அது தேவையில்லை"], e: "டோல்ற்றனின் பகுதியமுக்க விதி." },
+    { q: "நீர் மட்டங்களை ஏன் சமமாக்க வேண்டும்?", o: ["வாயு அமுக்கம் வளிமண்டல அமுக்கத்துக்குச் சமமாக", "வாயுவைக் குளிர்விக்க", "கசிவைத் தடுக்க", "வாயுவை உலர்த்த"], e: "அப்போது P(மொத்தம்) = P(வளிமண்டலம்)." },
+    { q: "STP (0 °C, 1 atm) இல் மூலர்க் கனவளவு ஏறத்தாழ…", o: ["24.0 dm³", "22.4 dm³", "1 dm³", "8.31 dm³"], e: "நியமப் பெறுமானம்." },
+  ],
+},
+};
+const QUIZ_ANS = [0, 0, 0, 1];
+let LANG = "en";
+try { const s = localStorage.getItem("svl-lang") || localStorage.getItem("kmno4-lang"); if (s && I18N[s]) LANG = s; else { const n = (navigator.language || "").slice(0, 2); if (I18N[n]) LANG = n; } } catch (e) {}
+function t(key, p) { let s = I18N[LANG][key]; if (s === undefined) s = I18N.en[key]; if (s === undefined) return key; if (p && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (_, k) => p[k] ?? ""); return s; }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+
+// =====================================================================
+// MODEL
+// =====================================================================
+const VP = { 20: 17.5, 21: 18.7, 22: 19.8, 23: 21.1, 24: 22.4, 25: 23.8, 26: 25.2, 27: 26.7, 28: 28.3, 29: 30.0, 30: 31.8 };
+const R = 62.364; // dm³ mmHg K⁻¹ mol⁻¹
+const PH = ["weigh1", "fill", "invert", "connect", "heat", "level", "cool", "reweigh", "calc", "done"];
+const idx = p => PH.indexOf(p);
+let S;
+function freshState() {
+  const T = ri(26, 30), mK = 4.6 + Math.random() * .8, tube = 30 + Math.random() * 4;
+  return {
+    ph: "weigh1", gog: false, ev: {}, logs: [], answered: {}, done: false, confetti: [], warned: {},
+    T, P: ri(752, 763), mK, nK: mK / 158.03, m1: Math.round((tube + mK) * 100), ferr: .975 + Math.random() * .045,
+    rec: {}, note: null, fill: 0, inverted: false, clamped: false, under: false, flame: 0, tubeT: T, x: 0, nColl: 0, nEsc: 0, heated: false, removed: false,
+    yTop: 20, bubbles: [], crackle: [], hist: [], histT: 0, coolT: -1, cooled: false, calc: { k: 0, vals: {}, note: null }, final: null,
+  };
+}
+const Pw = () => VP[S.T];
+const nProd = () => S.x * S.nK / 2;
+const Veq = n => n * R * (S.T + 273) / (S.P - Pw()) * 1000 * S.ferr; // cm³ at equal levels
+// geometry of cylinder (canvas units): 1 cm³ = 1 px; base 8 px; outside water surface y = 250
+const SURF = 250, CB = 8, CLEN = 270, CX = 740, CW = 26;
+function gasState() { // returns {V, yIn, s(mm water, + = inside above outside)}
+  if (!S.inverted) return { V: 0, yIn: S.yTop + CB, s: 0 };
+  let V = Veq(S.nColl), s = 0;
+  for (let k = 0; k < 3; k++) { const yIn = S.yTop + CB + V; s = (SURF - yIn) * 2; V = S.nColl * R * (S.T + 273) / (S.P - s / 13.6 - Pw()) * 1000 * S.ferr; }
+  return { V, yIn: S.yTop + CB + V, s };
+}
+const m2Val = () => S.m1 - Math.round(32 * nProd() * 100 + (S.dust || 0));
+
+// =====================================================================
+// CANVAS
+// =====================================================================
+const W = 960, H = 540;
+const cv = $("cv"), ctx = cv.getContext("2d"), vp = $("viewport");
+let dpr = 1, cw = 0, ch = 0, sc = 1, ox = 0, oy = 0, T = {};
+function resize() { const r = vp.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2.5); cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); sc = Math.min(cw / W, ch / H); ox = (cw - W * sc) / 2; oy = (ch - H * sc) / 2; }
+function readTokens() { const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim(); T = { wallTop: g("--wall-top"), wallBot: g("--wall-bot"), bench: g("--bench"), benchEdge: g("--bench-edge"), glass: g("--glass"), ink: g("--ink"), muted: g("--muted"), accent: g("--accent") }; }
+new ResizeObserver(resize).observe(vp);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTokens);
+new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const FONT = (w, s) => `${w} ${s}px 'IBM Plex Sans','Noto Sans Sinhala','Noto Sans Tamil',sans-serif`;
+const MONO = (w, s) => `${w} ${s}px 'IBM Plex Mono', monospace`;
+function rr(c, x, y, w, h, r) { c.beginPath(); c.roundRect(x, y, w, h, r); }
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let hatch = null;
+function makeHatch(c) { const h = document.createElement("canvas"); h.width = h.height = 10; const x = h.getContext("2d"); x.strokeStyle = "rgba(60,90,110,.3)"; x.lineWidth = 1; x.beginPath(); x.moveTo(0, 10); x.lineTo(10, 0); x.stroke(); return c.createPattern(h, "repeat"); }
+const seeded = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const BENCH = 500;
+function bench() { ctx.fillStyle = T.bench; ctx.fillRect(-ox / sc - 2, BENCH, cw / sc + 4, (ch - oy) / sc - BENCH + 4); ctx.fillStyle = T.benchEdge; ctx.fillRect(-ox / sc - 2, BENCH, cw / sc + 4, 4); }
+// crystal colour: purple-black → green-black
+const C0 = [62, 20, 78], C1 = [28, 40, 30];
+const crystalCol = x => { const a = Math.min(1, x / .35); return C0.map((v, i) => Math.round(v + (C1[i] - v) * a)); };
+const css = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+const colName = x => x < .04 ? t("cvCrystals") : x < .3 ? t("cvMid") : t("cvResidue");
+
+// boiling tube: closed end at (TB.x0,TB.y), mouth at (TB.x1,TB.y-…), slight tilt
+const TB = { x0: 150, x1: 350, y: 300, r: 15 };
+function drawTube(c, x) {
+  c.save(); c.translate(TB.x0, TB.y); c.rotate(-.05);
+  // crystals
+  const col = crystalCol(x); const n = 46;
+  for (let i = 0; i < n; i++) { const px = 6 + seeded(i) * 64, py = TB.r - 3 - seeded(i + 30) * 8; const mix = seeded(i + 60) < Math.min(1, x / .2) ? 1 : 0;
+    const cc = mix ? col : C0; c.fillStyle = css(cc); c.beginPath(); c.moveTo(px - 3, py); c.lineTo(px, py - 4); c.lineTo(px + 3, py); c.lineTo(px, py + 2); c.closePath(); c.fill();
+    if (!mix) { c.fillStyle = "rgba(170,90,200,.55)"; c.fillRect(px - .5, py - 2.5, 1, 1); } }
+  // glass
+  c.fillStyle = "rgba(225,238,245,.18)"; c.strokeStyle = T.glass; c.lineWidth = 1.8;
+  c.beginPath(); c.moveTo(TB.x1 - TB.x0, -TB.r); c.lineTo(TB.r, -TB.r); c.arc(TB.r, 0, TB.r, -Math.PI / 2, Math.PI / 2, true); c.lineTo(TB.x1 - TB.x0, TB.r); c.fill(); c.stroke();
+  c.strokeStyle = "rgba(255,255,255,.6)"; c.lineWidth = 3; c.beginPath(); c.moveTo(20, -TB.r + 4); c.lineTo(TB.x1 - TB.x0 - 6, -TB.r + 4); c.stroke();
+  // bung
+  if (S.clamped) { c.fillStyle = "#c86a2c"; rr(c, TB.x1 - TB.x0 - 6, -TB.r - 2, 22, 2 * TB.r + 4, 3); c.fill(); }
+  c.restore();
+}
+function cylinderPath(c, yTop) { c.beginPath(); c.moveTo(CX - CW, yTop + CLEN); c.lineTo(CX - CW, yTop + 6); c.quadraticCurveTo(CX - CW, yTop, CX - CW + 6, yTop); c.lineTo(CX + CW - 6, yTop); c.quadraticCurveTo(CX + CW, yTop, CX + CW, yTop + 6); c.lineTo(CX + CW, yTop + CLEN); }
+function drawScene() {
+  bench();
+  const g = gasState(), heating = S.flame > 0;
+  // wall instruments
+  drawBarometer(60, 140); drawThermo(905, 120);
+  // stand + clamp
+  ctx.fillStyle = "#2f3a40"; rr(ctx, 60, 488, 160, 12, 3); ctx.fill();
+  const rod = ctx.createLinearGradient(92, 0, 102, 0); rod.addColorStop(0, "#5e6a72"); rod.addColorStop(.5, "#e8eef1"); rod.addColorStop(1, "#4c5960"); ctx.fillStyle = rod; ctx.fillRect(92, 200, 10, 290);
+  ctx.fillStyle = "#2b353b"; ctx.fillRect(100, 292, 180, 7); rr(ctx, 270, 282, 14, 30, 3); ctx.fill();
+  // burner
+  const bx = 200; ctx.fillStyle = "#7d878c"; rr(ctx, bx - 26, 488, 52, 12, 3); ctx.fill(); const bg = ctx.createLinearGradient(bx - 9, 0, bx + 9, 0); bg.addColorStop(0, "#6f7a80"); bg.addColorStop(.5, "#e6ebee"); bg.addColorStop(1, "#5f6a70"); ctx.fillStyle = bg; ctx.fillRect(bx - 9, 400, 18, 90);
+  ctx.fillStyle = "#4a5359"; ctx.fillRect(bx - 12, 455, 24, 8);
+  if (heating) { const f = S.flame / 100, hgt = 30 + 70 * f, fl = reduceMotion ? 0 : Math.sin(time * 30) * 2;
+    let gr = ctx.createRadialGradient(bx, 400 - hgt * .4, 2, bx, 400 - hgt * .4, hgt * .7); gr.addColorStop(0, "rgba(120,170,255,.9)"); gr.addColorStop(1, "rgba(80,120,255,0)");
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(bx - 9, 400); ctx.quadraticCurveTo(bx - 14 - f * 6, 400 - hgt * .5, bx + fl, 400 - hgt); ctx.quadraticCurveTo(bx + 14 + f * 6, 400 - hgt * .5, bx + 9, 400); ctx.fill();
+    ctx.fillStyle = "rgba(40,90,230,.85)"; ctx.beginPath(); ctx.moveTo(bx - 6, 400); ctx.quadraticCurveTo(bx, 400 - hgt * .45, bx + 6, 400); ctx.fill(); }
+  // tube glow
+  if (S.tubeT > 120) { const a = Math.min(.45, (S.tubeT - 120) / 600); const gl = ctx.createRadialGradient(TB.x0 + 40, TB.y + 6, 2, TB.x0 + 40, TB.y + 6, 60); gl.addColorStop(0, `rgba(255,140,60,${a})`); gl.addColorStop(1, "rgba(255,140,60,0)"); ctx.fillStyle = gl; ctx.fillRect(TB.x0 - 30, TB.y - 60, 160, 120); }
+  drawTube(ctx, S.x);
+  S.crackle.forEach(p => { ctx.fillStyle = css(crystalCol(S.x)); ctx.fillRect(p.x - 1.5, p.y - 1.5, 3, 3); });
+  // trough
+  const tx0 = 560, tx1 = 900, ttop = 230, tbot = BENCH;
+  ctx.fillStyle = "rgba(225,240,247,.75)"; ctx.fillRect(tx0, SURF, tx1 - tx0, tbot - SURF); ctx.fillStyle = hatch; ctx.fillRect(tx0, SURF, tx1 - tx0, tbot - SURF);
+  // cylinder
+  if (S.inverted) {
+    ctx.save(); cylinderPath(ctx, S.yTop); ctx.closePath(); ctx.clip();
+    ctx.fillStyle = "#eef6fa"; ctx.fillRect(CX - CW, S.yTop, 2 * CW, CLEN);
+    ctx.fillStyle = "rgba(225,240,247,.95)"; ctx.fillRect(CX - CW, g.yIn, 2 * CW, CLEN); ctx.fillStyle = hatch; ctx.fillRect(CX - CW, g.yIn, 2 * CW, CLEN);
+    ctx.restore();
+    ctx.strokeStyle = "#3a6a80"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(CX - CW, g.yIn + 2); ctx.quadraticCurveTo(CX, g.yIn - 3, CX + CW, g.yIn + 2); ctx.stroke();
+    cylinderPath(ctx, S.yTop); ctx.strokeStyle = T.glass; ctx.lineWidth = 2; ctx.stroke();
+    // scale (inverted: 0 at the closed end, increasing downwards)
+    ctx.strokeStyle = "#1c2a31"; ctx.fillStyle = "#1c2a31"; ctx.font = MONO(500, 9); ctx.textAlign = "left"; ctx.textBaseline = "middle";
+    for (let v = 0; v <= 250; v += 10) { const y = S.yTop + CB + v; ctx.lineWidth = v % 50 === 0 ? 1.3 : .8; ctx.beginPath(); ctx.moveTo(CX - CW + 2, y); ctx.lineTo(CX - CW + (v % 50 === 0 ? 16 : 9), y); ctx.stroke(); if (v % 50 === 0) ctx.fillText(String(v), CX - CW + 18, y); }
+    if (g.V > 3) { ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "left"; ctx.fillText(t("cvO2"), CX + CW + 6, S.yTop + CB + Math.min(g.V, 200) / 2); }
+    // clamp
+    ctx.fillStyle = "#2b353b"; ctx.fillRect(CX + CW, S.yTop + 30, 120, 6); ctx.fillStyle = "#4a5359"; ctx.fillRect(920, 20, 9, 480);
+  } else if (S.fill > 0 || idx(S.ph) <= idx("invert")) { // upright cylinder on bench being filled
+    const yT = 230, x = 470; ctx.fillStyle = "rgba(225,240,247,.9)"; const lv = 270 * S.fill; ctx.fillRect(x - CW, BENCH - 6 - lv, 2 * CW, lv); ctx.fillStyle = hatch; ctx.fillRect(x - CW, BENCH - 6 - lv, 2 * CW, lv);
+    ctx.strokeStyle = T.glass; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - CW, BENCH - 278); ctx.lineTo(x - CW, BENCH - 6); ctx.lineTo(x + CW, BENCH - 6); ctx.lineTo(x + CW, BENCH - 278); ctx.stroke(); ctx.fillStyle = "#3b4a52"; rr(ctx, x - 40, BENCH - 8, 80, 8, 2); ctx.fill();
+    if (S.fill > 0) { ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "left"; ctx.fillText(t("cvWater"), x + CW + 6, BENCH - 40); }
+  }
+  // trough glass + labels
+  ctx.strokeStyle = T.glass; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(tx0, ttop); ctx.lineTo(tx0, tbot); ctx.lineTo(tx1, tbot); ctx.lineTo(tx1, ttop); ctx.stroke();
+  ctx.strokeStyle = "#3a6a80"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(tx0, SURF); ctx.lineTo(CX - CW, SURF); ctx.moveTo(CX + CW, SURF); ctx.lineTo(tx1, SURF); ctx.stroke();
+  ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "left"; ctx.fillText(t("cvTrough") + " · " + t("cvWater"), tx0 + 8, tbot - 12);
+  // beehive shelf under cylinder
+  if (S.inverted) { ctx.fillStyle = "#b9c3c8"; rr(ctx, CX - 40, 450, 80, 50, 4); ctx.fill(); }
+  // delivery tube
+  if (S.clamped) { ctx.strokeStyle = "rgba(120,150,165,.9)"; ctx.lineWidth = 5; ctx.lineJoin = "round"; ctx.beginPath(); const sx = TB.x1 + 8, sy = TB.y - 9;
+    ctx.moveTo(sx, sy); ctx.lineTo(500, sy - 20); ctx.lineTo(600, 210);
+    if (S.under && !S.removed) { ctx.lineTo(640, 470); ctx.lineTo(CX - 6, 470); ctx.lineTo(CX - 6, S.yTop + CLEN - 14); } else { ctx.lineTo(620, 205); }
+    ctx.stroke(); ctx.strokeStyle = "rgba(255,255,255,.5)"; ctx.lineWidth = 1.5; ctx.stroke(); }
+  // bubbles
+  S.bubbles.forEach(b => { ctx.strokeStyle = "rgba(60,100,120,.7)"; ctx.fillStyle = "rgba(255,255,255,.75)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, 7); ctx.fill(); ctx.stroke(); });
+  // labels
+  ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "center"; ctx.fillText(colName(S.x), TB.x0 + 45, TB.y - 26);
+  // level inset
+  if (["level"].includes(S.ph) || (S.ph === "heat" && S.removed)) drawLevelInset(g);
+}
+function drawLevelInset(g) {
+  const x = 340, y = 20, w = 200, h = 200, k = 3; ctx.save(); ctx.fillStyle = "#ffffff"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = "#cbd5d4"; ctx.stroke(); rr(ctx, x, y, w, h, 12); ctx.clip();
+  const cy = y + h / 2, toY = yy => cy + (yy - g.yIn) * k, cx0 = x + 40, cx1 = x + 130;
+  ctx.fillStyle = "rgba(225,240,247,.9)"; ctx.fillRect(x, toY(SURF), w, h); ctx.fillStyle = hatch; ctx.fillRect(x, toY(SURF), w, h);
+  ctx.fillStyle = "#eef6fa"; ctx.fillRect(cx0, y, cx1 - cx0, h);
+  ctx.fillStyle = "rgba(225,240,247,.95)"; ctx.fillRect(cx0, cy, cx1 - cx0, h); ctx.fillStyle = hatch; ctx.fillRect(cx0, cy, cx1 - cx0, h);
+  ctx.strokeStyle = "#1c2a31"; ctx.fillStyle = "#1c2a31"; ctx.font = MONO(600, 11); ctx.textAlign = "left"; ctx.textBaseline = "middle";
+  for (let v = Math.floor(g.V - 40); v <= g.V + 40; v++) { if (v < 0 || v > 250) continue; const yy = toY(S.yTop + CB + v); const big = v % 10 === 0, mid = v % 5 === 0; ctx.lineWidth = big ? 1.6 : 1; ctx.beginPath(); ctx.moveTo(cx0, yy); ctx.lineTo(cx0 + (big ? 30 : mid ? 20 : 12), yy); ctx.stroke(); if (big) ctx.fillText(String(v), cx0 + 34, yy); }
+  ctx.strokeStyle = "#3a6a80"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx0, cy + 3); ctx.quadraticCurveTo((cx0 + cx1) / 2, cy - 4, cx1, cy + 3); ctx.stroke();
+  ctx.strokeStyle = "#7a9aa8"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx0, y); ctx.lineTo(cx0, y + h); ctx.moveTo(cx1, y); ctx.lineTo(cx1, y + h); ctx.stroke();
+  const eq = Math.abs(g.s) < 2.5; ctx.strokeStyle = eq ? "#2c7a4d" : "#c0392b"; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, toY(SURF)); ctx.lineTo(x + w, toY(SURF)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = "#1c2a31"; ctx.font = FONT(600, 10); ctx.textAlign = "right"; ctx.fillText(t("cvOut"), x + w - 4, toY(SURF) - 8); ctx.textAlign = "left"; ctx.fillText(t("cvIn"), cx1 + 4, cy + 12);
+  ctx.restore(); ctx.fillStyle = T.ink; ctx.font = FONT(600, 11); ctx.textAlign = "center"; ctx.fillText(t("cvZoom"), x + w / 2, y + h + 14);
+}
+function drawBarometer(x, y) { ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(x, y, 36, 0, 7); ctx.fill(); ctx.strokeStyle = "#6d5638"; ctx.lineWidth = 4; ctx.stroke();
+  ctx.strokeStyle = "#1c2a31"; ctx.lineWidth = 1; for (let k = 0; k <= 20; k++) { const a = Math.PI * .8 + k / 20 * Math.PI * 1.4; ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * 28, y + Math.sin(a) * 28); ctx.lineTo(x + Math.cos(a) * (k % 5 ? 31 : 33), y + Math.sin(a) * (k % 5 ? 31 : 33)); ctx.stroke(); }
+  const a = Math.PI * .8 + (S.P - 740) / 40 * Math.PI * 1.4; ctx.strokeStyle = "#c0392b"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * 26, y + Math.sin(a) * 26); ctx.stroke();
+  ctx.fillStyle = "#1c2a31"; ctx.font = MONO(600, 9); ctx.textAlign = "center"; ctx.fillText(S.P + " mmHg", x, y + 18); ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.fillText(t("cvBar"), x, y + 50); }
+function drawThermo(x, y) { ctx.fillStyle = "rgba(240,246,250,.95)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 1.2; rr(ctx, x - 6, y, 12, 260, 6); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#c0392b"; ctx.beginPath(); ctx.arc(x, y + 262, 8, 0, 7); ctx.fill(); const top = y + 250 - (S.T - 0) * 5; ctx.fillRect(x - 2, top, 4, y + 262 - top);
+  ctx.fillStyle = T.ink; ctx.font = MONO(600, 10); ctx.textAlign = "right"; ctx.fillText(S.T + " °C", x - 10, top); ctx.font = FONT(600, 10); ctx.textAlign = "right"; ctx.fillText(t("cvTherm"), x - 12, y + 8); }
+function drawBalanceScene() {
+  bench(); ctx.fillStyle = "#e9eef0"; rr(ctx, 300, 400, 360, 100, 12); ctx.fill(); ctx.strokeStyle = "#7d878c"; ctx.stroke();
+  ctx.fillStyle = "#1c2a31"; rr(ctx, 420, 430, 160, 46, 6); ctx.fill();
+  const m = S.ph === "weigh1" ? S.m1 : m2Val(), flick = S.ph === "reweigh" && !S.cooled ? Math.round(Math.sin(time * 7) * 3) : 0;
+  ctx.fillStyle = "#9fe6b8"; ctx.font = MONO(600, 26); ctx.textAlign = "right"; ctx.textBaseline = "middle"; ctx.fillText(((m + flick) / 100).toFixed(2), 552, 454); ctx.font = MONO(600, 14); ctx.fillText("g", 572, 456);
+  ctx.fillStyle = "#b9c3c8"; ctx.beginPath(); ctx.ellipse(400, 400, 70, 10, 0, 0, 7); ctx.fill();
+  // tube in a small beaker on the pan
+  ctx.fillStyle = "rgba(214,234,242,.4)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 1.5; rr(ctx, 360, 320, 80, 78, 6); ctx.fill(); ctx.stroke();
+  ctx.save(); ctx.translate(380, 395); ctx.rotate(-1.2);
+  ctx.fillStyle = "rgba(225,238,245,.3)"; ctx.beginPath(); ctx.moveTo(150, -13); ctx.lineTo(13, -13); ctx.arc(13, 0, 13, -Math.PI / 2, Math.PI / 2, true); ctx.lineTo(150, 13); ctx.fill(); ctx.stroke();
+  const col = crystalCol(S.x); for (let i = 0; i < 30; i++) { ctx.fillStyle = css(seeded(i + 60) < Math.min(1, S.x / .2) ? col : C0); ctx.fillRect(4 + seeded(i) * 46, -10 + seeded(i + 3) * 20, 3, 3); }
+  ctx.restore();
+  ctx.fillStyle = T.ink; ctx.font = FONT(600, 12); ctx.textAlign = "center"; ctx.fillText(t("cvBalance"), 480, 520 - 4);
+  drawBarometer(80, 80); drawThermo(900, 100);
+}
+
+// =====================================================================
+// LOOP
+// =====================================================================
+let time = 0, last = performance.now(), uiT = 0;
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now; time += dt;
+  step(dt);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const gr = ctx.createLinearGradient(0, 0, 0, ch); gr.addColorStop(0, T.wallTop); gr.addColorStop(1, T.wallBot); ctx.fillStyle = gr; ctx.fillRect(0, 0, cw, ch);
+  ctx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, dpr * oy);
+  if (!hatch) hatch = makeHatch(ctx);
+  if (["weigh1", "reweigh"].includes(S.ph)) drawBalanceScene(); else drawScene();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  S.confetti.forEach(p => { p.vy += 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-3, -1.5, 6, 3); ctx.restore(); });
+  S.confetti = S.confetti.filter(p => p.y < ch + 20);
+  if (playing) { const r = Math.min(1000, +$("replay").value + dt / 4 * 1000); $("replay").value = r; if (r >= 1000) { playing = false; renderReplayCtl(); } }
+  uiT += dt; if (uiT > .12) { uiT = 0; renderLive(); if (!$("pane-colours").hidden) drawMini(); }
+  requestAnimationFrame(frame);
+}
+function step(dt) {
+  if (S.fillAnim) { S.fill = Math.min(1, S.fill + dt / 1.2); if (S.fill >= 1) { S.fillAnim = false; setPh("invert"); } }
+  // tube temperature and decomposition
+  const target = S.T + 4.4 * S.flame; S.tubeT += (target - S.tubeT) * Math.min(1, dt / 2.2);
+  if (S.tubeT > 205 && S.x < 1) {
+    const rate = .032 * (S.tubeT - 205) / 100, dx = Math.min(1 - S.x, rate * dt), dn = dx * S.nK / 2; S.x += dx;
+    if (S.flame > 80) S.dust = (S.dust || 0) + dt * .25; // dust carried out by strong heating (hundredths of a gram)
+    if (S.under && !S.removed) { const cap = 248; if (Veq(S.nColl + dn) > cap) { S.nEsc += dn; if (!S.warned.full) { S.warned.full = 1; toast("tFull", "warn", 5000); log(["lEscape"]); } } else S.nColl += dn; } else S.nEsc += dn;
+    if (!reduceMotion && Math.random() < rate * 30 * dt * 10) S.crackle.push({ x: TB.x0 + 10 + Math.random() * 60, y: TB.y + 6, vx: (Math.random() - .5) * 60, vy: -40 - Math.random() * 60, life: .5 });
+    if (S.under && !S.removed && Math.random() < rate * 60 * dt * 6) { S.bubbles.push({ x: CX - 6 + (Math.random() - .5) * 4, y: S.yTop + CLEN - 14, r: 2 + Math.random() * 2.5, vy: -60 - Math.random() * 40 }); }
+    if (!S.heated && S.x > .08) { S.heated = true; log(["lHeat"]); render(); }
+    S.histT += dt; if (S.histT > .15) { S.histT = 0; S.hist.push(S.x); }
+  }
+  S.crackle.forEach(p => { p.vy += 300 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.life -= dt; }); S.crackle = S.crackle.filter(p => p.life > 0);
+  const g = gasState(); S.bubbles.forEach(b => { b.y += b.vy * dt; b.x += Math.sin(time * 8 + b.r) * .3; }); S.bubbles = S.bubbles.filter(b => b.y > g.yIn);
+  if (S.coolT >= 0) { S.coolT += dt; S.tubeT += (S.T - S.tubeT) * Math.min(1, dt / .5); if (S.coolT > 2.4) { S.coolT = -1; S.cooled = true; S.tubeT = S.T; setPh("reweigh"); } }
+}
+
+// =====================================================================
+// ACTIONS
+// =====================================================================
+function setPh(p) { S.ph = p; render(); }
+function recordM(which) {
+  const el = $("mIn"), v = parseFloat(el ? el.value : "");
+  if (!isFinite(v)) { S.note = ["bad", "mType"]; return renderPanel(); }
+  const truth = which === 1 ? S.m1 : m2Val();
+  if (Math.round(v * 100) !== truth) { S.note = ["bad", "mBad"]; return renderPanel(); }
+  S.note = null;
+  if (which === 1) { S.rec.m1 = truth; S.ev.w1 = 1; log(["lM1", { m: (truth / 100).toFixed(2) }]); setPh("fill"); }
+  else { S.rec.m2 = truth; S.ev.w2 = 1; log(["lM2", { m: (truth / 100).toFixed(2) }]); setPh("calc"); }
+}
+function fillCyl() { S.fillAnim = true; renderPanel(); }
+function invertCyl() { if (S.fill < 1) return toast("tInvertFirst", "warn", 4200); S.inverted = true; S.yTop = 20; setPh("connect"); }
+function clampTube() { S.clamped = true; renderPanel(); }
+function putUnder() { if (!S.clamped) return toast("tClampFirst", "warn"); S.under = true; S.ev.setup = 1; log(["lSetup"]); setPh("heat"); }
+function setFlame(v) {
+  if (v > 0 && !S.gog) { toast("tGog", "warn", 4000); v = 0; }
+  if (v < S.flame && v < 8 && S.under && !S.removed && S.x > 0.01) { toast("tSuck", "warn", 6000); v = 8; }
+  if (v > 80 && !S.warned.strong) { S.warned.strong = 1; toast("tStrong", "warn", 4600); }
+  S.flame = v; const el = $("flame"); if (el) el.value = v;
+  if (S.removed && v === 0 && S.ph === "heat") { S.ev.heat = 1; S.yTop = 20; setPh("level"); }
+}
+function removeTube() { if (Veq(S.nColl) < 150) return toast("tLow", "warn", 4200); S.removed = true; log(["lRemove"]); render(); }
+function setY(v) { S.yTop = Math.max(-10, Math.min(150, v)); const el = $("lev"); if (el) el.value = Math.round(150 - S.yTop); }
+function recordV() {
+  const g = gasState(), v = parseFloat(($("vIn") || {}).value);
+  if (Math.abs(g.s) >= 2.5) { S.note = ["bad", "vNotEq", { why: t(g.s > 0 ? "whyHigh" : "whyLow") }]; return renderPanel(); }
+  if (!isFinite(v) || Math.abs(v - g.V) > 1.01) { S.note = ["bad", "vBad"]; return renderPanel(); }
+  S.note = null; S.rec.V = Math.round(v); S.ev.level = 1; log(["lV", { v: S.rec.V, T: S.T, P: S.P }]); setPh("cool");
+}
+function coolIt() { S.coolT = 0; renderPanel(); }
+// calculation
+function calcTruth(k) {
+  const r = S.rec, m = (r.m1 - r.m2) / 100, n = m / 32, pw = Pw(), po = S.P - pw, Kk = S.T + 273, vs = r.V * (po / 760) * (273 / Kk), vm = vs / 1000 / n;
+  return [m, n, pw, po, vs, vm][k];
+}
+function checkStep() {
+  const c = S.calc, k = c.k, el = $("cIn"), v = parseFloat(el ? el.value : ""), want = c.vals.ref ? null : null;
+  // check against the student's own earlier values
+  const r = S.rec, own = c.vals, m = own[0] ?? calcTruth(0), n = own[1] ?? calcTruth(1), pw = own[2] ?? calcTruth(2), po = own[3] ?? calcTruth(3), vs = own[4] ?? calcTruth(4);
+  const exp = [(r.m1 - r.m2) / 100, m / 32, Pw(), S.P - pw, r.V * (po / 760) * (273 / (S.T + 273)), vs / 1000 / n][k];
+  const tol = [.0051, Math.abs(exp) * .012, .051, .151, Math.abs(exp) * .012, Math.abs(exp) * .015][k];
+  if (!isFinite(v) || Math.abs(v - exp) > tol) { c.note = ["bad", "h" + (k + 1), { a: [(r.m1 / 100).toFixed(2), (S.P).toFixed(0)][k === 0 ? 0 : 1], b: k === 0 ? (r.m2 / 100).toFixed(2) : String(pw), T: S.T, K: S.T + 273, v: r.V, p: po.toFixed(1) }]; return renderPanel(); }
+  own[k] = v; c.note = null; c.k++;
+  if (c.k >= 6) { const vm = own[5], e = (vm - 22.4) / 22.4 * 100; S.final = { vm, e, vs: own[4], n: own[1], po: own[3], pw: own[2], mo: own[0] }; S.ev.calc = 1; log(["lCalc", { v: vm.toFixed(1), e: (e >= 0 ? "+" : "") + e.toFixed(1) }]); setPh("done"); if (!S.done) { S.done = true; celebrate(); } return; }
+  renderPanel();
+}
+
+// =====================================================================
+// UI
+// =====================================================================
+let toastT;
+function toast(k, kind = "", ms = 3600, p) { const el = $("toast"); el.textContent = t(k, p); el.className = "toast show " + kind; clearTimeout(toastT); toastT = setTimeout(() => el.className = "toast " + kind, ms); }
+function log(...parts) { S.logs.unshift({ time: new Date().toTimeString().slice(0, 8), parts }); renderLog(); }
+function renderLog() { const box = $("log"); box.innerHTML = ""; S.logs.forEach(e => { const d = document.createElement("div"), s = document.createElement("span"), m = document.createElement("div"); s.textContent = e.time; m.textContent = e.parts.map(([k, p]) => t(k, p)).join(" "); d.append(s, m); box.append(d); }); }
+function promptText() {
+  const p = S.ph; if (p === "heat") return t(S.removed ? "p_off" : "p_heat");
+  return t({ weigh1: "p_weigh1", fill: "p_fill", invert: "p_invert", connect: "p_connect", level: "p_level", cool: "p_cool", reweigh: "p_reweigh", calc: "p_calc", done: "pDone" }[p]);
+}
+const noteHTML = n => n ? `<div class="note ${n[0]}">${esc(t(n[1], n[2]))}</div>` : "";
+function vpTable() { return `<table class="vpt"><tr><th>${esc(t("thT"))}</th><th>${esc(t("thP"))}</th></tr>${Object.entries(VP).map(([k, v]) => `<tr class="${+k === S.T && idx(S.ph) >= idx("calc") ? "hl" : ""}"><td>${k}</td><td>${v.toFixed(1)}</td></tr>`).join("")}</table>`; }
+function renderPanel() {
+  const p = S.ph, P = $("panel"); let h = `<p>${esc(promptText())}</p>`;
+  if (p === "weigh1" || p === "reweigh") {
+    if (p === "reweigh" && !S.cooled) h += `<div class="note bad">${esc(t("tHot"))}</div>`;
+    h += `<div class="row"><label class="label" for="mIn">${esc(t(p === "weigh1" ? "fM1" : "fM2"))}</label><input type="number" id="mIn" step="0.01" inputmode="decimal" placeholder="0.00"><button class="btn primary" id="mBtn">${esc(t("record"))}</button></div>` + noteHTML(S.note); }
+  if (p === "fill") h += `<div class="row"><button class="btn primary" id="fillBtn" ${S.fillAnim ? "disabled" : ""}>${esc(t("fill"))}</button><button class="btn" id="invBtn">${esc(t("invert"))}</button></div>`;
+  if (p === "invert") h += `<div class="row"><button class="btn primary" id="invBtn">${esc(t("invert"))}</button></div>`;
+  if (p === "connect") h += `<div class="row"><button class="btn primary" id="clBtn" ${S.clamped ? "disabled" : ""}>${S.clamped ? "✓ " : ""}${esc(t("clamp"))}</button><button class="btn primary" id="unBtn">${esc(t("under"))}</button></div>`;
+  if (p === "heat") h += `<div class="row"><label class="label" for="flame">${esc(t("flameL"))}</label><div class="slider"><input type="range" id="flame" min="0" max="100" value="${S.flame}"></div><button class="btn ${S.removed ? "" : "primary"}" id="rmBtn" ${S.removed ? "disabled" : ""}>${S.removed ? "✓ " : ""}${esc(t("removeT"))}</button></div>`;
+  if (p === "level") h += `<div class="row"><label class="label" for="lev">${esc(t("levelL"))}</label><button class="btn sm" id="lvDn">${esc(t("lower"))}</button><div class="slider"><input type="range" id="lev" min="0" max="160" value="${Math.round(150 - S.yTop)}"></div><button class="btn sm" id="lvUp">${esc(t("raise"))}</button></div>
+    <div class="row"><label class="label" for="vIn">${esc(t("fV"))}</label><input type="number" id="vIn" step="1" inputmode="decimal" placeholder="0"><button class="btn primary" id="vBtn">${esc(t("record"))}</button></div>` + noteHTML(S.note);
+  if (p === "cool") h += `<div class="row"><button class="btn primary" id="coolBtn" ${S.coolT >= 0 ? "disabled" : ""}>${esc(t(S.coolT >= 0 ? "cooling" : "cool"))}</button></div>`;
+  if (p === "calc") { const c = S.calc; h += `<div>${[0, 1, 2, 3, 4, 5].map(k => { const lab = t("c" + (k + 1), { T: S.T });
+      if (k < c.k) return `<div class="cstep"><span>${esc(lab)}</span><b>${c.vals[k]}</b></div>`;
+      if (k === c.k) return `<div class="cstep"><span>${esc(lab)}</span><div class="row"><input type="number" id="cIn" step="any" inputmode="decimal" aria-label="${esc(lab)}"><button class="btn primary" id="cBtn">${esc(t("check"))}</button></div></div>`;
+      return `<div class="cstep muted"><span>${esc(lab)}</span><span>…</span></div>`; }).join("")}</div>` + noteHTML(c.note) + (c.k === 2 ? `<div class="tablewrap">${vpTable()}</div>` : ""); }
+  if (p === "done") { const f = S.final; h = `<div class="note ok">${esc(t("resultT", { v: f.vm.toFixed(1), e: (f.e >= 0 ? "+" : "") + f.e.toFixed(1) }))}</div><div><h3>${esc(t("errH"))}</h3><ul class="errlist">${t("errs").map(x => `<li>${esc(x)}</li>`).join("")}</ul></div>`; }
+  P.innerHTML = h;
+  const on = (id, fn) => { const el = $(id); if (el) el.onclick = fn; };
+  on("mBtn", () => recordM(p === "weigh1" ? 1 : 2)); on("fillBtn", fillCyl); on("invBtn", invertCyl); on("clBtn", clampTube); on("unBtn", putUnder); on("rmBtn", removeTube);
+  on("vBtn", recordV); on("coolBtn", coolIt); on("cBtn", checkStep); on("lvDn", () => setY(S.yTop + 1)); on("lvUp", () => setY(S.yTop - 1));
+  if ($("flame")) $("flame").oninput = e => setFlame(+e.target.value);
+  if ($("lev")) $("lev").oninput = e => setY(150 - +e.target.value);
+  [["mIn", () => recordM(p === "weigh1" ? 1 : 2)], ["vIn", recordV], ["cIn", checkStep]].forEach(([id, fn]) => { const el = $(id); if (el) el.onkeydown = e => { if (e.key === "Enter") fn(); }; });
+}
+function stepsDone() { return [!!S.ev.w1, !!S.ev.setup, !!S.ev.heat, !!S.ev.level, !!S.ev.w2, !!S.ev.calc]; }
+function renderGuide() { const d = stepsDone(), cur = d.indexOf(false), k = d.filter(Boolean).length;
+  $("steps").innerHTML = t("steps").map((s, i) => `<li class="${d[i] ? "done" : i === cur ? "now" : ""}"><span class="tick">${d[i] ? "✓" : i + 1}</span><span>${esc(s)}</span></li>`).join("");
+  $("ringTxt").textContent = `${k}/6`; $("ringArc").style.strokeDashoffset = String(113.1 * (1 - k / 6)); }
+function renderLive() {
+  const c = [];
+  if (["heat", "level", "cool"].includes(S.ph)) { c.push(`<span class="chip">${esc(t("chipFlame", { f: S.flame }))}</span>`); c.push(`<span class="chip">${esc(t("chipTube", { t: Math.round(S.tubeT) }))}</span>`); }
+  if (S.ph === "level") { const g = gasState(), eq = Math.abs(g.s) < 2.5; c.push(`<span class="chip ${eq ? "ok" : "bad"}">${esc(eq ? "✓ " + t("lvEq") : t("lvIn", { d: Math.abs(Math.round(g.s)), w: t(g.s > 0 ? "above" : "below") }))}</span>`); }
+  const h = c.join(""); if ($("chips").innerHTML !== h) $("chips").innerHTML = h;
+  $("chipT").textContent = t("chipT", { t: S.T }); $("chipP").textContent = t("chipP", { p: S.P });
+}
+function renderTables() {
+  const r = S.rec, f = S.final, row = (k, v) => `<tr><td>${esc(t(k))}</td><td class="num">${v}</td></tr>`, a = [];
+  if (r.m1 !== undefined) a.push(row("rM1", (r.m1 / 100).toFixed(2) + " g"));
+  a.push(row("rT", S.T + " °C (" + (S.T + 273) + " K)")); a.push(row("rP", S.P + " mmHg"));
+  if (r.V !== undefined) a.push(row("rV", r.V + " cm³"));
+  if (r.m2 !== undefined) { a.push(row("rM2", (r.m2 / 100).toFixed(2) + " g")); a.push(row("rMO", ((r.m1 - r.m2) / 100).toFixed(2) + " g")); }
+  if (f) { a.push(row("rN", f.n.toFixed(5) + " mol")); a.push(row("rPw", f.pw.toFixed(1) + " mmHg")); a.push(row("rPO", f.po.toFixed(1) + " mmHg")); a.push(row("rVs", f.vs.toFixed(1) + " cm³")); a.push(row("rVm", f.vm.toFixed(1) + " dm³ mol⁻¹")); a.push(row("rE", (f.e >= 0 ? "+" : "") + f.e.toFixed(1) + " %")); }
+  $("tbR").innerHTML = a.join(""); $("vpObs").innerHTML = vpTable();
+}
+function render() {
+  $("gogBtn").textContent = t(S.gog ? "gogOn" : "gog"); $("gogBtn").setAttribute("aria-pressed", String(S.gog));
+  $("prompt").textContent = promptText(); renderPanel(); renderGuide(); renderTables(); renderLive(); renderCards();
+}
+function celebrate() { toast("tDone", "party", 5200); $("quizTab").classList.add("ping");
+  if (!reduceMotion) { const cols = ["#6A1B9A", "#2E8B57", "#4BA3E3", "#d9a441"]; for (let i = 0; i < 90; i++) S.confetti.push({ x: cw / 2 + (Math.random() - .5) * 200, y: ch * .3, vx: (Math.random() - .5) * 340, vy: -150 - Math.random() * 220, rot: Math.random() * 6, vr: (Math.random() - .5) * 10, c: cols[i % cols.length] }); } }
+// colour cards
+function crystalsSVG(x) { const col = crystalCol(x); return `<svg viewBox="0 0 90 60" aria-hidden="true"><rect width="90" height="60" fill="#ffffff"/>${Array.from({ length: 34 }, (_, i) => `<rect x="${8 + seeded(i) * 72}" y="${22 + seeded(i + 30) * 28}" width="5" height="5" transform="rotate(45 ${10 + seeded(i) * 72} ${24 + seeded(i + 30) * 28})" fill="${css(x > 0 && seeded(i + 60) < .9 ? col : C0)}"/>`).join("")}</svg>`; }
+function cylSVG(full) { return `<svg viewBox="0 0 90 60" aria-hidden="true"><defs><pattern id="hc${full}" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="rgba(60,90,110,.3)"/></pattern></defs><rect width="90" height="60" fill="#ffffff"/><rect x="34" y="${full ? 4 : 30}" width="22" height="${full ? 52 : 26}" fill="#e1f0f7"/><rect x="34" y="${full ? 4 : 30}" width="22" height="${full ? 52 : 26}" fill="url(#hc${full})"/><path d="M34 60 L34 6 Q34 2 38 2 L52 2 Q56 2 56 6 L56 60" fill="none" stroke="#4f6b78" stroke-width="1.5"/>${full ? "" : `<circle cx="45" cy="40" r="2.5" fill="#fff" stroke="#3a6a80"/><circle cx="43" cy="49" r="2" fill="#fff" stroke="#3a6a80"/>`}</svg>`; }
+function renderCards() {
+  const done1 = S.heated, done2 = Veq(S.nColl) > 20;
+  const card = (ok, b, bs, r, a, as, v) => `<div class="cc"><div class="ttl"><em class="${ok ? "ok" : ""}">${ok ? "✓ " + esc(t("seen")) : esc(t("notYet"))}</em></div><div class="flow"><div class="st"><small>${esc(t("before"))}</small>${bs}<span>${esc(t(b))}</span></div><div class="arrow"><b>→</b><span>${esc(t(r))}</span></div><div class="st"><small>${esc(t("after"))}</small>${as}<span>${esc(t(a))}</span></div></div><div class="via">${esc(t(v))}</div></div>`;
+  $("cards").innerHTML = card(done1, "k1b", crystalsSVG(0), "k1r", "k1a", crystalsSVG(1), "k1v") + card(done2, "k2b", cylSVG(1), "k2r", "k2a", cylSVG(0), "k2v");
+}
+const mini = $("mini"), mctx = mini.getContext("2d"); let playing = false;
+function drawMini() {
+  const w = mini.width, h = mini.height, hs = S.hist, ok = hs.length > 5; mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.fillStyle = "#ffffff"; mctx.fillRect(0, 0, w, h);
+  const x = ok ? hs[Math.min(hs.length - 1, Math.round(+$("replay").value / 1000 * (hs.length - 1)))] : 0, col = crystalCol(x);
+  mctx.save(); mctx.translate(60, h / 2); mctx.scale(5, 5);
+  for (let i = 0; i < 46; i++) { const px = 6 + seeded(i) * 64, py = 12 - seeded(i + 30) * 8; const cc = seeded(i + 60) < Math.min(1, x / .2) ? col : C0; mctx.fillStyle = css(cc); mctx.beginPath(); mctx.moveTo(px - 3, py); mctx.lineTo(px, py - 4); mctx.lineTo(px + 3, py); mctx.lineTo(px, py + 2); mctx.closePath(); mctx.fill(); }
+  mctx.strokeStyle = "rgba(40,60,70,.55)"; mctx.lineWidth = .4; mctx.beginPath(); mctx.moveTo(95, -15); mctx.lineTo(15, -15); mctx.arc(15, 0, 15, -Math.PI / 2, Math.PI / 2, true); mctx.lineTo(95, 15); mctx.stroke();
+  mctx.restore();
+  $("rname").textContent = ok ? t("rAt", { p: Math.round(x * 100), c: colName(x) }) : t("rNone");
+}
+function renderReplayCtl() { const ok = S.hist.length > 5; $("replay").disabled = !ok; $("playBtn").disabled = !ok; $("playBtn").textContent = t(playing ? "pause" : "play"); }
+// quiz
+function readScores() { try { return JSON.parse(localStorage.getItem("svl-scores") || "{}") || {}; } catch (e) { return {}; } }
+function saveScore(pct) { try { const s = readScores(); if (!(s[SIM_ID] >= pct)) { s[SIM_ID] = pct; localStorage.setItem("svl-scores", JSON.stringify(s)); } } catch (e) {} }
+function renderQuiz() { const Q = t("quiz"), L = ["A", "B", "C", "D"];
+  $("quiz").innerHTML = Q.map((q, i) => `<div class="q" id="q${i}"><p>${i + 1}. ${esc(q.q)}</p>${q.o.map((o, j) => `<button data-q="${i}" data-o="${j}">${L[j]}) ${esc(o)}</button>`).join("")}<div class="exp"></div></div>`).join("");
+  Object.entries(S.answered).forEach(([i, j]) => markAnswer(+i, j)); score(); }
+function markAnswer(i, j) { const ok = j === QUIZ_ANS[i];
+  $("q" + i).querySelectorAll("button").forEach((x, k) => { x.disabled = true; if (k === QUIZ_ANS[i]) x.classList.add("right"); else if (k === j) x.classList.add("wrong"); });
+  const d = document.createElement("div"); d.className = "note " + (ok ? "ok" : "bad"); d.textContent = t(ok ? "correct" : "notQuite") + t("quiz")[i].e; const ex = $("q" + i).querySelector(".exp"); ex.innerHTML = ""; ex.append(d); }
+$("quiz").onclick = e => { const b = e.target.closest("button[data-q]"); if (!b) return; const i = +b.dataset.q, j = +b.dataset.o; if (i in S.answered) return; S.answered[i] = j; markAnswer(i, j); score(); };
+function score() { const n = Object.keys(S.answered).length, s = Object.entries(S.answered).filter(([i, j]) => j === QUIZ_ANS[+i]).length, N = QUIZ_ANS.length;
+  if (n === N) saveScore(Math.round(s / N * 100)); const best = readScores()[SIM_ID];
+  $("score").textContent = `${s} / ${N}` + (n < N ? " · " + t("scoreLeft", { n: N - n }) : "") + (best !== undefined ? " · " + t("best", { p: best }) : ""); }
+$("retryBtn").onclick = () => { S.answered = {}; renderQuiz(); };
+function applyStatic() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("#langSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  cv.setAttribute("aria-label", t("canvasAria"));
+  $("appList").innerHTML = t("app").map(a => `<span>${esc(a)}</span>`).join(""); $("safeList").innerHTML = t("safe").map(a => `<li>${esc(a)}</li>`).join("");
+  try { const st = JSON.parse(localStorage.getItem("svl-student") || "null"); if (st && st.name) { $("student").hidden = false; $("student").textContent = t("student", { name: st.name, cls: st.cls ? " · " + st.cls : "" }); } } catch (e) {}
+}
+function fullRender() { applyStatic(); render(); renderLog(); renderQuiz(); renderReplayCtl(); }
+function applyLang(l) { LANG = l; try { localStorage.setItem("svl-lang", l); } catch (e) {} fullRender(); }
+document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  ["guide", "obs", "colours", "quiz"].forEach(id => $("pane-" + id).hidden = id !== b.dataset.tab);
+  if (b.dataset.tab === "quiz") b.classList.remove("ping"); if (b.dataset.tab === "colours") { renderReplayCtl(); drawMini(); } });
+$("gogBtn").onclick = () => { S.gog = !S.gog; render(); };
+$("resetBtn").onclick = () => { const ans = S.answered; S = freshState(); S.answered = ans; $("quizTab").classList.remove("ping"); fullRender(); };
+$("replay").oninput = () => { playing = false; renderReplayCtl(); drawMini(); };
+$("playBtn").onclick = () => { playing = !playing; if (playing && +$("replay").value >= 1000) $("replay").value = 0; renderReplayCtl(); };
+// canvas: drag the cylinder up and down to level
+let cylDrag = null;
+function toLogical(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left - ox) / sc, y: (e.clientY - r.top - oy) / sc }; }
+cv.addEventListener("pointerdown", e => { if (S.ph !== "level") return; const p = toLogical(e); if (Math.abs(p.x - CX) < 50 && p.y > S.yTop - 10 && p.y < S.yTop + CLEN + 10) { cylDrag = { y: p.y, y0: S.yTop }; cv.setPointerCapture(e.pointerId); } });
+cv.addEventListener("pointermove", e => { if (!cylDrag) return; const p = toLogical(e); setY(cylDrag.y0 + (p.y - cylDrag.y) * .5); });
+["pointerup", "pointercancel"].forEach(ev => cv.addEventListener(ev, () => { cylDrag = null; }));
+cv.addEventListener("keydown", e => { if (S.ph !== "level") return; if (e.key === "ArrowUp") { e.preventDefault(); setY(S.yTop - 1); } if (e.key === "ArrowDown") { e.preventDefault(); setY(S.yTop + 1); } });
+
+readTokens(); resize(); S = freshState(); fullRender();
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>

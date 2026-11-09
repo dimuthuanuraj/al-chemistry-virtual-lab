@@ -1,0 +1,697 @@
+<title>Flame Test Bench</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap">
+<style>
+
+/* Layout: bench stage (balance / volumetric flask / pipette views) with a step-by-step action dock, working notebook on the right. Same system as the KMnO₄ bench. */
+:root{
+  --bg:#e7eceb; --surface:#f8faf9; --surface-2:#eef2f1; --ink:#162127; --muted:#56666c; --line:#cbd5d4;
+  --accent:#8b1d6f; --accent-soft:#f3dcea; --on-accent:#ffffff; --current:#b7791f;
+  --ok:#2c7a4d; --ok-soft:#dcefe3; --warn:#9a520a; --warn-soft:#f8e8d5; --bad:#a3302b; --bad-soft:#f6dedc;
+  --wall-top:#dde5e4; --wall-bot:#c5d0cf; --bench:#2a3236; --bench-edge:#1b2124; --glass:rgba(40,60,70,.55);
+  --f-display:"Bricolage Grotesque", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", "Noto Sans Sinhala", "Noto Sans Tamil", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 28px}
+:lang(si) body,:lang(ta) body{line-height:1.65}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.top > div:first-child{min-width:0}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+:lang(si) .eyebrow,:lang(ta) .eyebrow{letter-spacing:.02em;font-size:12.5px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 6px;text-wrap:balance;letter-spacing:-.01em}
+:lang(si) h1,:lang(ta) h1{letter-spacing:0;font-size:clamp(22px,2.6vw,32px);line-height:1.3}
+.sub{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.top-actions{display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap}
+.student{font-size:13px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;min-height:44px;font-weight:500;font-size:14px;transition:background .15s,border-color .15s,transform .05s;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.next{border-color:var(--current);box-shadow:0 0 0 3px color-mix(in srgb,var(--current) 30%,transparent)}
+.btn.sm{min-height:40px;padding:6px 10px}
+.btn[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.btn.hold{touch-action:none;user-select:none;-webkit-user-select:none}
+.btn.hold.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface-2)}
+.seg button{border:0;background:transparent;padding:8px 12px;min-height:42px;font-size:14px;font-weight:500;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.lang button{min-height:36px}
+.lang button[lang="si"]{font-family:"Noto Sans Sinhala",var(--f-body)}
+.lang button[lang="ta"]{font-family:"Noto Sans Tamil",var(--f-body)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.modebar{display:flex;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.prompt{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.prompt .dot{width:9px;height:9px;border-radius:50%;background:var(--current);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--current) 25%,transparent)}
+.prompt p{margin:0;font-weight:500;min-width:0}
+.viewport{position:relative;height:clamp(320px,calc(100vh - 470px),560px);background:var(--wall-bot);user-select:none;-webkit-user-select:none}
+@media (max-width:980px){.viewport{height:clamp(260px,62vw,520px)}}
+canvas#cv{display:block;width:100%;height:100%;touch-action:none}
+.chips{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;max-width:60%}
+.chip{font-family:var(--f-mono);font-size:12.5px;background:#0E1A2B;color:#D4C4FF;border:1px solid rgba(212,196,255,.25);padding:3px 10px;border-radius:999px}
+.chip.ok{color:#9fe6b8;border-color:#2c7a4d}
+.chip.bad{color:#ffb4ab;border-color:#a3302b}
+.toast{position:absolute;left:50%;bottom:14px;transform:translate(-50%,10px);opacity:0;transition:opacity .25s,transform .25s;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 28px);width:max-content;pointer-events:none;text-align:center;z-index:5}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.toast.good{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.toast.party{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);font-weight:600}
+.dock{display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.panelbox{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:10px}
+.panelbox > p{margin:0;font-weight:500}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-right:2px}
+:lang(si) .label,:lang(ta) .label{letter-spacing:0;font-size:12.5px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.fields label{display:flex;flex-direction:column;gap:4px;font-size:13px;min-width:0}
+input[type=number]{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:15px;font-family:var(--f-mono);max-width:100%}
+input.ok{border-color:var(--ok);background:var(--ok-soft)}
+input.bad{border-color:var(--bad);background:var(--bad-soft)}
+.slider{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-width:0;max-width:420px}
+.slider input{flex:1;min-width:0}
+input[type=range]{accent-color:var(--accent);min-height:30px}
+.beamctl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.beamctl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.beamctl div{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:9px;padding:4px;background:var(--surface);min-width:0}
+.beamctl span{flex:1;text-align:center;font-family:var(--f-mono);font-size:12.5px;min-width:0}
+.note{font-size:13.5px;padding:8px 10px;border-radius:8px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.note.info{background:var(--surface);border:1px solid var(--line)}
+.calcline{font-family:var(--f-mono);font-size:13px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.tabs button{flex:1;min-width:0;border:0;background:transparent;padding:12px 4px;min-height:46px;font-weight:600;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;line-height:1.3;position:relative}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs button.ping::after{content:"";position:absolute;top:8px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--current)}
+.pane{padding:16px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:980px){.pane{max-height:none}}
+h2{font-family:var(--f-display);font-size:18px;font-weight:700;margin:0}
+h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+:lang(si) h3,:lang(ta) h3{letter-spacing:0;font-size:13px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2)}
+.box.safety{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.box.safety h3{color:var(--warn)}
+.box.safety ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ring{position:relative;width:46px;height:46px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;font-weight:500}
+.chiplist{display:flex;flex-wrap:wrap;gap:6px}
+.chiplist span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;background:var(--surface)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid transparent}
+.steps li .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-family:var(--f-mono);color:var(--muted);margin-top:2px}
+.steps li.done{color:var(--muted)}
+.steps li.done .tick{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.steps li.now{background:var(--surface);border-color:var(--current)}
+.steps li.now .tick{border-color:var(--current);color:var(--current)}
+.log{font-size:13.5px;display:flex;flex-direction:column;gap:5px;max-height:240px;overflow:auto}
+.log > div{display:grid;grid-template-columns:58px 1fr;gap:6px}
+.log span{font-family:var(--f-mono);color:var(--muted);font-size:11.5px;padding-top:2px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:7px 8px;background:var(--surface-2);font-weight:600}
+:lang(si) th,:lang(ta) th{letter-spacing:0;font-size:12px}
+td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+td.num{font-family:var(--f-mono);white-space:nowrap;text-align:right}
+.cc{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px}
+.cc .ttl{display:flex;justify-content:flex-end}
+.cc .ttl em{font-style:normal;font-weight:500;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.cc .ttl em.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.cc .flow{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start}
+.cc .st{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:13px;min-width:0}
+.cc .st small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+:lang(si) .cc .st small,:lang(ta) .cc .st small{letter-spacing:0}
+.cc .arrow{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);padding-top:14px;max-width:110px;text-align:center}
+.cc .arrow b{font-size:20px;color:var(--ink);line-height:1}
+.cc svg{width:90px;height:60px;border-radius:8px;border:1px solid var(--line);background:#ffffff}
+.cc .via{font-size:12.5px;color:var(--muted);text-align:center}
+.replaycv{width:100%;max-width:100%;aspect-ratio:3/2;border-radius:10px;border:1px solid var(--line);display:block;background:#ffffff}
+.q{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}
+.q p{margin:0 0 4px;font-weight:600}
+.q button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px}
+.q button:hover:not(:disabled){border-color:var(--accent)}
+.q button.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.q button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.q button:disabled{cursor:default}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--accent);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px;max-width:100%}
+.idrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.sw{display:inline-block;width:14px;height:14px;border-radius:4px;border:1px solid var(--line);vertical-align:-2px;margin-right:6px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1 data-i18n="title"></h1>
+      <div class="sub">NIE Practical Handbook (2018) · al-exp-10 · Li⁺ · Na⁺ · K⁺ · Mg²⁺ · Ca²⁺ · Sr²⁺ · Ba²⁺</div>
+    </div>
+    <div class="top-actions">
+      <span class="student" id="student" hidden></span>
+      <div class="seg lang" role="group" aria-label="Language / භාෂාව / மொழி" id="langSeg">
+        <button data-lang="si" lang="si" aria-pressed="false">සිංහල</button>
+        <button data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button data-lang="ta" lang="ta" aria-pressed="false">தமிழ்</button>
+      </div>
+      <button class="btn" id="resetBtn" data-i18n="reset"></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="modebar">
+        <button class="btn" id="lightBtn"></button>
+        <button class="btn" id="airBtn" aria-pressed="false"></button>
+        <button class="btn" id="cobBtn" aria-pressed="false"></button>
+        <span style="flex:1"></span>
+        <button class="btn" id="gogBtn" aria-pressed="false"></button>
+      </div>
+      <div class="prompt"><span class="dot"></span><p id="prompt" aria-live="polite"></p></div>
+      <div class="viewport" id="viewport">
+        <canvas id="cv" role="img" tabindex="0"></canvas>
+        <div class="chips" id="chips"></div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+      <div class="dock"><div class="panelbox" id="panel" aria-live="polite"></div></div>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="guide" data-i18n="tabGuide"></button>
+        <button role="tab" aria-selected="false" data-tab="obs" data-i18n="tabObs"></button>
+        <button role="tab" aria-selected="false" data-tab="colours" data-i18n="tabColours"></button>
+        <button role="tab" aria-selected="false" data-tab="quiz" data-i18n="tabQuiz" id="quizTab"></button>
+      </div>
+      <div class="pane" id="pane-guide">
+        <div class="headrow">
+          <div><h3 data-i18n="aimH"></h3><p class="small" data-i18n="aim"></p></div>
+          <div class="ring" aria-hidden="true"><svg width="46" height="46"><circle cx="23" cy="23" r="18" fill="none" stroke="var(--line)" stroke-width="4"/><circle id="ringArc" cx="23" cy="23" r="18" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><span id="ringTxt">0/5</span></div>
+        </div>
+        <div><h3 data-i18n="appH"></h3><div class="chiplist" id="appList"></div></div>
+        <div><h3 data-i18n="procH"></h3><ul class="steps" id="steps"></ul></div>
+        <div class="box safety"><h3 data-i18n="safeH"></h3><ul id="safeList"></ul></div>
+      </div>
+      <div class="pane" id="pane-obs" hidden>
+        <div><h3 data-i18n="logH"></h3><div class="log" id="log"></div></div>
+        <div><h3 data-i18n="resH"></h3><div class="tablewrap"><table><thead><tr><th data-i18n="thIon"></th><th data-i18n="thColour"></th><th data-i18n="thCob"></th><th>λ / nm</th></tr></thead><tbody id="tbR"></tbody></table></div></div>
+      </div>
+      <div class="pane" id="pane-colours" hidden>
+        <h2 data-i18n="coloursH"></h2>
+        <div id="cards" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div class="box" style="display:flex;flex-direction:column;gap:8px">
+          <h3 data-i18n="replayH" style="margin:0"></h3>
+          <select id="rsel" data-i18n-aria="replayH"></select>
+          <canvas id="mini" class="replaycv" width="600" height="400" aria-hidden="true"></canvas>
+          <input type="range" id="replay" min="0" max="1000" value="1000" data-i18n-aria="replayH">
+          <div class="row"><button class="btn" id="playBtn"></button><span class="small" id="rname"></span></div>
+        </div>
+      </div>
+      <div class="pane" id="pane-quiz" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <h2 data-i18n="quizH"></h2><span class="score" id="score"></span>
+        </div>
+        <div id="quiz" style="display:flex;flex-direction:column;gap:12px"></div>
+        <button class="btn" id="retryBtn" data-i18n="tryAgain" style="align-self:flex-start"></button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const SIM_ID = "al-exp-10";
+
+// =====================================================================
+// LANGUAGES
+// =====================================================================
+const I18N = {
+en: {
+  eyebrow: "A/L Chemistry · Unit 06 · s, p and d block · Experiment 10", title: "Flame tests (Li, Na, K, Ca, Sr, Ba)", student: "Student: {name}{cls}", reset: "Reset bench",
+  gog: "Put on goggles", gogOn: "Goggles on", light: "Light the burner", lit: "Burner lit", airOpen: "Air hole: open", airClosed: "Air hole: closed", cobOn: "Cobalt glass: in front", cobOff: "Cobalt glass: away",
+  col: { li: "crimson red", na: "intense, persistent golden yellow", k: "lilac", ca: "brick red (orange-red)", sr: "crimson / scarlet red", ba: "apple (pale) green", mg: "no colour (bright white glow of wire)" },
+  cob: { li: "crimson red", na: "no colour (yellow absorbed)", k: "crimson-violet", ca: "faint red", sr: "red", ba: "almost no colour", mg: "no colour" },
+  ionX: "Unknown X", ionY: "Unknown Y", blueFlame: "blue non-luminous flame", yellowFlame: "yellow luminous flame",
+  p_gog: "Put on safety goggles: conc. HCl is corrosive and gives off fumes.", p_light: "Light the burner (it lights with the air hole closed).", p_air: "Open the air hole to get the hot, blue non-luminous flame.",
+  p_clean: "Clean the wire: dip it in conc. HCl, then heat it in the hottest part of the flame until it gives no colour. Repeat if needed.", p_salt: "Dip the clean wire in a salt, then in conc. HCl.", p_heat: "Hold the wire in the hottest part of the flame (just above the blue inner cone) and watch the colour.",
+  p_next: "Clean the wire, then test the next salt. Still to do: {left}.", p_k: "View the potassium flame through the cobalt-blue glass.", p_unk: "Test the unknowns X and Y and identify them.", p_done: "All steps done. Now try the Questions tab.",
+  wireL: "Wire controls", saltL: "Salt", dipSalt: "Dip in salt", dipAcid: "Dip in conc. HCl", hold: "Hold in hottest part", out: "Take out of flame",
+  idH: "Identify the unknowns", idX: "X is", idY: "Y is", choose: "choose…", check: "Check", idOk: "Correct: {u} contains {ion}.", idBad: "Not quite. Compare the colour of {u} with your results table.", idNeed: "Test {u} in the flame first.",
+  tGog: "Put on safety goggles first. Conc. HCl is corrosive.", tLight: "Light the burner first.", tLum: "This is the yellow luminous flame: it is cooler and its own yellow hides the test colour. Open the air hole to get the blue flame.",
+  tDirty: "The wire is not clean! Old sodium on it will give a yellow flame that hides the real colour. Clean it first: dip in conc. HCl and heat until no colour.",
+  tMix: "Clean the wire between samples, or the colours will mix.", tMask: "Yellow from sodium contamination is masking the colour. Clean the wire and test this salt again.",
+  tNoAcid: "Dip the wire in conc. HCl after the salt: it forms volatile chlorides, which give a stronger colour.", tCool: "Move the wire to the hottest part: just above the tip of the blue inner cone.",
+  tClean: "The wire is clean: no colour in the flame.", tStillCol: "There is still colour in the flame. Dip in conc. HCl and heat again.", tFumes: "Conc. HCl gives off choking fumes: keep the watch glass away from your face and the bottle closed.",
+  tKcob: "Now look at the potassium flame through the cobalt-blue glass: it absorbs the yellow sodium light.", tNeedClean: "Clean the wire before the next salt.",
+  lClean: "Wire cleaned: dipped in conc. HCl and heated until the flame showed no colour.", lRec: "{ion}: {col} flame.", lRecCob: "{ion} through cobalt-blue glass: {col}.", lMg: "Mg²⁺: no flame colour; the wire glows bright white.", lId: "{u} identified as {ion} ({col} flame).",
+  chipWire: "Wire: {s}", wClean: "clean", wDirty: "dirty", wSalt: "{ion}", chipFlame: "Flame: {c}", chipZone: "{z}", zHot: "hottest part", zCool: "cooler part", zOut: "out of flame",
+  cvBoard: "dark board behind the flame", cvBurner: "Bunsen burner", cvAir: "air hole", cvHCl: "conc. HCl", cvPlate: "spot plate (chloride salts)", cvWire: "nichrome wire", cvCob: "cobalt-blue glass", cvSpec: "Emission spectrum", cvInner: "blue inner cone", cvHot: "hottest part", cvGlow: "white-hot wire", cvLook: "colour seen", cvOff: "burner off", cvNoLines: "no lines (no flame colour)", cvLum: "luminous flame",
+  tabGuide: "Guide", tabObs: "Observations", tabColours: "Colours", tabQuiz: "Questions",
+  aimH: "Aim", aim: "Identify metal ions by the colour they give to a non-luminous Bunsen flame and explain the colours.",
+  appH: "Apparatus and chemicals", app: ["Nichrome/platinum wire", "Conc. HCl (watch glass)", "Bunsen burner", "Cobalt-blue glass", "LiCl", "NaCl", "KCl", "MgCl₂", "CaCl₂", "SrCl₂", "BaCl₂", "Two unknowns"],
+  procH: "Procedure", steps: ["Clean the wire: dip in conc. HCl and heat until it gives no colour", "Dip the wire in the salt then in conc. HCl", "Hold it in the hottest (blue) part of the flame; record the colour", "View K through cobalt glass", "Clean the wire between samples; identify the unknowns"],
+  safeH: "Safety", safe: ["Wear safety goggles. Conc. HCl is corrosive and gives off choking fumes: use a small amount in a watch glass, in a well-ventilated place.", "The wire and its holder get very hot: hold only the handle.", "Barium and strontium salts are toxic: do not taste, and wash your hands afterwards.", "Keep hair, sleeves and papers away from the flame."],
+  logH: "Observation log", resH: "Results", thIon: "Ion", thColour: "Flame colour", thCob: "Through cobalt glass", none: "Not tested yet.",
+  coloursH: "Colour changes (flame colours)", before: "Before", after: "After", seen: "Seen", notYet: "Not seen yet",
+  replayH: "Replay a recorded flame", play: "Play slowly", pause: "Pause", rNone: "Test this salt in the flame to record it.",
+  sBlue: "blue non-luminous flame", sRise: "colour appears as the chloride vaporises", sFull: "full colour: {c}", sFade: "colour fades as the salt burns off", sPersist: "still yellow: the sodium colour is persistent",
+  quizH: "Knowledge check", tryAgain: "Try again", best: "best {p}%", scoreLeft: "{n} left", correct: "Correct. ", notQuite: "Not quite. ", tDone: "Practical complete! Now answer the questions in the Questions tab.",
+  canvasAria: "Bunsen burner in front of a dark board, a watch glass of concentrated HCl, a spot plate of chloride salts and a nichrome wire that can be dragged, with an emission spectrum strip.",
+  quiz: [
+    { q: "Why is the wire dipped in conc. HCl?", o: ["To form volatile chlorides and clean it", "To colour the flame", "To cool it", "To make it shiny"], e: "Chlorides vaporise easily." },
+    { q: "A persistent golden-yellow flame indicates…", o: ["K⁺", "Na⁺", "Ca²⁺", "Ba²⁺"], e: "Sodium D-line." },
+    { q: "Cobalt glass is used to see the K flame because it…", o: ["absorbs the yellow Na light", "makes the flame hotter", "is purple", "magnifies"], e: "Filters sodium contamination." },
+    { q: "Colours arise when…", o: ["excited electrons fall back and emit light", "the metal burns", "the wire melts", "the gas is coloured"], e: "Emission of photons." },
+  ],
+},
+si: {
+  eyebrow: "උ.පෙ. රසායන විද්‍යාව · ඒකකය 06 · s, p සහ d ගොනුව · පරීක්ෂණය 10", title: "ජ්වාලා පරීක්ෂා (Li, Na, K, Ca, Sr, Ba)", student: "ශිෂ්‍යයා: {name}{cls}", reset: "නැවත අරඹන්න",
+  gog: "ආරක්ෂිත කණ්ණාඩි පළඳින්න", gogOn: "කණ්ණාඩි පැළඳ ඇත", light: "දාහකය දල්වන්න", lit: "දාහකය දල්වා ඇත", airOpen: "වායු සිදුර: විවෘත", airClosed: "වායු සිදුර: වසා ඇත", cobOn: "කොබෝල්ට් වීදුරුව: ඉදිරියෙන්", cobOff: "කොබෝල්ට් වීදුරුව: ඉවතට",
+  col: { li: "තද රතු (crimson)", na: "තීව්‍ර, දිගු වේලාවක් පවතින රන් කහ", k: "ලා දම් (lilac)", ca: "ගඩොල් රතු (තැඹිලි-රතු)", sr: "තද රතු / දීප්තිමත් රතු", ba: "ඇපල් (ලා) කොළ", mg: "වර්ණයක් නැත (කම්බියේ දීප්තිමත් සුදු දිලිසීම)" },
+  cob: { li: "තද රතු", na: "වර්ණයක් නැත (කහ අවශෝෂණය වේ)", k: "තද රතු-දම්", ca: "ලා රතු", sr: "රතු", ba: "වර්ණයක් නැති තරම්", mg: "වර්ණයක් නැත" },
+  ionX: "නොදන්නා X", ionY: "නොදන්නා Y", blueFlame: "නිල් අදීප්ත ජ්වාලාව", yellowFlame: "කහ දීප්ත ජ්වාලාව",
+  p_gog: "ආරක්ෂිත කණ්ණාඩි පළඳින්න: සාන්ද්‍ර HCl විඛාදක වන අතර දුමාර පිට කරයි.", p_light: "දාහකය දල්වන්න (එය වායු සිදුර වසා දැල්වේ).", p_air: "උණුසුම්, නිල් අදීප්ත ජ්වාලාව ලබා ගැනීමට වායු සිදුර විවෘත කරන්න.",
+  p_clean: "කම්බිය පිරිසිදු කරන්න: සාන්ද්‍ර HCl තුළ ගිල්වා, වර්ණයක් නොදෙන තුරු ජ්වාලාවේ උණුසුම්ම කොටසේ රත් කරන්න. අවශ්‍ය නම් නැවත කරන්න.", p_salt: "පිරිසිදු කම්බිය ලවණයක ගිල්වා, පසුව සාන්ද්‍ර HCl තුළ ගිල්වන්න.", p_heat: "කම්බිය ජ්වාලාවේ උණුසුම්ම කොටසේ (නිල් අභ්‍යන්තර කේතුවට මඳක් ඉහළින්) අල්ලා වර්ණය බලන්න.",
+  p_next: "කම්බිය පිරිසිදු කර ඊළඟ ලවණය පරීක්ෂා කරන්න. තවම කළ යුතු: {left}.", p_k: "පොටෑසියම් ජ්වාලාව කොබෝල්ට්-නිල් වීදුරුව හරහා බලන්න.", p_unk: "නොදන්නා X සහ Y පරීක්ෂා කර හඳුනා ගන්න.", p_done: "සියලු පියවර අවසන්. දැන් ප්‍රශ්න ටැබය උත්සාහ කරන්න.",
+  wireL: "කම්බි පාලන", saltL: "ලවණය", dipSalt: "ලවණයේ ගිල්වන්න", dipAcid: "සාන්ද්‍ර HCl හි ගිල්වන්න", hold: "උණුසුම්ම කොටසේ අල්ලන්න", out: "ජ්වාලාවෙන් ඉවතට ගන්න",
+  idH: "නොදන්නා දෑ හඳුනා ගන්න", idX: "X යනු", idY: "Y යනු", choose: "තෝරන්න…", check: "පරීක්ෂා කරන්න", idOk: "නිවැරදියි: {u} හි {ion} ඇත.", idBad: "තවම නිවැරදි නැත. {u} හි වර්ණය ඔබේ ප්‍රතිඵල වගුව සමඟ සසඳන්න.", idNeed: "පළමුව {u} ජ්වාලාවේ පරීක්ෂා කරන්න.",
+  tGog: "පළමුව ආරක්ෂිත කණ්ණාඩි පළඳින්න. සාන්ද්‍ර HCl විඛාදකයි.", tLight: "පළමුව දාහකය දල්වන්න.", tLum: "මෙය කහ දීප්ත ජ්වාලාවයි: එය සිසිල් වන අතර එහි කහ වර්ණය පරීක්ෂා වර්ණය සඟවයි. නිල් ජ්වාලාව ලබා ගැනීමට වායු සිදුර විවෘත කරන්න.",
+  tDirty: "කම්බිය පිරිසිදු නැත! එහි ඇති පැරණි සෝඩියම් සැබෑ වර්ණය සඟවන කහ ජ්වාලාවක් දෙයි. පළමුව පිරිසිදු කරන්න: සාන්ද්‍ර HCl හි ගිල්වා වර්ණයක් නොදෙන තුරු රත් කරන්න.",
+  tMix: "සාම්පල අතර කම්බිය පිරිසිදු කරන්න, නැතහොත් වර්ණ මිශ්‍ර වේ.", tMask: "සෝඩියම් දූෂණයේ කහ වර්ණය සැබෑ වර්ණය සඟවයි. කම්බිය පිරිසිදු කර මෙම ලවණය නැවත පරීක්ෂා කරන්න.",
+  tNoAcid: "ලවණයෙන් පසු කම්බිය සාන්ද්‍ර HCl හි ගිල්වන්න: එය වාෂ්පශීලී ක්ලෝරයිඩ සාදන අතර ප්‍රබල වර්ණයක් දෙයි.", tCool: "කම්බිය උණුසුම්ම කොටසට ගෙන යන්න: නිල් අභ්‍යන්තර කේතුවේ අග්‍රයට මඳක් ඉහළින්.",
+  tClean: "කම්බිය පිරිසිදුයි: ජ්වාලාවේ වර්ණයක් නැත.", tStillCol: "ජ්වාලාවේ තවමත් වර්ණයක් ඇත. සාන්ද්‍ර HCl හි ගිල්වා නැවත රත් කරන්න.", tFumes: "සාන්ද්‍ර HCl හුස්ම හිර කරවන දුමාර පිට කරයි: ඔරලෝසු වීදුරුව මුහුණෙන් ඈත් කර බෝතලය වසා තබන්න.",
+  tKcob: "දැන් පොටෑසියම් ජ්වාලාව කොබෝල්ට්-නිල් වීදුරුව හරහා බලන්න: එය සෝඩියම්හි කහ ආලෝකය අවශෝෂණය කරයි.", tNeedClean: "ඊළඟ ලවණයට පෙර කම්බිය පිරිසිදු කරන්න.",
+  lClean: "කම්බිය පිරිසිදු කළා: සාන්ද්‍ර HCl හි ගිල්වා ජ්වාලාවේ වර්ණයක් නොපෙන්වන තුරු රත් කළා.", lRec: "{ion}: {col} ජ්වාලාව.", lRecCob: "කොබෝල්ට්-නිල් වීදුරුව හරහා {ion}: {col}.", lMg: "Mg²⁺: ජ්වාලා වර්ණයක් නැත; කම්බිය දීප්තිමත් සුදු ලෙස දිලිසේ.", lId: "{u} යනු {ion} ලෙස හඳුනා ගත්තා ({col} ජ්වාලාව).",
+  chipWire: "කම්බිය: {s}", wClean: "පිරිසිදු", wDirty: "අපිරිසිදු", wSalt: "{ion}", chipFlame: "ජ්වාලාව: {c}", chipZone: "{z}", zHot: "උණුසුම්ම කොටස", zCool: "සිසිල් කොටස", zOut: "ජ්වාලාවෙන් පිටත",
+  cvBoard: "ජ්වාලාව පිටුපස අඳුරු පුවරුව", cvBurner: "බන්සන් දාහකය", cvAir: "වායු සිදුර", cvHCl: "සාන්ද්‍ර HCl", cvPlate: "ලක්ෂ තහඩුව (ක්ලෝරයිඩ ලවණ)", cvWire: "නයික්‍රෝම් කම්බිය", cvCob: "කොබෝල්ට්-නිල් වීදුරුව", cvSpec: "විමෝචන වර්ණාවලිය", cvInner: "නිල් අභ්‍යන්තර කේතුව", cvHot: "උණුසුම්ම කොටස", cvGlow: "සුදු-රත් කම්බිය", cvLook: "පෙනෙන වර්ණය", cvOff: "දාහකය නිවා ඇත", cvNoLines: "රේඛා නැත (ජ්වාලා වර්ණයක් නැත)", cvLum: "දීප්ත ජ්වාලාව",
+  tabGuide: "මාර්ගෝපදේශය", tabObs: "නිරීක්ෂණ", tabColours: "වර්ණ", tabQuiz: "ප්‍රශ්න",
+  aimH: "අරමුණ", aim: "අදීප්ත බන්සන් ජ්වාලාවට ලබා දෙන වර්ණයෙන් ලෝහ අයන හඳුනා ගෙන එම වර්ණ පැහැදිලි කිරීම.",
+  appH: "උපකරණ සහ රසායන ද්‍රව්‍ය", app: ["නයික්‍රෝම්/ප්ලැටිනම් කම්බිය", "සාන්ද්‍ර HCl (ඔරලෝසු වීදුරුව)", "බන්සන් දාහකය", "කොබෝල්ට්-නිල් වීදුරුව", "LiCl", "NaCl", "KCl", "MgCl₂", "CaCl₂", "SrCl₂", "BaCl₂", "නොදන්නා දෙකක්"],
+  procH: "ක්‍රියා පිළිවෙළ", steps: ["කම්බිය පිරිසිදු කරන්න: සාන්ද්‍ර HCl හි ගිල්වා වර්ණයක් නොදෙන තුරු රත් කරන්න", "කම්බිය ලවණයේ ද පසුව සාන්ද්‍ර HCl හි ද ගිල්වන්න", "එය ජ්වාලාවේ උණුසුම්ම (නිල්) කොටසේ අල්ලා වර්ණය සටහන් කරන්න", "K කොබෝල්ට් වීදුරුව හරහා බලන්න", "සාම්පල අතර කම්බිය පිරිසිදු කරන්න; නොදන්නා දෑ හඳුනා ගන්න"],
+  safeH: "ආරක්ෂාව", safe: ["ආරක්ෂිත කණ්ණාඩි පළඳින්න. සාන්ද්‍ර HCl විඛාදක වන අතර හුස්ම හිර කරවන දුමාර පිට කරයි: හොඳින් වාතාශ්‍රය ඇති තැනක ඔරලෝසු වීදුරුවක කුඩා ප්‍රමාණයක් භාවිත කරන්න.", "කම්බිය සහ එහි රඳවනය ඉතා උණුසුම් වේ: මිටෙන් පමණක් අල්ලන්න.", "බේරියම් සහ ස්ට්‍රොන්ෂියම් ලවණ විෂ සහිතයි: රස නොබලන්න, පසුව අත් සෝදන්න.", "කොණ්ඩය, අත් කෙළවර සහ කඩදාසි ජ්වාලාවෙන් ඈත් කර තබන්න."],
+  logH: "නිරීක්ෂණ සටහන", resH: "ප්‍රතිඵල", thIon: "අයනය", thColour: "ජ්වාලා වර්ණය", thCob: "කොබෝල්ට් වීදුරුව හරහා", none: "තවම පරීක්ෂා කර නැත.",
+  coloursH: "වර්ණ වෙනස්කම් (ජ්වාලා වර්ණ)", before: "පෙර", after: "පසු", seen: "දුටුවා", notYet: "තවම දැක නැත",
+  replayH: "සටහන් කළ ජ්වාලාවක් නැවත බලන්න", play: "සෙමින් ධාවනය", pause: "නවතන්න", rNone: "මෙය සටහන් කිරීමට මෙම ලවණය ජ්වාලාවේ පරීක්ෂා කරන්න.",
+  sBlue: "නිල් අදීප්ත ජ්වාලාව", sRise: "ක්ලෝරයිඩය වාෂ්ප වන විට වර්ණය පෙනේ", sFull: "සම්පූර්ණ වර්ණය: {c}", sFade: "ලවණය දැවී යන විට වර්ණය මැකේ", sPersist: "තවමත් කහ: සෝඩියම් වර්ණය දිගු වේලාවක් පවතී",
+  quizH: "දැනුම පරීක්ෂාව", tryAgain: "නැවත උත්සාහ කරන්න", best: "උපරිම {p}%", scoreLeft: "ඉතිරි {n}", correct: "නිවැරදියි. ", notQuite: "තවම නිවැරදි නැත. ", tDone: "ප්‍රායෝගිකය අවසන්! දැන් ප්‍රශ්න ටැබයේ ප්‍රශ්නවලට පිළිතුරු දෙන්න.",
+  canvasAria: "අඳුරු පුවරුවක් ඉදිරියේ බන්සන් දාහකයක්, සාන්ද්‍ර HCl ඔරලෝසු වීදුරුවක්, ක්ලෝරයිඩ ලවණ ලක්ෂ තහඩුවක් සහ ඇදිය හැකි නයික්‍රෝම් කම්බියක්, විමෝචන වර්ණාවලි තීරුවක් සමඟ.",
+  quiz: [
+    { q: "කම්බිය සාන්ද්‍ර HCl හි ගිල්වන්නේ ඇයි?", o: ["වාෂ්පශීලී ක්ලෝරයිඩ සාදා එය පිරිසිදු කිරීමට", "ජ්වාලාව වර්ණ ගැන්වීමට", "එය සිසිල් කිරීමට", "එය දිලිසෙන ලෙස කිරීමට"], e: "ක්ලෝරයිඩ පහසුවෙන් වාෂ්ප වේ." },
+    { q: "දිගු වේලාවක් පවතින රන් කහ ජ්වාලාවක් පෙන්වන්නේ…", o: ["K⁺", "Na⁺", "Ca²⁺", "Ba²⁺"], e: "සෝඩියම් D-රේඛාව." },
+    { q: "K ජ්වාලාව බැලීමට කොබෝල්ට් වීදුරුව භාවිත කරන්නේ එය…", o: ["කහ Na ආලෝකය අවශෝෂණය කරන නිසා", "ජ්වාලාව උණුසුම් කරන නිසා", "දම් පැහැ නිසා", "විශාල කරන නිසා"], e: "සෝඩියම් දූෂණය පෙරහන් කරයි." },
+    { q: "වර්ණ ඇති වන්නේ…", o: ["උත්තේජිත ඉලෙක්ට්‍රෝන නැවත පහළට වැටී ආලෝකය විමෝචනය කරන විට", "ලෝහය දැවෙන විට", "කම්බිය දිය වන විට", "වායුව වර්ණවත් වන විට"], e: "ෆෝටෝන විමෝචනය." },
+  ],
+},
+ta: {
+  eyebrow: "க.பொ.த (உ/த) இரசாயனவியல் · அலகு 06 · s, p, d தொகுதி · பரிசோதனை 10", title: "சுவாலைச் சோதனைகள் (Li, Na, K, Ca, Sr, Ba)", student: "மாணவர்: {name}{cls}", reset: "மீண்டும் தொடங்கு",
+  gog: "பாதுகாப்புக் கண்ணாடி அணி", gogOn: "கண்ணாடி அணிந்துள்ளீர்", light: "சுவாலையைப் பற்றவை", lit: "சுவாலை எரிகிறது", airOpen: "வளித்துளை: திறந்துள்ளது", airClosed: "வளித்துளை: மூடியுள்ளது", cobOn: "கோபால்ட் கண்ணாடி: முன்னே", cobOff: "கோபால்ட் கண்ணாடி: அகற்றப்பட்டது",
+  col: { li: "கருஞ்சிவப்பு", na: "செறிவான, நீடித்த பொன் மஞ்சள்", k: "இளஊதா (lilac)", ca: "செங்கல் சிவப்பு (செம்மஞ்சள்-சிவப்பு)", sr: "கருஞ்சிவப்பு / செந்நிறம்", ba: "அப்பிள் (வெளிர்) பச்சை", mg: "நிறமில்லை (கம்பியின் பிரகாசமான வெள்ளை ஒளிர்வு)" },
+  cob: { li: "கருஞ்சிவப்பு", na: "நிறமில்லை (மஞ்சள் உறிஞ்சப்படுகிறது)", k: "கருஞ்சிவப்பு-ஊதா", ca: "மங்கிய சிவப்பு", sr: "சிவப்பு", ba: "ஏறத்தாழ நிறமில்லை", mg: "நிறமில்லை" },
+  ionX: "தெரியாதது X", ionY: "தெரியாதது Y", blueFlame: "நீல ஒளிராச் சுவாலை", yellowFlame: "மஞ்சள் ஒளிரும் சுவாலை",
+  p_gog: "பாதுகாப்புக் கண்ணாடி அணிக: செறிந்த HCl அரிக்கும் தன்மையுடையது, புகை வெளியிடும்.", p_light: "சுவாலையைப் பற்றவைக்க (வளித்துளை மூடிய நிலையில் பற்றும்).", p_air: "சூடான நீல ஒளிராச் சுவாலையைப் பெற வளித்துளையைத் திறக்க.",
+  p_clean: "கம்பியைச் சுத்தம் செய்க: செறிந்த HCl இல் அமிழ்த்தி, நிறம் தராத வரை சுவாலையின் மிகச் சூடான பகுதியில் சூடாக்குக. தேவையெனில் மீண்டும் செய்க.", p_salt: "சுத்தமான கம்பியை ஓர் உப்பில் அமிழ்த்தி, பின் செறிந்த HCl இல் அமிழ்த்துக.", p_heat: "கம்பியைச் சுவாலையின் மிகச் சூடான பகுதியில் (நீல உட்கூம்புக்குச் சற்று மேலே) பிடித்து நிறத்தைப் பார்க்க.",
+  p_next: "கம்பியைச் சுத்தம் செய்து அடுத்த உப்பைச் சோதிக்க. இன்னும் செய்ய வேண்டியவை: {left}.", p_k: "பொற்றாசியச் சுவாலையைக் கோபால்ட்-நீலக் கண்ணாடியூடாகப் பார்க்க.", p_unk: "தெரியாத X, Y ஐச் சோதித்து இனங்காண்க.", p_done: "எல்லாப் படிகளும் முடிந்தன. இப்போது வினாக்கள் தாவலை முயல்க.",
+  wireL: "கம்பிக் கட்டுப்பாடுகள்", saltL: "உப்பு", dipSalt: "உப்பில் அமிழ்த்து", dipAcid: "செறிந்த HCl இல் அமிழ்த்து", hold: "மிகச் சூடான பகுதியில் பிடி", out: "சுவாலையிலிருந்து எடு",
+  idH: "தெரியாதவற்றை இனங்காண்க", idX: "X என்பது", idY: "Y என்பது", choose: "தெரிவு செய்க…", check: "சரிபார்", idOk: "சரி: {u} இல் {ion} உள்ளது.", idBad: "சரியில்லை. {u} இன் நிறத்தை உங்கள் முடிவு அட்டவணையுடன் ஒப்பிடுக.", idNeed: "முதலில் {u} ஐச் சுவாலையில் சோதிக்க.",
+  tGog: "முதலில் பாதுகாப்புக் கண்ணாடி அணிக. செறிந்த HCl அரிக்கும் தன்மையுடையது.", tLight: "முதலில் சுவாலையைப் பற்றவைக்க.", tLum: "இது மஞ்சள் ஒளிரும் சுவாலை: இது குளிர்ந்தது, இதன் மஞ்சள் நிறம் சோதனை நிறத்தை மறைக்கிறது. நீலச் சுவாலையைப் பெற வளித்துளையைத் திறக்க.",
+  tDirty: "கம்பி சுத்தமாக இல்லை! அதிலுள்ள பழைய சோடியம் உண்மையான நிறத்தை மறைக்கும் மஞ்சள் சுவாலையைத் தரும். முதலில் சுத்தம் செய்க: செறிந்த HCl இல் அமிழ்த்தி நிறம் தராத வரை சூடாக்குக.",
+  tMix: "மாதிரிகளுக்கிடையே கம்பியைச் சுத்தம் செய்க, இல்லையெனில் நிறங்கள் கலக்கும்.", tMask: "சோடியம் மாசின் மஞ்சள் நிறம் உண்மையான நிறத்தை மறைக்கிறது. கம்பியைச் சுத்தம் செய்து இந்த உப்பை மீண்டும் சோதிக்க.",
+  tNoAcid: "உப்பின் பின் கம்பியைச் செறிந்த HCl இல் அமிழ்த்துக: அது ஆவியாகும் குளோரைட்டுகளை உருவாக்கி வலுவான நிறத்தைத் தரும்.", tCool: "கம்பியை மிகச் சூடான பகுதிக்கு நகர்த்துக: நீல உட்கூம்பின் நுனிக்குச் சற்று மேலே.",
+  tClean: "கம்பி சுத்தமானது: சுவாலையில் நிறமில்லை.", tStillCol: "சுவாலையில் இன்னும் நிறம் உள்ளது. செறிந்த HCl இல் அமிழ்த்தி மீண்டும் சூடாக்குக.", tFumes: "செறிந்த HCl மூச்சுத் திணறவைக்கும் புகையை வெளியிடும்: மணிக்கூட்டுக் கண்ணாடியை முகத்திலிருந்து தூரமாக வைத்துப் போத்தலை மூடுக.",
+  tKcob: "இப்போது பொற்றாசியச் சுவாலையைக் கோபால்ட்-நீலக் கண்ணாடியூடாகப் பார்க்க: அது சோடியத்தின் மஞ்சள் ஒளியை உறிஞ்சும்.", tNeedClean: "அடுத்த உப்புக்கு முன் கம்பியைச் சுத்தம் செய்க.",
+  lClean: "கம்பி சுத்தம் செய்யப்பட்டது: செறிந்த HCl இல் அமிழ்த்திச் சுவாலையில் நிறம் தெரியாத வரை சூடாக்கப்பட்டது.", lRec: "{ion}: {col} சுவாலை.", lRecCob: "கோபால்ட்-நீலக் கண்ணாடியூடாக {ion}: {col}.", lMg: "Mg²⁺: சுவாலை நிறமில்லை; கம்பி பிரகாசமான வெள்ளையாக ஒளிர்கிறது.", lId: "{u} {ion} என இனங்காணப்பட்டது ({col} சுவாலை).",
+  chipWire: "கம்பி: {s}", wClean: "சுத்தம்", wDirty: "அழுக்கு", wSalt: "{ion}", chipFlame: "சுவாலை: {c}", chipZone: "{z}", zHot: "மிகச் சூடான பகுதி", zCool: "குளிர்ந்த பகுதி", zOut: "சுவாலைக்கு வெளியே",
+  cvBoard: "சுவாலைக்குப் பின்னாலுள்ள கருப்புப் பலகை", cvBurner: "பன்சன் சுவாலையடுப்பு", cvAir: "வளித்துளை", cvHCl: "செறிந்த HCl", cvPlate: "புள்ளித் தட்டு (குளோரைட்டு உப்புகள்)", cvWire: "நிக்குரோம் கம்பி", cvCob: "கோபால்ட்-நீலக் கண்ணாடி", cvSpec: "காலல் நிறமாலை", cvInner: "நீல உட்கூம்பு", cvHot: "மிகச் சூடான பகுதி", cvGlow: "வெண்சூடான கம்பி", cvLook: "காணப்படும் நிறம்", cvOff: "சுவாலை அணைந்துள்ளது", cvNoLines: "கோடுகள் இல்லை (சுவாலை நிறமில்லை)", cvLum: "ஒளிரும் சுவாலை",
+  tabGuide: "வழிகாட்டி", tabObs: "அவதானிப்புகள்", tabColours: "நிறங்கள்", tabQuiz: "வினாக்கள்",
+  aimH: "நோக்கம்", aim: "ஒளிராப் பன்சன் சுவாலைக்கு உலோக அயன்கள் தரும் நிறத்தால் அவற்றை இனங்கண்டு அந்நிறங்களை விளக்குதல்.",
+  appH: "உபகரணங்களும் இரசாயனங்களும்", app: ["நிக்குரோம்/பிளாற்றினம் கம்பி", "செறிந்த HCl (மணிக்கூட்டுக் கண்ணாடி)", "பன்சன் சுவாலையடுப்பு", "கோபால்ட்-நீலக் கண்ணாடி", "LiCl", "NaCl", "KCl", "MgCl₂", "CaCl₂", "SrCl₂", "BaCl₂", "இரண்டு தெரியாதவை"],
+  procH: "செய்முறை", steps: ["கம்பியைச் சுத்தம் செய்க: செறிந்த HCl இல் அமிழ்த்தி நிறம் தராத வரை சூடாக்குக", "கம்பியை உப்பிலும் பின் செறிந்த HCl இலும் அமிழ்த்துக", "சுவாலையின் மிகச் சூடான (நீல) பகுதியில் பிடித்து நிறத்தைப் பதிக", "K ஐக் கோபால்ட் கண்ணாடியூடாகப் பார்க்க", "மாதிரிகளுக்கிடையே கம்பியைச் சுத்தம் செய்க; தெரியாதவற்றை இனங்காண்க"],
+  safeH: "பாதுகாப்பு", safe: ["பாதுகாப்புக் கண்ணாடி அணிக. செறிந்த HCl அரிக்கும், மூச்சுத் திணறவைக்கும் புகையை வெளியிடும்: நல்ல காற்றோட்டமுள்ள இடத்தில் மணிக்கூட்டுக் கண்ணாடியில் சிறிதளவு பயன்படுத்துக.", "கம்பியும் அதன் தாங்கியும் மிகச் சூடாகும்: கைப்பிடியை மட்டும் பிடிக்க.", "பேரியம், ஸ்ரொன்சியம் உப்புகள் நச்சுத்தன்மையுடையவை: சுவைக்க வேண்டாம், பின்னர் கைகளைக் கழுவுக.", "தலைமுடி, கைச்சட்டை, தாள்களைச் சுவாலையிலிருந்து தூரமாக வைக்க."],
+  logH: "அவதானிப்புப் பதிவு", resH: "முடிவுகள்", thIon: "அயன்", thColour: "சுவாலை நிறம்", thCob: "கோபால்ட் கண்ணாடியூடாக", none: "இன்னும் சோதிக்கவில்லை.",
+  coloursH: "நிற மாற்றங்கள் (சுவாலை நிறங்கள்)", before: "முன்", after: "பின்", seen: "காணப்பட்டது", notYet: "இன்னும் காணவில்லை",
+  replayH: "பதியப்பட்ட சுவாலையை மீண்டும் பார்", play: "மெதுவாக இயக்கு", pause: "நிறுத்து", rNone: "இதைப் பதிய இந்த உப்பைச் சுவாலையில் சோதிக்க.",
+  sBlue: "நீல ஒளிராச் சுவாலை", sRise: "குளோரைட்டு ஆவியாகும்போது நிறம் தோன்றுகிறது", sFull: "முழு நிறம்: {c}", sFade: "உப்பு எரிந்து போகும்போது நிறம் மங்குகிறது", sPersist: "இன்னும் மஞ்சள்: சோடிய நிறம் நீடிக்கும்",
+  quizH: "அறிவுச் சோதனை", tryAgain: "மீண்டும் முயல்க", best: "அதிகூடியது {p}%", scoreLeft: "{n} மீதம்", correct: "சரி. ", notQuite: "சரியில்லை. ", tDone: "செய்முறை முடிந்தது! இப்போது வினாக்கள் தாவலில் உள்ள வினாக்களுக்கு விடையளிக்க.",
+  canvasAria: "கருப்புப் பலகைக்கு முன் பன்சன் சுவாலையடுப்பு, செறிந்த HCl மணிக்கூட்டுக் கண்ணாடி, குளோரைட்டு உப்புகளின் புள்ளித் தட்டு, இழுக்கக்கூடிய நிக்குரோம் கம்பி, காலல் நிறமாலைப் பட்டை.",
+  quiz: [
+    { q: "கம்பி ஏன் செறிந்த HCl இல் அமிழ்த்தப்படுகிறது?", o: ["ஆவியாகும் குளோரைட்டுகளை உருவாக்கிச் சுத்தம் செய்ய", "சுவாலைக்கு நிறம் தர", "குளிர்விக்க", "பளபளப்பாக்க"], e: "குளோரைட்டுகள் எளிதில் ஆவியாகும்." },
+    { q: "நீடித்த பொன்-மஞ்சள் சுவாலை குறிப்பது…", o: ["K⁺", "Na⁺", "Ca²⁺", "Ba²⁺"], e: "சோடியம் D-கோடு." },
+    { q: "K சுவாலையைப் பார்க்கக் கோபால்ட் கண்ணாடி பயன்படுவது அது…", o: ["மஞ்சள் Na ஒளியை உறிஞ்சுவதால்", "சுவாலையைச் சூடாக்குவதால்", "ஊதா நிறமானதால்", "உருப்பெருக்குவதால்"], e: "சோடிய மாசை வடிகட்டுகிறது." },
+    { q: "நிறங்கள் தோன்றுவது…", o: ["கிளர்ந்த இலத்திரன்கள் கீழிறங்கி ஒளியைக் காலும்போது", "உலோகம் எரியும்போது", "கம்பி உருகும்போது", "வாயு நிறமுடையதாக இருக்கும்போது"], e: "போட்டோன்களின் காலல்." },
+  ],
+},
+};
+const QUIZ_ANS = [0, 1, 0, 0];
+let LANG = "en";
+try { const s = localStorage.getItem("svl-lang") || localStorage.getItem("kmno4-lang"); if (s && I18N[s]) LANG = s; else { const n = (navigator.language || "").slice(0, 2); if (I18N[n]) LANG = n; } } catch (e) {}
+function t(key, p) { let s = I18N[LANG][key]; if (s === undefined) s = I18N.en[key]; if (s === undefined) return key; if (p && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (_, k) => p[k] ?? ""); return s; }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+// =====================================================================
+// MODEL
+// =====================================================================
+const ION = {
+  li: { sym: "Li⁺", hex: "#DC143C", cobHex: "#c0103a", cobI: .9, lines: [[671, 1], [610, .15]], decay: .3 },
+  na: { sym: "Na⁺", hex: "#FFB000", cobHex: "#3a5bd7", cobI: 0, lines: [[589, 1]], decay: .06 },
+  k: { sym: "K⁺", hex: "#B39DDB", cobHex: "#a0307a", cobI: .85, lines: [[766, 1], [404, .45]], decay: .2, weak: .8 },
+  mg: { sym: "Mg²⁺", hex: "#ffffff", cobHex: "#ffffff", cobI: 0, lines: [], decay: .4 },
+  ca: { sym: "Ca²⁺", hex: "#D2552B", cobHex: "#b0283a", cobI: .35, lines: [[622, 1], [554, .3]], decay: .3 },
+  sr: { sym: "Sr²⁺", hex: "#C8102E", cobHex: "#b0102e", cobI: .55, lines: [[641, 1], [461, .45]], decay: .3 },
+  ba: { sym: "Ba²⁺", hex: "#8DBF2C", cobHex: "#6a8a50", cobI: .1, lines: [[554, 1], [524, .4]], decay: .3 },
+};
+const KNOWN = ["li", "na", "k", "mg", "ca", "sr", "ba"], SPOTS = ["li", "na", "k", "mg", "ca", "sr", "ba", "X", "Y"];
+const COBT = l => l < 500 ? .85 : l < 640 ? .04 : l < 680 ? .5 : .9;
+let S;
+function freshState() {
+  const pool = ["li", "na", "k", "ca", "sr", "ba"].sort(() => Math.random() - .5);
+  return { gog: false, lit: false, air: false, cob: false, ev: {}, logs: [], answered: {}, done: false, confetti: [],
+    unk: { X: pool[0], Y: pool[1] }, unkOk: {}, unkGuess: {}, unkNote: {},
+    wire: { x: 760, y: 250, res: { na: .5 }, acid: false, clean: false, everClean: false, salt: null, saltAcid: false, glow: 0, heatT: 0, coolT: 0, dirtyFlag: true, mix: false },
+    rec: {}, recCob: {}, recU: {}, steady: 0, steadyKey: null, cleanT: 0, lastSel: "li", trace: {} };
+}
+const R = () => S.wire;
+
+// =====================================================================
+// CANVAS
+// =====================================================================
+const W = 960, H = 540;
+const cv = $("cv"), ctx = cv.getContext("2d"), vp = $("viewport");
+let dpr = 1, cw = 0, ch = 0, sc = 1, ox = 0, oy = 0, T = {};
+function resize() { const r = vp.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2.5); cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); sc = Math.min(cw / W, ch / H); ox = (cw - W * sc) / 2; oy = (ch - H * sc) / 2; }
+function readTokens() { const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim(); T = { wallTop: g("--wall-top"), wallBot: g("--wall-bot"), bench: g("--bench"), benchEdge: g("--bench-edge"), glass: g("--glass"), ink: g("--ink"), muted: g("--muted"), accent: g("--accent"), surface: g("--surface") }; }
+new ResizeObserver(resize).observe(vp);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTokens);
+new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const FONT = (w, s) => `${w} ${s}px 'IBM Plex Sans','Noto Sans Sinhala','Noto Sans Tamil',sans-serif`;
+const MONO = (w, s) => `${w} ${s}px 'IBM Plex Mono', monospace`;
+function rr(c, x, y, w, h, r) { c.beginPath(); c.roundRect(x, y, w, h, r); }
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const BENCH = 470, BX = 270, BTOP = 360;
+const hex = h => [parseInt(h.slice(1, 3), 16), parseInt(h.slice(3, 5), 16), parseInt(h.slice(5, 7), 16)];
+const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+function label(txt, x, y, al = "center", col, sz = 11, w = 600) { ctx.fillStyle = col || T.ink; ctx.font = FONT(w, sz); ctx.textAlign = al; ctx.fillText(txt, x, y); }
+function wl2rgb(l) { let r = 0, g = 0, b = 0;
+  if (l < 440) { r = -(l - 440) / 60; b = 1; } else if (l < 490) { g = (l - 440) / 50; b = 1; } else if (l < 510) { g = 1; b = -(l - 510) / 20; } else if (l < 580) { r = (l - 510) / 70; g = 1; } else if (l < 645) { r = 1; g = -(l - 645) / 65; } else r = 1;
+  const f = l < 420 ? .3 + .7 * (l - 380) / 40 : l > 700 ? .3 + .7 * (780 - l) / 80 : 1; return [r, g, b].map(v => Math.round(255 * Math.pow(Math.max(0, v * f), .8))); }
+// zones
+const INNER_TIP = () => BTOP - 70;
+function zoneOf(x, y) { if (!S.lit) return "out"; const dx = Math.abs(x - BX), H2 = S.air ? 260 : 290;
+  if (y < BTOP - H2 || y > BTOP + 4) return "out"; const halfW = S.air ? 38 * Math.sin(Math.PI * Math.min(1, (BTOP - y) / H2 + .15)) + 6 : 46; if (dx > halfW) return "out";
+  if (S.air && y < INNER_TIP() + 12 && y > INNER_TIP() - 45 && dx < 26) return "hot"; return "cool"; }
+// emission (per ion intensity in flame)
+function emissions() { const w = R(), z = zoneOf(w.x, w.y); if (z === "out") return []; const zf = z === "hot" ? 1 : .45, af = w.acid || w.saltAcid ? 1 : .55;
+  return Object.entries(w.res).filter(([k, a]) => a > .01 && k !== "mg").map(([k, a]) => [k, Math.min(1, a * 1.6) * zf * af * (ION[k].weak || 1) * (k === "na" ? 1.6 : 1)]); }
+function flameColour(em) { // returns [rgb, intensity] as seen (with cobalt filter if on)
+  let r = 0, g = 0, b = 0, tot = 0;
+  em.forEach(([k, i]) => { const ii = S.cob ? i * ION[k].cobI : i; if (ii <= .01) return; const c = hex(S.cob ? ION[k].cobHex : ION[k].hex); r += c[0] * ii; g += c[1] * ii; b += c[2] * ii; tot += ii; });
+  if (tot < .02) return [null, 0]; return [[r / tot, g / tot, b / tot].map(Math.round), Math.min(1, tot)]; }
+function dominant(em) { let best = null, bi = 0; em.forEach(([k, i]) => { if (i > bi) { bi = i; best = k; } }); return [best, bi]; }
+
+function drawScene() {
+  ctx.fillStyle = T.bench; ctx.fillRect(-ox / sc - 2, BENCH, W + 2 * ox / sc + 4, (ch - oy) / sc - BENCH + 4); ctx.fillStyle = T.benchEdge; ctx.fillRect(-ox / sc - 2, BENCH, W + 2 * ox / sc + 4, 4);
+  // dark board
+  ctx.fillStyle = "#14181c"; rr(ctx, 110, 30, 320, BENCH - 30, 10); ctx.fill(); label(t("cvBoard"), 270, 48, "center", "#9aa4a8", 10, 500);
+  // burner
+  ctx.fillStyle = "#4a555b"; rr(ctx, BX - 50, BENCH - 16, 100, 16, 5); ctx.fill(); ctx.fillStyle = "#8a959b"; ctx.fillRect(BX - 11, BTOP, 22, BENCH - 16 - BTOP);
+  ctx.fillStyle = "#5c666b"; rr(ctx, BX - 16, BENCH - 52, 32, 16, 3); ctx.fill(); ctx.fillStyle = S.air ? "#1c2a31" : "#5c666b"; ctx.fillRect(BX - 5, BENCH - 48, 10, 8);
+  label(t("cvAir") + ": " + (S.air ? "◉" : "●"), BX + 26, BENCH - 40, "left", "#cfd6db", 10); label(t("cvBurner"), BX, BENCH + 18, "center", T.ink, 10);
+  ctx.strokeStyle = "#e07a10"; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(BX - 50, BENCH - 10); ctx.quadraticCurveTo(BX - 90, BENCH - 6, BX - 140, BENCH + 2); ctx.stroke();
+  const em = emissions(), [fc, fi] = flameColour(em), fl = reduceMotion ? 0 : 1;
+  if (S.lit) { ctx.save(); ctx.globalCompositeOperation = "lighter";
+    if (!S.air) { const h = 290, wv = Math.sin(time * 7) * 6 * fl; const g = ctx.createLinearGradient(0, BTOP - h, 0, BTOP); g.addColorStop(0, "rgba(255,170,40,0)"); g.addColorStop(.25, "rgba(255,190,60,.85)"); g.addColorStop(.85, "rgba(255,220,120,.95)"); g.addColorStop(1, "rgba(120,140,255,.6)");
+      ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(BX - 11, BTOP); ctx.bezierCurveTo(BX - 50, BTOP - 90, BX - 30 + wv, BTOP - 200, BX + wv * 2, BTOP - h); ctx.bezierCurveTo(BX + 32 + wv, BTOP - 200, BX + 50, BTOP - 90, BX + 11, BTOP); ctx.fill(); }
+    else { const h = 260, wv = Math.sin(time * 11) * 3 * fl, base = [90, 110, 255], oc = fc ? fc.map((v, i) => Math.round(base[i] * (1 - fi) + v * fi)) : base, oa = fc ? .35 + .55 * fi : .32;
+      const g = ctx.createLinearGradient(0, BTOP - h, 0, BTOP); g.addColorStop(0, rgba(oc, 0)); g.addColorStop(.3, rgba(oc, oa * .8)); g.addColorStop(.8, rgba(oc, oa)); g.addColorStop(1, rgba(base, .5));
+      ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(BX - 12, BTOP); ctx.bezierCurveTo(BX - 44, BTOP - 80, BX - 26 + wv, BTOP - 180, BX + wv, BTOP - h); ctx.bezierCurveTo(BX + 26 + wv, BTOP - 180, BX + 44, BTOP - 80, BX + 12, BTOP); ctx.fill();
+      const g2 = ctx.createLinearGradient(0, INNER_TIP(), 0, BTOP); g2.addColorStop(0, "rgba(120,200,255,.7)"); g2.addColorStop(1, "rgba(60,90,255,.9)"); ctx.fillStyle = g2; ctx.beginPath(); ctx.moveTo(BX - 10, BTOP); ctx.quadraticCurveTo(BX - 14, BTOP - 40, BX, INNER_TIP()); ctx.quadraticCurveTo(BX + 14, BTOP - 40, BX + 10, BTOP); ctx.fill(); }
+    ctx.restore();
+    if (S.air) { label(t("cvInner"), BX + 60, BTOP - 30, "left", "#9fc2ff", 10, 500); ctx.strokeStyle = "rgba(255,200,90,.6)"; ctx.setLineDash([3, 3]); ctx.beginPath(); ctx.arc(BX, INNER_TIP() - 14, 22, 0, 7); ctx.stroke(); ctx.setLineDash([]); label(t("cvHot"), BX + 60, INNER_TIP() - 10, "left", "#ffcf7a", 10, 500); }
+    else label(t("cvLum"), BX + 60, BTOP - 150, "left", "#ffcf7a", 10, 500);
+  } else label(t("cvOff"), BX, BTOP - 40, "center", "#9aa4a8", 11);
+  // cobalt glass
+  if (S.cob) { ctx.fillStyle = "rgba(30,60,200,.33)"; ctx.strokeStyle = "rgba(120,150,255,.9)"; ctx.lineWidth = 2; rr(ctx, 160, 70, 220, 300, 6); ctx.fill(); ctx.stroke(); label(t("cvCob"), 270, 88, "center", "#cdd8ff", 11); }
+  // HCl watch glass
+  const hx = 500, hy = BENCH - 8; ctx.fillStyle = "rgba(225,240,247,.9)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(hx, hy, 42, 9, 0, 0, Math.PI); ctx.fill(); ctx.stroke(); ctx.beginPath(); ctx.ellipse(hx, hy - 1, 42, 5, 0, 0, 7); ctx.stroke();
+  if (!reduceMotion) { ctx.strokeStyle = "rgba(200,210,215,.35)"; for (let i = 0; i < 3; i++) { const ph = (time * .3 + i * .33) % 1; ctx.beginPath(); ctx.moveTo(hx - 20 + i * 20, hy - 6 - ph * 30); ctx.quadraticCurveTo(hx - 26 + i * 20, hy - 20 - ph * 30, hx - 20 + i * 20, hy - 32 - ph * 30); ctx.stroke(); } }
+  label(t("cvHCl"), hx, BENCH + 18, "center", T.ink, 10);
+  // spot plate
+  ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#cbd5d4"; ctx.lineWidth = 1.5; rr(ctx, 560, BENCH - 22, 390, 22, 4); ctx.fill(); ctx.stroke();
+  SPOTS.forEach((k, i) => { const x = 582 + i * 43; ctx.fillStyle = "#eef1f2"; ctx.beginPath(); ctx.ellipse(x, BENCH - 11, 16, 6, 0, 0, 7); ctx.fill(); ctx.fillStyle = "#fbfbfa"; for (let j = 0; j < 6; j++) { ctx.beginPath(); ctx.arc(x - 8 + j * 3.2, BENCH - 12 + (j % 2) * 2, 2.2, 0, 7); ctx.fill(); }
+    label(k === "X" || k === "Y" ? k + " ?" : ION[k].sym, x, BENCH - 30, "center", T.ink, 11); });
+  label(t("cvPlate"), 755, BENCH + 18, "center", T.ink, 10);
+  drawSpectrum(em);
+  drawWire(em);
+}
+function drawWire(em) { const w = R(), z = zoneOf(w.x, w.y);
+  const hx = w.x + 170, hy = w.y + 110; ctx.strokeStyle = "#b9c0c4"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(w.x, w.y); ctx.lineTo(hx - 60, hy - 39); ctx.stroke();
+  ctx.strokeStyle = "rgba(220,235,245,.9)"; ctx.lineWidth = 7; ctx.beginPath(); ctx.moveTo(hx - 62, hy - 40); ctx.lineTo(hx, hy); ctx.stroke(); ctx.strokeStyle = T.glass; ctx.lineWidth = 1; ctx.stroke();
+  const glow = w.glow; ctx.strokeStyle = glow > .05 ? `rgba(255,${Math.round(150 + 105 * glow)},${Math.round(80 + 175 * Math.max(0, glow - .5) * 2)},1)` : "#b9c0c4"; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.arc(w.x, w.y, 4, 0, 7); ctx.stroke();
+  const salt = Object.entries(w.res).filter(([, a]) => a > .05).length; if (salt && z === "out") { ctx.fillStyle = "#f4f4f0"; ctx.beginPath(); ctx.arc(w.x, w.y, 3, 0, 7); ctx.fill(); }
+  if (w.acid && z === "out") { ctx.fillStyle = "rgba(170,205,225,.9)"; ctx.beginPath(); ctx.arc(w.x, w.y + 5, 2.5, 0, 7); ctx.fill(); }
+  if (glow > .6 && (w.res.mg || 0) > .05) { const g = ctx.createRadialGradient(w.x, w.y, 1, w.x, w.y, 26); g.addColorStop(0, "rgba(255,255,255,.95)"); g.addColorStop(1, "rgba(255,255,255,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(w.x, w.y, 26, 0, 7); ctx.fill(); label(t("cvGlow"), w.x - 34, w.y + 4, "right", "#ffffff", 10); }
+  if (z === "out") label(t("cvWire"), hx + 6, hy + 4, "left", T.ink, 10);
+}
+function drawSpectrum(em) { const x0 = 480, x1 = 935, y0 = 40, y1 = 150, sx = l => x0 + 20 + (l - 380) / 400 * (x1 - x0 - 40);
+  ctx.fillStyle = "#ffffff"; rr(ctx, x0, y0, x1 - x0, y1 - y0 + 60, 12); ctx.fill(); ctx.strokeStyle = "#cbd5d4"; ctx.lineWidth = 1; ctx.stroke();
+  label(t("cvSpec") + (S.cob ? " · " + t("cvCob") : ""), x0 + 14, y0 + 20, "left", "#1c2a31", 12);
+  const by = y0 + 34, bh = 56; ctx.fillStyle = "#0e1215"; ctx.fillRect(sx(380), by, sx(780) - sx(380), bh);
+  for (let l = 380; l <= 780; l += 2) { const c = wl2rgb(l); ctx.fillStyle = rgba(c, .12); ctx.fillRect(sx(l), by + bh - 6, sx(l + 2) - sx(l) + .5, 6); }
+  let any = false;
+  em.forEach(([k, i]) => ION[k].lines.forEach(([l, s]) => { const I = i * s * (S.cob ? COBT(l) : 1); if (I < .03) return; any = true; const c = wl2rgb(l); ctx.fillStyle = rgba(c, Math.min(1, .25 + I)); ctx.fillRect(sx(l) - 2, by, 4, bh - 6); ctx.fillStyle = rgba(c, .25 * I); ctx.fillRect(sx(l) - 7, by, 14, bh - 6);
+    label(l + "", sx(l), by - 4, "center", "#1c2a31", 10); }));
+  ctx.fillStyle = "#1c2a31"; ctx.font = MONO(500, 10); ctx.textAlign = "center"; [400, 500, 600, 700].forEach(l => { ctx.fillText(l + " nm", sx(l), by + bh + 14); });
+  const [fc, fi] = flameColour(em), [dk] = dominant(em);
+  ctx.fillStyle = fc ? rgba(fc, Math.max(.35, fi)) : "rgba(90,110,255,.5)"; rr(ctx, x0 + 14, by + bh + 22, 30, 20, 4); ctx.fill(); ctx.strokeStyle = "#9aa4a8"; ctx.stroke();
+  const nm = !S.lit ? t("cvOff") : !S.air ? t("yellowFlame") : !fc ? (R().glow > .6 && (R().res.mg || 0) > .05 ? t("col").mg : t("blueFlame")) : S.cob ? t("cob")[dk] : t("col")[dk];
+  label(t("cvLook") + ": " + nm, x0 + 52, by + bh + 37, "left", "#1c2a31", 11);
+  if (!any && S.lit && S.air) label(t("cvNoLines"), (x0 + x1) / 2, by + bh / 2 + 4, "center", "#9aa4a8", 11, 500);
+}
+
+// =====================================================================
+// LOOP / MODEL UPDATE
+// =====================================================================
+let time = 0, last = performance.now(), uiT = 0;
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now; time += dt;
+  update(dt);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const g = ctx.createLinearGradient(0, 0, 0, ch); g.addColorStop(0, T.wallTop); g.addColorStop(1, T.wallBot); ctx.fillStyle = g; ctx.fillRect(0, 0, cw, ch);
+  ctx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, dpr * oy);
+  drawScene();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  S.confetti.forEach(p => { p.vy += 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-3, -1.5, 6, 3); ctx.restore(); });
+  S.confetti = S.confetti.filter(p => p.y < ch + 20);
+  if (playing) { const v = Math.min(1000, +$("replay").value + dt / 6 * 1000); $("replay").value = v; if (v >= 1000) { playing = false; renderReplayCtl(); } }
+  uiT += dt; if (uiT > .15) { uiT = 0; renderLive(); if (!$("pane-colours").hidden) drawMini(); }
+  requestAnimationFrame(frame);
+}
+let hintT = 0;
+function update(dt) {
+  const w = R(), z = zoneOf(w.x, w.y);
+  w.glow = Math.max(0, Math.min(1, w.glow + (z === "hot" ? 1.5 : z === "cool" ? .6 : -1.2) * dt));
+  if (z === "out") { w.steady = 0; hintT = 0; return; }
+  if (!S.air) { hintT += dt; if (hintT > 1.2) { hintT = -6; toast("tLum", "warn", 5000); } return; }
+  // burn off residue
+  const em = emissions(), zf = z === "hot" ? 1 : .35;
+  Object.keys(w.res).forEach(k => { const af = w.acid || w.saltAcid ? 1.6 : .7; w.res[k] = Math.max(0, w.res[k] - ION[k].decay * af * zf * dt * (k === "mg" ? 3 : 1)); });
+  if (z === "cool") { hintT += dt; if (hintT > 2) { hintT = -6; toast("tCool", "warn", 4000); } }
+  // cleaning check
+  const total = Object.values(w.res).reduce((a, b) => a + b, 0);
+  if (w.cleaning) { if (total < .02 && w.glow > .9) { w.cleaning = false; w.clean = true; w.dirtyFlag = false; w.mix = false; w.acid = false; w.res = {};
+      if (!S.ev.s1) { S.ev.s1 = 1; log("lClean"); } toast("tClean", "good", 2500); render(); } }
+  // recording
+  if (z === "hot" && w.salt && !w.recorded) {
+    const [dk, di] = dominant(em), target = w.salt === "X" || w.salt === "Y" ? S.unk[w.salt] : w.salt;
+    if (target === "mg") { if (w.glow > .9) { w.st = (w.st || 0) + dt; if (w.st > 1.2) record(w.salt, target); } }
+    else if (dk) { if (w.mix || w.dirtyFlag) { if (dk === "na" || (w.st = (w.st || 0) + dt) > 1.5) { if (!w.warned) { w.warned = true; toast(w.dirtyFlag ? "tMask" : "tMix", "warn", 5000); } } }
+      else if (S.cob && target !== "k") { w.st = (w.st || 0) + dt; if (w.st > 1.2 && !w.cobHint) { w.cobHint = 1; } }
+      else { w.st = (w.st || 0) + dt; if (w.st > 1.2) record(w.salt, target); } }
+    trace(w.salt, em);
+  } else if (z === "hot" && w.salt) trace(w.salt, em);
+}
+function trace(key, em) { const arr = S.trace[key] || (S.trace[key] = []); if (arr.length < 400) arr.push(dominant(em)[1]); }
+function record(key, ion) { const w = R(); w.recorded = true; w.st = 0;
+  if (key === "X" || key === "Y") { S.recU[key] = { ion, cob: S.cob }; log("lRec", { ion: t(key === "X" ? "ionX" : "ionY"), col: t(S.cob ? "cob" : "col")[ion] }); }
+  else { if (S.cob) { if (ion === "k") { S.recCob.k = 1; S.ev.s4 = 1; log("lRecCob", { ion: "K⁺", col: t("cob").k }); } }
+    else { S.rec[ion] = 1; log(ion === "mg" ? "lMg" : "lRec", { ion: ION[ion].sym, col: t("col")[ion] }); if (ion === "k" && !S.recCob.k) toast("tKcob", "", 5000); } }
+  if (!S.ev.s3) S.ev.s3 = 1; render(); }
+
+// =====================================================================
+// ACTIONS
+// =====================================================================
+const HCL = { x: 500, y: BENCH - 10 }, spotX = i => 582 + i * 43;
+function dipAcid() { const w = R(); if (!S.gog) { toast("tGog", "warn", 4000); return false; }
+  w.acid = true; if (w.salt && !w.saltAcid && !w.recorded) { w.saltAcid = true; if (!S.ev.s2) S.ev.s2 = 1; }
+  else { w.cleaning = true; w.salt = null; w.saltAcid = false; }
+  if (!S.fumed) { S.fumed = 1; toast("tFumes", "warn", 4000); } render(); return true; }
+function dipSalt(key) { const w = R(); if (!S.gog) { toast("tGog", "warn", 4000); return false; }
+  const total = Object.values(w.res).reduce((a, b) => a + b, 0);
+  if (!w.clean) { toast(w.everCleanOnce ? "tMix" : "tDirty", "warn", 5500); w.mix = total > .05; }
+  else { w.mix = false; w.dirtyFlag = false; }
+  const ion = key === "X" || key === "Y" ? S.unk[key] : key; w.res[ion] = 1; w.salt = key; w.saltAcid = false; w.acid = false; w.clean = false; w.everCleanOnce = true; w.recorded = false; w.warned = false; w.st = 0; S.trace[key] = []; S.lastSel = key;
+  render(); return true; }
+function moveWire(x, y) { const w = R(); w.x = x; w.y = y; }
+function hold() { if (!S.lit) return toast("tLight", "warn"); moveWire(BX + 4, INNER_TIP() - 14); }
+function takeOut() { moveWire(760, 250); }
+function checkId(u) { const g = S.unkGuess[u]; if (!S.recU[u]) { S.unkNote[u] = ["bad", "idNeed", { u }]; return renderPanel(); }
+  if (g === S.unk[u]) { S.unkOk[u] = 1; S.unkNote[u] = ["ok", "idOk", { u, ion: ION[g].sym }]; log("lId", { u, ion: ION[g].sym, col: t("col")[g] }); if (S.unkOk.X && S.unkOk.Y) S.ev.s5 = 1; checkAll(); render(); }
+  else { S.unkNote[u] = ["bad", "idBad", { u }]; renderPanel(); } }
+function checkAll() { if ([1, 2, 3, 4, 5].every(i => S.ev["s" + i]) && !S.done) { S.done = true; celebrate(); } }
+// drag
+let drag = null, lastDip = null;
+function toLogical(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left - ox) / sc, y: (e.clientY - r.top - oy) / sc }; }
+cv.addEventListener("pointerdown", e => { const p = toLogical(e), w = R();
+  if (Math.hypot(p.x - w.x, p.y - w.y) < 30 || Math.hypot(p.x - (w.x + 140), p.y - (w.y + 90)) < 50) { drag = { dx: p.x - w.x, dy: p.y - w.y }; cv.setPointerCapture(e.pointerId); } });
+cv.addEventListener("pointermove", e => { if (!drag) return; const p = toLogical(e); const x = Math.max(60, Math.min(940, p.x - drag.dx)), y = Math.max(40, Math.min(BENCH - 4, p.y - drag.dy)); moveWire(x, y);
+  // dip detection
+  let here = null; if (Math.abs(x - HCL.x) < 36 && y > BENCH - 22) here = "acid"; SPOTS.forEach((k, i) => { if (Math.abs(x - spotX(i)) < 16 && y > BENCH - 24) here = k; });
+  if (here && here !== lastDip) { lastDip = here; if (here === "acid") dipAcid(); else dipSalt(here); } if (!here && y < BENCH - 40) lastDip = null; });
+["pointerup", "pointercancel"].forEach(ev => cv.addEventListener(ev, () => { drag = null; }));
+
+// =====================================================================
+// UI
+// =====================================================================
+let toastT;
+function toast(k, kind = "", ms = 3600, p) { const el = $("toast"); el.textContent = t(k, p); el.className = "toast show " + kind; clearTimeout(toastT); toastT = setTimeout(() => el.className = "toast " + kind, ms); }
+function log(k, p) { S.logs.unshift({ time: new Date().toTimeString().slice(0, 8), k, p }); renderLog(); }
+function renderLog() { const box = $("log"); box.innerHTML = ""; S.logs.forEach(e => { const d = document.createElement("div"), s = document.createElement("span"), m = document.createElement("div"); s.textContent = e.time; m.textContent = t(e.k, e.p); d.append(s, m); box.append(d); }); }
+const ionName = k => k === "X" ? t("ionX") : k === "Y" ? t("ionY") : ION[k].sym;
+function promptText() {
+  if (!S.gog) return t("p_gog"); if (!S.lit) return t("p_light"); if (!S.air) return t("p_air"); if (!S.ev.s1) return t("p_clean");
+  const w = R(); if (!S.ev.s3) return w.salt && w.saltAcid ? t("p_heat") : t("p_salt");
+  const left = KNOWN.filter(k => !S.rec[k]); if (left.length) return w.salt && w.saltAcid && !w.recorded ? t("p_heat") : t("p_next", { left: left.map(k => ION[k].sym).join(", ") });
+  if (!S.ev.s4) return t("p_k"); if (!S.ev.s5) return t("p_unk"); return t("p_done");
+}
+function renderPanel() {
+  const P = $("panel"); let h = `<p>${esc(promptText())}</p>`;
+  h += `<div class="row"><label class="label" for="saltSel">${esc(t("saltL"))}</label><select id="saltSel">${SPOTS.map(k => `<option value="${k}" ${k === S.lastSel ? "selected" : ""}>${esc(ionName(k))}</option>`).join("")}</select>
+    <button class="btn" id="bSalt">${esc(t("dipSalt"))}</button><button class="btn" id="bAcid">${esc(t("dipAcid"))}</button><button class="btn primary" id="bHold">${esc(t("hold"))}</button><button class="btn" id="bOut">${esc(t("out"))}</button></div>`;
+  if (S.ev.s3) { h += `<div class="box" style="display:flex;flex-direction:column;gap:8px"><b>${esc(t("idH"))}</b>` + ["X", "Y"].map(u => `<div class="idrow"><label class="label" for="id${u}">${esc(t("id" + u))}</label><select id="id${u}" ${S.unkOk[u] ? "disabled" : ""}><option value="">${esc(t("choose"))}</option>${["li", "na", "k", "ca", "sr", "ba"].map(k => `<option value="${k}" ${S.unkGuess[u] === k ? "selected" : ""}>${ION[k].sym}</option>`).join("")}</select><button class="btn" id="chk${u}" ${S.unkOk[u] ? "disabled" : ""}>${esc(t("check"))}</button></div>${S.unkNote[u] ? `<div class="note ${S.unkNote[u][0]}">${esc(t(S.unkNote[u][1], S.unkNote[u][2]))}</div>` : ""}`).join("") + `</div>`; }
+  P.innerHTML = h;
+  $("saltSel").onchange = e => { S.lastSel = e.target.value; };
+  $("bSalt").onclick = () => { const k = $("saltSel").value, i = SPOTS.indexOf(k); moveWire(spotX(i), BENCH - 12); if (dipSalt(k)) setTimeout(() => moveWire(spotX(i), BENCH - 70), 350); };
+  $("bAcid").onclick = () => { moveWire(HCL.x, BENCH - 10); if (dipAcid()) setTimeout(() => moveWire(HCL.x, BENCH - 70), 350); };
+  $("bHold").onclick = hold; $("bOut").onclick = takeOut;
+  ["X", "Y"].forEach(u => { const s = $("id" + u); if (s) s.onchange = e => { S.unkGuess[u] = e.target.value; }; const b = $("chk" + u); if (b) b.onclick = () => checkId(u); });
+}
+function renderGuide() { const d = [1, 2, 3, 4, 5].map(i => !!S.ev["s" + i]), cur = d.indexOf(false), k = d.filter(Boolean).length;
+  $("steps").innerHTML = t("steps").map((s, i) => `<li class="${d[i] ? "done" : i === cur ? "now" : ""}"><span class="tick">${d[i] ? "✓" : i + 1}</span><span>${esc(s)}</span></li>`).join("");
+  $("ringTxt").textContent = `${k}/5`; $("ringArc").style.strokeDashoffset = String(113.1 * (1 - k / 5)); }
+function renderLive() {
+  const w = R(), z = zoneOf(w.x, w.y), ws = w.clean ? t("wClean") : w.salt && Object.values(w.res).some(a => a > .05) ? ionName(w.salt) : Object.values(w.res).some(a => a > .03) ? t("wDirty") : t("wClean");
+  const c = [t("chipWire", { s: ws }), t("chipZone", { z: t(z === "hot" ? "zHot" : z === "cool" ? "zCool" : "zOut") })];
+  const h = c.map(x => `<span class="chip">${esc(x)}</span>`).join(""); if ($("chips").innerHTML !== h) $("chips").innerHTML = h;
+  const pt = promptText(); if ($("prompt").textContent !== pt) $("prompt").textContent = pt;
+}
+function renderTables() {
+  const rows = KNOWN.map(k => `<tr><td>${ION[k].sym}</td><td>${S.rec[k] ? `<span class="sw" style="background:${k === "mg" ? "#ffffff" : ION[k].hex}"></span>${esc(t("col")[k])}` : `<span class="muted">${esc(t("none"))}</span>`}</td><td>${k === "k" ? (S.recCob.k ? esc(t("cob").k) : "…") : "—"}</td><td class="num">${ION[k].lines.map(l => l[0]).join(", ") || "—"}</td></tr>`);
+  ["X", "Y"].forEach(u => { const r = S.recU[u]; rows.push(`<tr><td>${esc(ionName(u))}</td><td>${r ? `<span class="sw" style="background:${ION[r.ion].hex}"></span>${esc(t("col")[r.ion])}` : `<span class="muted">${esc(t("none"))}</span>`}</td><td>${S.unkOk[u] ? "= " + ION[S.unk[u]].sym : "…"}</td><td>—</td></tr>`); });
+  $("tbR").innerHTML = rows.join(""); }
+function render() { $("gogBtn").textContent = t(S.gog ? "gogOn" : "gog"); $("gogBtn").setAttribute("aria-pressed", String(S.gog));
+  $("lightBtn").textContent = t(S.lit ? "lit" : "light"); $("lightBtn").disabled = S.lit; $("lightBtn").classList.toggle("primary", !S.lit && S.gog);
+  $("airBtn").textContent = t(S.air ? "airOpen" : "airClosed"); $("airBtn").setAttribute("aria-pressed", String(S.air)); $("airBtn").disabled = !S.lit;
+  $("cobBtn").textContent = t(S.cob ? "cobOn" : "cobOff"); $("cobBtn").setAttribute("aria-pressed", String(S.cob));
+  renderPanel(); renderGuide(); renderTables(); renderLive(); renderCards(); renderRsel(); }
+function celebrate() { toast("tDone", "party", 5200); $("quizTab").classList.add("ping");
+  if (!reduceMotion) { const cols = ["#DC143C", "#FFB000", "#B39DDB", "#8DBF2C"]; for (let i = 0; i < 90; i++) S.confetti.push({ x: cw / 2 + (Math.random() - .5) * 200, y: ch * .3, vx: (Math.random() - .5) * 340, vy: -150 - Math.random() * 220, rot: Math.random() * 6, vr: (Math.random() - .5) * 10, c: cols[i % cols.length] }); } }
+// colour cards
+const flameSvg = (col, glow) => `<svg viewBox="0 0 90 60" aria-hidden="true"><rect width="90" height="60" fill="#14181c"/><path d="M45 4 C34 22 30 40 38 56 L52 56 C60 40 56 22 45 4Z" fill="${col}" opacity=".9"/><path d="M45 34 C41 44 41 52 42 56 L48 56 C49 52 49 44 45 34Z" fill="#5a78ff"/>${glow ? `<circle cx="45" cy="30" r="7" fill="#ffffff"/>` : ""}</svg>`;
+function renderCards() {
+  const card = (k) => { const ok = k === "k" ? !!S.rec.k : !!S.rec[k], after = k === "mg" ? flameSvg("#5a78ff", 1) : flameSvg(ION[k].hex), extra = k === "k" ? `<div class="via">${esc(t("thCob"))}: ${esc(t("cob").k)} ${S.recCob.k ? "✓" : ""}</div>` + `<div style="display:flex;justify-content:center">${flameSvg(ION.k.cobHex)}</div>` : "";
+    return `<div class="cc"><div class="ttl"><em class="${ok ? "ok" : ""}">${ok ? "✓ " + esc(t("seen")) : esc(t("notYet"))}</em></div><div class="flow"><div class="st"><small>${esc(t("before"))}</small>${flameSvg("#5a78ff")}<span>${esc(t("blueFlame"))}</span></div><div class="arrow"><b>→</b><span>${ION[k].sym}</span></div><div class="st"><small>${esc(t("after"))}</small>${after}<span>${esc(t("col")[k])}</span></div></div>${extra}</div>`; };
+  $("cards").innerHTML = KNOWN.map(card).join("");
+}
+let rsel = "li";
+function renderRsel() { const cur = rsel; $("rsel").innerHTML = KNOWN.map(k => `<option value="${k}">${S.rec[k] ? "✓ " : ""}${ION[k].sym} · ${esc(t("col")[k])}</option>`).join(""); $("rsel").value = cur; renderReplayCtl(); }
+const mini = $("mini"), mctx = mini.getContext("2d"); let playing = false;
+function drawMini() {
+  const w = mini.width, h = mini.height, f = +$("replay").value / 1000; mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.fillStyle = "#14181c"; mctx.fillRect(0, 0, w, h);
+  if (!S.rec[rsel]) { mctx.fillStyle = "#9aa4a8"; mctx.font = "18px 'IBM Plex Sans',sans-serif"; mctx.textAlign = "center"; mctx.fillText(t("rNone"), w / 2, h / 2); $("rname").textContent = t("rNone"); return; }
+  const k = rsel, persist = k === "na", I = f < .15 ? 0 : f < .4 ? (f - .15) / .25 : f < .75 ? 1 : persist ? .9 : Math.max(0, 1 - (f - .75) / .25), base = [90, 110, 255], c = k === "mg" ? base : hex(ION[k].hex), oc = base.map((v, i) => Math.round(v * (1 - I) + c[i] * I));
+  mctx.save(); mctx.globalCompositeOperation = "lighter"; const g = mctx.createLinearGradient(0, 40, 0, 340); g.addColorStop(0, rgba(oc, 0)); g.addColorStop(.35, rgba(oc, .35 + .55 * I)); g.addColorStop(1, rgba(base, .6));
+  mctx.fillStyle = g; mctx.beginPath(); mctx.moveTo(270, 340); mctx.bezierCurveTo(200, 240, 250, 120, 300, 40); mctx.bezierCurveTo(350, 120, 400, 240, 330, 340); mctx.fill();
+  mctx.fillStyle = "rgba(90,130,255,.9)"; mctx.beginPath(); mctx.moveTo(285, 340); mctx.quadraticCurveTo(280, 280, 300, 250); mctx.quadraticCurveTo(320, 280, 315, 340); mctx.fill(); mctx.restore();
+  if (k === "mg" && f > .15) { const gg = mctx.createRadialGradient(300, 230, 2, 300, 230, 30); gg.addColorStop(0, "#ffffff"); gg.addColorStop(1, "rgba(255,255,255,0)"); mctx.fillStyle = gg; mctx.beginPath(); mctx.arc(300, 230, 30, 0, 7); mctx.fill(); }
+  mctx.fillStyle = k === "mg" ? "#ffffff" : rgba(c, 1); mctx.fillRect(440, 120, 110, 90); mctx.strokeStyle = "#9aa4a8"; mctx.strokeRect(440, 120, 110, 90);
+  const name = f < .15 ? t("sBlue") : f < .4 ? t("sRise") : f < .75 ? t("sFull", { c: t("col")[k] }) : persist ? t("sPersist") : t("sFade");
+  mctx.fillStyle = "#ffffff"; mctx.font = "600 18px 'IBM Plex Sans','Noto Sans Sinhala','Noto Sans Tamil',sans-serif"; mctx.textAlign = "center"; mctx.fillText(name.length > 46 ? name.slice(0, 46) + "…" : name, w / 2, 380); $("rname").textContent = name;
+}
+function renderReplayCtl() { const ok = !!S.rec[rsel]; $("replay").disabled = !ok; $("playBtn").disabled = !ok; $("playBtn").textContent = t(playing ? "pause" : "play"); }
+// quiz
+function readScores() { try { return JSON.parse(localStorage.getItem("svl-scores") || "{}") || {}; } catch (e) { return {}; } }
+function saveScore(pct) { try { const s = readScores(); if (!(s[SIM_ID] >= pct)) { s[SIM_ID] = pct; localStorage.setItem("svl-scores", JSON.stringify(s)); } } catch (e) {} }
+function renderQuiz() { const Q = t("quiz"), L = ["A", "B", "C", "D"];
+  $("quiz").innerHTML = Q.map((q, i) => `<div class="q" id="q${i}"><p>${i + 1}. ${esc(q.q)}</p>${q.o.map((o, j) => `<button data-q="${i}" data-o="${j}">${L[j]}) ${esc(o)}</button>`).join("")}<div class="exp"></div></div>`).join("");
+  Object.entries(S.answered).forEach(([i, j]) => markAnswer(+i, j)); score(); }
+function markAnswer(i, j) { const ok = j === QUIZ_ANS[i];
+  $("q" + i).querySelectorAll("button").forEach((x, k) => { x.disabled = true; if (k === QUIZ_ANS[i]) x.classList.add("right"); else if (k === j) x.classList.add("wrong"); });
+  const d = document.createElement("div"); d.className = "note " + (ok ? "ok" : "bad"); d.textContent = t(ok ? "correct" : "notQuite") + t("quiz")[i].e; const ex = $("q" + i).querySelector(".exp"); ex.innerHTML = ""; ex.append(d); }
+$("quiz").onclick = e => { const b = e.target.closest("button[data-q]"); if (!b) return; const i = +b.dataset.q, j = +b.dataset.o; if (i in S.answered) return; S.answered[i] = j; markAnswer(i, j); score(); };
+function score() { const n = Object.keys(S.answered).length, s = Object.entries(S.answered).filter(([i, j]) => j === QUIZ_ANS[+i]).length, N = QUIZ_ANS.length;
+  if (n === N) saveScore(Math.round(s / N * 100)); const best = readScores()[SIM_ID];
+  $("score").textContent = `${s} / ${N}` + (n < N ? " · " + t("scoreLeft", { n: N - n }) : "") + (best !== undefined ? " · " + t("best", { p: best }) : ""); }
+$("retryBtn").onclick = () => { S.answered = {}; renderQuiz(); };
+function applyStatic() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("#langSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  cv.setAttribute("aria-label", t("canvasAria"));
+  $("appList").innerHTML = t("app").map(a => `<span>${esc(a)}</span>`).join(""); $("safeList").innerHTML = t("safe").map(a => `<li>${esc(a)}</li>`).join("");
+  try { const st = JSON.parse(localStorage.getItem("svl-student") || "null"); if (st && st.name) { $("student").hidden = false; $("student").textContent = t("student", { name: st.name, cls: st.cls ? " · " + st.cls : "" }); } } catch (e) {}
+}
+function fullRender() { applyStatic(); render(); renderLog(); renderQuiz(); }
+function applyLang(l) { LANG = l; try { localStorage.setItem("svl-lang", l); } catch (e) {} fullRender(); }
+document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  ["guide", "obs", "colours", "quiz"].forEach(id => $("pane-" + id).hidden = id !== b.dataset.tab);
+  if (b.dataset.tab === "quiz") b.classList.remove("ping"); if (b.dataset.tab === "colours") { renderReplayCtl(); drawMini(); } });
+$("gogBtn").onclick = () => { S.gog = !S.gog; render(); };
+$("lightBtn").onclick = () => { if (!S.gog) return toast("tGog", "warn", 4000); S.lit = true; render(); };
+$("airBtn").onclick = () => { S.air = !S.air; render(); };
+$("cobBtn").onclick = () => { S.cob = !S.cob; const w = R(); w.recorded = w.recorded && !(w.salt === "k" || w.salt === "X" || w.salt === "Y"); render(); };
+$("rsel").onchange = e => { rsel = e.target.value; playing = false; $("replay").value = 1000; renderReplayCtl(); drawMini(); };
+$("resetBtn").onclick = () => { const ans = S.answered; S = freshState(); S.answered = ans; $("quizTab").classList.remove("ping"); fullRender(); };
+$("replay").oninput = () => { playing = false; renderReplayCtl(); drawMini(); };
+$("playBtn").onclick = () => { playing = !playing; if (playing && +$("replay").value >= 1000) $("replay").value = 0; renderReplayCtl(); };
+
+readTokens(); resize(); S = freshState(); fullRender();
+requestAnimationFrame(frame);
+})();
+</script>

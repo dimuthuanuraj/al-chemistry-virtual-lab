@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="React a known mass of Mg with excess dilute HCl, measure the volume of H₂ and calculate the relative atomic mass of Mg.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+.svlnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:#0E1A2B;background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:28px 28px;color:#F4F1EA;font:500 14px/1.2 "IBM Plex Sans","Noto Sans Sinhala","Noto Sans Tamil",system-ui,sans-serif}
+.svlnav .in{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.svlnav a{color:#F4F1EA;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1.5px solid rgba(212,196,255,.45);border-radius:999px}
+.svlnav a:hover{background:rgba(212,196,255,.14)}
+.svlnav a:focus-visible{outline:3px solid #FFC857;outline-offset:2px}
+.svlnav .pos{color:#D4C4FF;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;margin-left:auto}
+.svlnav .pn{display:flex;gap:8px}
+@media (max-width:560px){.svlnav .lbl{display:none}.svlnav .pos{margin-left:0}}
+</style>
+<title>Magnesium Ar Bench</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap">
+<style>
+
+/* Layout: bench stage (balance / volumetric flask / pipette views) with a step-by-step action dock, working notebook on the right. Same system as the KMnO₄ bench. */
+:root{
+  --bg:#e7eceb; --surface:#f8faf9; --surface-2:#eef2f1; --ink:#162127; --muted:#56666c; --line:#cbd5d4;
+  --accent:#8b1d6f; --accent-soft:#f3dcea; --on-accent:#ffffff; --current:#b7791f;
+  --ok:#2c7a4d; --ok-soft:#dcefe3; --warn:#9a520a; --warn-soft:#f8e8d5; --bad:#a3302b; --bad-soft:#f6dedc;
+  --wall-top:#dde5e4; --wall-bot:#c5d0cf; --bench:#2a3236; --bench-edge:#1b2124; --glass:rgba(40,60,70,.55);
+  --f-display:"Bricolage Grotesque", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", "Noto Sans Sinhala", "Noto Sans Tamil", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 28px}
+:lang(si) body,:lang(ta) body{line-height:1.65}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.top > div:first-child{min-width:0}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+:lang(si) .eyebrow,:lang(ta) .eyebrow{letter-spacing:.02em;font-size:12.5px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 6px;text-wrap:balance;letter-spacing:-.01em}
+:lang(si) h1,:lang(ta) h1{letter-spacing:0;font-size:clamp(22px,2.6vw,32px);line-height:1.3}
+.sub{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.top-actions{display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap}
+.student{font-size:13px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;min-height:44px;font-weight:500;font-size:14px;transition:background .15s,border-color .15s,transform .05s;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.next{border-color:var(--current);box-shadow:0 0 0 3px color-mix(in srgb,var(--current) 30%,transparent)}
+.btn.sm{min-height:40px;padding:6px 10px}
+.btn[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.btn.hold{touch-action:none;user-select:none;-webkit-user-select:none}
+.btn.hold.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface-2)}
+.seg button{border:0;background:transparent;padding:8px 12px;min-height:42px;font-size:14px;font-weight:500;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.lang button{min-height:36px}
+.lang button[lang="si"]{font-family:"Noto Sans Sinhala",var(--f-body)}
+.lang button[lang="ta"]{font-family:"Noto Sans Tamil",var(--f-body)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.modebar{display:flex;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.prompt{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.prompt .dot{width:9px;height:9px;border-radius:50%;background:var(--current);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--current) 25%,transparent)}
+.prompt p{margin:0;font-weight:500;min-width:0}
+.viewport{position:relative;height:clamp(320px,calc(100vh - 470px),560px);background:var(--wall-bot);user-select:none;-webkit-user-select:none}
+@media (max-width:980px){.viewport{height:clamp(260px,62vw,520px)}}
+canvas#cv{display:block;width:100%;height:100%;touch-action:none}
+.chips{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;max-width:60%}
+.chip{font-family:var(--f-mono);font-size:12.5px;background:#0E1A2B;color:#D4C4FF;border:1px solid rgba(212,196,255,.25);padding:3px 10px;border-radius:999px}
+.chip.ok{color:#9fe6b8;border-color:#2c7a4d}
+.chip.bad{color:#ffb4ab;border-color:#a3302b}
+.toast{position:absolute;left:50%;bottom:14px;transform:translate(-50%,10px);opacity:0;transition:opacity .25s,transform .25s;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 28px);width:max-content;pointer-events:none;text-align:center;z-index:5}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.toast.good{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.toast.party{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);font-weight:600}
+.dock{display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.panelbox{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:10px}
+.panelbox > p{margin:0;font-weight:500}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-right:2px}
+:lang(si) .label,:lang(ta) .label{letter-spacing:0;font-size:12.5px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.fields label{display:flex;flex-direction:column;gap:4px;font-size:13px;min-width:0}
+input[type=number]{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:15px;font-family:var(--f-mono);max-width:100%}
+input.ok{border-color:var(--ok);background:var(--ok-soft)}
+input.bad{border-color:var(--bad);background:var(--bad-soft)}
+.slider{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-width:0;max-width:420px}
+.slider input{flex:1;min-width:0}
+input[type=range]{accent-color:var(--accent);min-height:30px}
+.beamctl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.beamctl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.beamctl div{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:9px;padding:4px;background:var(--surface);min-width:0}
+.beamctl span{flex:1;text-align:center;font-family:var(--f-mono);font-size:12.5px;min-width:0}
+.note{font-size:13.5px;padding:8px 10px;border-radius:8px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.note.info{background:var(--surface);border:1px solid var(--line)}
+.calcline{font-family:var(--f-mono);font-size:13px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.tabs button{flex:1;min-width:0;border:0;background:transparent;padding:12px 4px;min-height:46px;font-weight:600;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;line-height:1.3;position:relative}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs button.ping::after{content:"";position:absolute;top:8px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--current)}
+.pane{padding:16px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:980px){.pane{max-height:none}}
+h2{font-family:var(--f-display);font-size:18px;font-weight:700;margin:0}
+h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+:lang(si) h3,:lang(ta) h3{letter-spacing:0;font-size:13px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2)}
+.box.safety{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.box.safety h3{color:var(--warn)}
+.box.safety ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ring{position:relative;width:46px;height:46px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;font-weight:500}
+.chiplist{display:flex;flex-wrap:wrap;gap:6px}
+.chiplist span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;background:var(--surface)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid transparent}
+.steps li .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-family:var(--f-mono);color:var(--muted);margin-top:2px}
+.steps li.done{color:var(--muted)}
+.steps li.done .tick{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.steps li.now{background:var(--surface);border-color:var(--current)}
+.steps li.now .tick{border-color:var(--current);color:var(--current)}
+.log{font-size:13.5px;display:flex;flex-direction:column;gap:5px;max-height:240px;overflow:auto}
+.log > div{display:grid;grid-template-columns:58px 1fr;gap:6px}
+.log span{font-family:var(--f-mono);color:var(--muted);font-size:11.5px;padding-top:2px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:7px 8px;background:var(--surface-2);font-weight:600}
+:lang(si) th,:lang(ta) th{letter-spacing:0;font-size:12px}
+td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+td.num{font-family:var(--f-mono);white-space:nowrap;text-align:right}
+.cc{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px}
+.cc .ttl{display:flex;justify-content:flex-end}
+.cc .ttl em{font-style:normal;font-weight:500;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.cc .ttl em.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.cc .flow{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start}
+.cc .st{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:13px;min-width:0}
+.cc .st small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+:lang(si) .cc .st small,:lang(ta) .cc .st small{letter-spacing:0}
+.cc .arrow{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);padding-top:14px;max-width:110px;text-align:center}
+.cc .arrow b{font-size:20px;color:var(--ink);line-height:1}
+.cc svg{width:90px;height:60px;border-radius:8px;border:1px solid var(--line);background:#ffffff}
+.cc .via{font-size:12.5px;color:var(--muted);text-align:center}
+.replaycv{width:100%;max-width:100%;aspect-ratio:3/2;border-radius:10px;border:1px solid var(--line);display:block;background:#ffffff}
+.q{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}
+.q p{margin:0 0 4px;font-weight:600}
+.q button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px}
+.q button:hover:not(:disabled){border-color:var(--accent)}
+.q button.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.q button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.q button:disabled{cursor:default}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--accent);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+
+.vpt{border-collapse:collapse;font-size:13px;width:100%}
+.vpt td,.vpt th{padding:4px 8px;border-top:1px solid var(--line);text-align:center;font-family:var(--f-mono)}
+.vpt tr.hl td{background:var(--accent-soft);color:var(--ink);font-weight:600}
+.cstep{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;align-items:center;font-size:13.5px;padding:6px 0;border-top:1px solid var(--line)}
+.cstep:first-child{border-top:0}
+.cstep b{font-family:var(--f-mono);font-weight:500;color:var(--ok)}
+.cstep .row input{width:140px}
+.errlist{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.mchip{font-family:var(--f-mono);font-size:12.5px;background:#0E1A2B;color:#D4C4FF;border:1px solid rgba(212,196,255,.25);padding:3px 10px;border-radius:999px}
+</style>
+</head>
+<body>
+<nav class="svlnav" aria-label="Practicals">
+<div class="in"><a href="../index.html#practicals">← <span data-svlnav="home">A/L labs</span></a>
+<span class="pos">Exp 6 · 6 / 22</span>
+<span class="pn"><a href="molar-volume.html" rel="prev">‹ <span class="lbl" data-svlnav="prev">Previous</span></a><a href="enthalpy-neutralisation.html" rel="next"><span class="lbl" data-svlnav="next">Next</span> ›</a></span></div>
+</nav>
+<script>
+(function(){var L={en:{home:"All practicals",prev:"Previous",next:"Next"},si:{home:"සියලු ප්‍රායෝගික",prev:"පෙර",next:"ඊළඟ"},ta:{home:"எல்லாச் செய்முறைகளும்",prev:"முந்தையது",next:"அடுத்தது"}};
+function lang(){try{var l=localStorage.getItem("svl-lang");if(L[l])return l;}catch(e){}return "en";}
+function apply(){var l=lang();document.querySelectorAll("[data-svlnav]").forEach(function(e){e.textContent=L[l][e.getAttribute("data-svlnav")];});}
+apply();document.addEventListener("click",function(){setTimeout(apply,60);});})();
+</script>
+
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1 data-i18n="title"></h1>
+      <div class="sub">NIE Practical Handbook (2018) · al-exp-06 · Mg + 2HCl → MgCl₂ + H₂</div>
+    </div>
+    <div class="top-actions">
+      <span class="student" id="student" hidden></span>
+      <div class="seg lang" role="group" aria-label="Language / භාෂාව / மொழி" id="langSeg">
+        <button data-lang="si" lang="si" aria-pressed="false">සිංහල</button>
+        <button data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button data-lang="ta" lang="ta" aria-pressed="false">தமிழ்</button>
+      </div>
+      <button class="btn" id="resetBtn" data-i18n="reset"></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="modebar">
+        <span class="mchip" id="mchip" hidden></span>
+        <span style="flex:1"></span>
+        <button class="btn" id="gogBtn" aria-pressed="false"></button>
+      </div>
+      <div class="prompt"><span class="dot"></span><p id="prompt" aria-live="polite"></p></div>
+      <div class="viewport" id="viewport">
+        <canvas id="cv" role="img" tabindex="0"></canvas>
+        <div class="chips" id="chips"></div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+      <div class="dock"><div class="panelbox" id="panel" aria-live="polite"></div></div>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="guide" data-i18n="tabGuide"></button>
+        <button role="tab" aria-selected="false" data-tab="obs" data-i18n="tabObs"></button>
+        <button role="tab" aria-selected="false" data-tab="colours" data-i18n="tabColours"></button>
+        <button role="tab" aria-selected="false" data-tab="quiz" data-i18n="tabQuiz" id="quizTab"></button>
+      </div>
+      <div class="pane" id="pane-guide">
+        <div class="headrow">
+          <div><h3 data-i18n="aimH"></h3><p class="small" data-i18n="aim"></p></div>
+          <div class="ring" aria-hidden="true"><svg width="46" height="46"><circle cx="23" cy="23" r="18" fill="none" stroke="var(--line)" stroke-width="4"/><circle id="ringArc" cx="23" cy="23" r="18" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><span id="ringTxt">0/5</span></div>
+        </div>
+        <div><h3 data-i18n="appH"></h3><div class="chiplist" id="appList"></div></div>
+        <div><h3 data-i18n="procH"></h3><ul class="steps" id="steps"></ul></div>
+        <div class="box safety"><h3 data-i18n="safeH"></h3><ul id="safeList"></ul></div>
+      </div>
+      <div class="pane" id="pane-obs" hidden>
+        <div><h3 data-i18n="logH"></h3><div class="log" id="log"></div></div>
+        <div><h3 data-i18n="resH"></h3><div class="tablewrap"><table><tbody id="tbR"></tbody></table></div></div>
+        <div><h3 data-i18n="vpH"></h3><div class="tablewrap" id="vpObs"></div></div>
+      </div>
+      <div class="pane" id="pane-colours" hidden>
+        <div><h2 data-i18n="coloursH"></h2><p class="small muted" style="margin-top:4px" data-i18n="coloursIntro"></p></div>
+        <div id="cards" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div class="box" style="display:flex;flex-direction:column;gap:8px">
+          <h3 data-i18n="replayH" style="margin:0"></h3>
+          <canvas id="mini" class="replaycv" width="600" height="400" aria-hidden="true"></canvas>
+          <input type="range" id="replay" min="0" max="1000" value="1000" data-i18n-aria="replayH">
+          <div class="row"><button class="btn" id="playBtn"></button><span class="small" id="rname"></span></div>
+        </div>
+      </div>
+      <div class="pane" id="pane-quiz" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <h2 data-i18n="quizH"></h2><span class="score" id="score"></span>
+        </div>
+        <div id="quiz" style="display:flex;flex-direction:column;gap:12px"></div>
+        <button class="btn" id="retryBtn" data-i18n="tryAgain" style="align-self:flex-start"></button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const SIM_ID = "al-exp-06";
+
+// =====================================================================
+// LANGUAGES
+// =====================================================================
+const I18N = {
+en: {
+  eyebrow: "A/L Chemistry · Unit 04 · Gaseous state · Experiment 6", title: "Relative atomic mass of magnesium from H₂ volume", student: "Student: {name}{cls}", reset: "Reset bench",
+  gog: "Put on goggles", gogOn: "Goggles on", record: "Record", check: "Check", mchip: "Mg {m} g",
+  p_clean: "Rub the magnesium ribbon with sandpaper until it is shiny grey all over.", clean: "Rub with sandpaper",
+  p_weigh: "Weigh the clean ribbon on the analytical balance and record its mass.", weigh: "Put ribbon on balance", fM: "Mass of Mg / g",
+  tCleanFirst: "Clean the ribbon first. The dull layer is magnesium oxide: it reacts with acid but gives no H₂, so the mass would be too large for the hydrogen made.",
+  mBad: "Not quite. Type the reading exactly as the display shows it, to 0.0001 g.", mType: "Type the mass in grams, for example 0.0352.",
+  p_cage: "Wrap the weighed ribbon in a small copper wire cage, so it stays in place and cannot float up.", cage: "Wrap in copper cage",
+  p_acid: "Pour about 10 cm³ of dilute HCl into the eudiometer.", acid: "Pour in dilute HCl",
+  p_water: "Carefully layer water on top of the acid, right to the brim, without mixing.", water: "Layer water on top",
+  p_insert: "Push the copper cage with the Mg into the water layer near the mouth.", insert: "Insert Mg in cage",
+  p_invert: "Close the mouth with your thumb, invert the eudiometer and stand it in the jar of water. Clamp it.", invert: "Invert into jar",
+  tGog: "Put on safety goggles first. Hydrochloric acid is corrosive.", tWaterFirst: "Layer water on the acid first. Otherwise the Mg touches the acid straight away and hydrogen escapes before you can invert the tube.",
+  tInsertFirst: "Insert the caged magnesium before inverting.", tAcidFirst: "Pour the acid in first. Acid is denser than water, so it must go in first and sit underneath.",
+  p_react: "Watch: the denser acid sinks down through the water. Wait until all the magnesium has reacted.", reacting: "Reacting… {p}% of Mg used",
+  tWait: "Wait until all the magnesium has reacted. Every bit of Mg must produce its hydrogen, or the volume will be too small.",
+  p_level: "Raise or lower the eudiometer until the liquid level inside equals the water level outside. Then read the volume of gas.", levelL: "Eudiometer height", lower: "Lower", raise: "Raise",
+  lvEq: "Levels equal", lvIn: "Inside level {d} mm {w} the outside level", above: "above", below: "below", fV: "Volume of H₂, V / cm³",
+  vNotEq: "Equalise the levels first. Only then is the gas pressure equal to atmospheric pressure. {why}", whyHigh: "Now the inside level is higher, so the gas is below atmospheric pressure and its volume reads too large.", whyLow: "Now the inside level is lower, so the gas is squeezed and its volume reads too small.",
+  vBad: "Not quite. Read the bottom of the meniscus to 0.1 cm³. The numbers increase downwards because the tube is upside down.",
+  p_record: "Record the temperature from the thermometer and the atmospheric pressure from the barometer.", fT: "Temperature / °C", fP: "Atmospheric pressure / mmHg", tpBad: "Read the thermometer and the barometer again. Both are shown on the bench.",
+  p_calc: "Work through the calculation one step at a time, using your own readings. R = 8.314 J K⁻¹ mol⁻¹.",
+  c1: "Water vapour pressure at {T} °C, P(H₂O) (mmHg) from the table", c2: "P(H₂) = P(atm) − P(H₂O) (mmHg)", c3: "P(H₂) in Pa = P(H₂) × 101325 ÷ 760", c4: "n(H₂) = PV ÷ RT (mol), with V in m³ and T in K", c5: "n(Mg) (mol)", c6: "Ar(Mg) = mass ÷ n(Mg)",
+  h1: "Find {T} °C in the vapour pressure table.", h2: "{a} − {b}.", h3: "{a} × 101325 ÷ 760.", h4: "n = {p} × ({v} × 10⁻⁶) ÷ (8.314 × {K}). Change cm³ to m³ by × 10⁻⁶ and °C to K by + 273.", h5: "Mg + 2HCl → MgCl₂ + H₂: 1 mol Mg gives 1 mol H₂.", h6: "{m} ÷ {n}.",
+  vpH: "Vapour pressure of water", thT: "T / °C", thP: "P(H₂O) / mmHg",
+  resultT: "Your relative atomic mass of Mg is {v}. The accepted value is 24.3. Percentage error: {e} %.",
+  errH: "Why your value is not exactly 24.3", errs: ["A little H₂ escapes or dissolves, so n(H₂) is low and Ar comes out high.", "Any oxide left on the ribbon adds mass without giving H₂, so Ar comes out high.", "The gas may not be exactly at room temperature, and the levels may not be exactly equal.", "The mass is very small (about 0.035 g), so a weighing error of 0.0001 g is about 0.3 %."],
+  splint: "Test the gas with a lighted splint", tPop: "A squeaky pop: the gas is hydrogen.",
+  pDone: "All steps done. Now try the Questions tab.",
+  chipFizz: "Mg fizzing", chipAcid: "Acid sinking",
+  cvDull: "dull grey (oxide layer)", cvShiny: "shiny grey Mg ribbon", cvCage: "copper wire cage", cvAcid: "dilute HCl (colourless)", cvWater: "water (colourless)", cvH2: "colourless gas (H₂)", cvSink: "acid sinking", cvFizz: "Mg fizzing", cvOut: "outside level", cvIn: "inside level", cvZoom: "eudiometer scale · ×10", cvBalance: "analytical balance", cvBar: "barometer", cvTherm: "thermometer", cvJar: "jar of water", cvSand: "sandpaper", cvGone: "ribbon gone",
+  lClean: "The dull grey ribbon was rubbed with sandpaper until it was shiny grey.", lM: "Mass of magnesium = {m} g.", lCage: "Ribbon wrapped in a copper wire cage.",
+  lSetup: "About 10 cm³ of dilute HCl was poured into the eudiometer, water layered on top, the caged Mg inserted and the tube inverted in a jar of water.",
+  lAcid: "The denser acid sinks down through the water towards the magnesium.", lFizz: "When the acid reaches the magnesium, it fizzes: colourless gas bubbles rise and collect at the top.",
+  lDone: "The ribbon disappears completely. The solution stays colourless; colourless gas (H₂) has collected.",
+  lV: "Levels equalised. Volume of H₂ collected, V = {v} cm³.", lTP: "Temperature = {T} °C, atmospheric pressure = {P} mmHg.", lCalc: "Ar(Mg) = {v} (error {e} %).", lPop: "A lighted splint gives a squeaky pop: the gas is hydrogen.",
+  tabGuide: "Guide", tabObs: "Observations", tabColours: "Colours", tabQuiz: "Questions",
+  aimH: "Aim", aim: "React a known mass of Mg with excess dilute HCl, measure the volume of H₂ and calculate the relative atomic mass of Mg.",
+  appH: "Apparatus and chemicals", app: ["Eudiometer (gas measuring tube)", "Mg ribbon (about 0.03–0.04 g)", "Sandpaper", "Copper wire cage", "Dilute HCl", "Jar or beaker of water", "Analytical balance", "Thermometer", "Barometer"],
+  procH: "Procedure", steps: ["Clean and weigh the Mg ribbon; wrap it in a copper wire cage", "Pour HCl into the eudiometer, layer water on top, insert the Mg and invert into a beaker of water", "Collect H₂ until the Mg has reacted completely", "Adjust levels and read the volume; record T and P", "P(H₂) = P(atm) − P(H₂O); find n(H₂) with PV = nRT; n(Mg) = n(H₂); Ar = mass ÷ n"],
+  safeH: "Safety", safe: ["Wear safety goggles. Dilute hydrochloric acid is corrosive.", "Hydrogen is flammable: keep flames away, except for the small splint test.", "Wash any acid off your skin with plenty of water.", "Rinse your thumb after closing the eudiometer mouth."],
+  logH: "Observation log", resH: "Results", none: "Nothing recorded yet.",
+  rM: "Mass of Mg", rV: "Volume of H₂, V", rT: "Temperature", rP: "Atmospheric pressure", rPw: "P(H₂O)", rPH: "P(H₂)", rPa: "P(H₂) in Pa", rN: "n(H₂) = n(Mg)", rAr: "Ar(Mg)", rE: "Percentage error",
+  coloursH: "Colour and visible changes", coloursIntro: "Each card shows the state before and after, with its textbook name. Do the step on the bench to record it, then replay it slowly below.",
+  k1b: "dull grey ribbon (oxide layer)", k1r: "rub with sandpaper", k1a: "shiny grey Mg ribbon",
+  k2b: "shiny grey Mg ribbon", k2r: "dilute HCl", k2a: "ribbon disappears; colourless gas bubbles (H₂); solution stays colourless", k2v: "Seen on the way: ribbon fizzes and gets smaller",
+  before: "Before", after: "After", seen: "Recorded", notYet: "Not done yet",
+  replayH: "Replay: the ribbon reacting", play: "Play slowly", pause: "Pause", rNone: "Let the Mg react to record it.", rAt: "Mg used: {p}% · gas: {v} cm³",
+  quizH: "Knowledge check", tryAgain: "Try again", best: "best {p}%", scoreLeft: "{n} left", correct: "Correct. ", notQuite: "Not quite. ", tDone: "Practical complete! Now answer the questions in the Questions tab.",
+  canvasAria: "Bench with a magnesium ribbon, sandpaper, an analytical balance, and a eudiometer that is filled with acid and water, then inverted in a jar of water to collect hydrogen.",
+  quiz: [
+    { q: "Mg + 2HCl → MgCl₂ + H₂. Moles of Mg = …", o: ["2 × moles of H₂", "moles of H₂", "½ moles of H₂", "moles of HCl"], e: "1 : 1 ratio." },
+    { q: "Why is the Mg ribbon cleaned with sand paper?", o: ["To remove the oxide layer", "To make it lighter", "To make it shiny", "To weigh it"], e: "MgO reacts without giving H₂." },
+    { q: "If some H₂ escapes, the calculated Ar(Mg) will be…", o: ["too high", "too low", "correct", "zero"], e: "Fewer moles → larger mass/n." },
+    { q: "The gas collected is identified by…", o: ["relighting a splint", "a squeaky pop with a lighted splint", "turning lime water milky", "bleaching litmus"], e: "Hydrogen test." },
+  ],
+},
+si: {
+  eyebrow: "උ.පෙ. රසායන විද්‍යාව · ඒකකය 04 · වායු අවස්ථාව · පරීක්ෂණය 6", title: "H₂ පරිමාවෙන් මැග්නීසියම්හි සාපේක්ෂ පරමාණුක ස්කන්ධය", student: "ශිෂ්‍යයා: {name}{cls}", reset: "නැවත අරඹන්න",
+  gog: "ආරක්ෂිත කණ්ණාඩි පළඳින්න", gogOn: "කණ්ණාඩි පැළඳ ඇත", record: "සටහන් කරන්න", check: "පරීක්ෂා කරන්න", mchip: "Mg {m} g",
+  p_clean: "මැග්නීසියම් පටිය සෑම තැනම දිලිසෙන අළු පැහැ වන තුරු වැලි කඩදාසියෙන් අතුල්ලන්න.", clean: "වැලි කඩදාසියෙන් අතුල්ලන්න",
+  p_weigh: "පිරිසිදු පටිය විශ්ලේෂණ තුලාවේ කිරා එහි ස්කන්ධය සටහන් කරන්න.", weigh: "පටිය තුලාව මත තබන්න", fM: "Mg ස්කන්ධය / g",
+  tCleanFirst: "පළමුව පටිය පිරිසිදු කරන්න. අඳුරු ස්තරය මැග්නීසියම් ඔක්සයිඩ්ය: එය අම්ලය සමඟ ප්‍රතික්‍රියා කළත් H₂ නොදෙන නිසා සෑදෙන හයිඩ්‍රජන්ට සාපේක්ෂව ස්කන්ධය වැඩි වේ.",
+  mBad: "තවම නිවැරදි නැත. සංදර්ශකයේ පෙන්වන ආකාරයටම 0.0001 g දක්වා පාඨාංකය ටයිප් කරන්න.", mType: "ස්කන්ධය ග්‍රෑම්වලින් ටයිප් කරන්න, උදා. 0.0352.",
+  p_cage: "කිරූ පටිය කුඩා තඹ කම්බි කූඩුවක ඔතන්න, එවිට එය එක තැන රැඳී පාවී නොයයි.", cage: "තඹ කූඩුවේ ඔතන්න",
+  p_acid: "තනුක HCl 10 cm³ පමණ යුඩියෝමීටරයට වත් කරන්න.", acid: "තනුක HCl වත් කරන්න",
+  p_water: "අම්ලය මත, මිශ්‍ර නොවන සේ, කට දක්වාම ප්‍රවේශමෙන් ජලය ස්තරයක් ලෙස එක් කරන්න.", water: "මතුපිටින් ජලය ස්තරයක් ලෙස එක් කරන්න",
+  p_insert: "Mg සහිත තඹ කූඩුව කට අසල ජල ස්තරයට තල්ලු කරන්න.", insert: "කූඩුවේ ඇති Mg ඇතුළු කරන්න",
+  p_invert: "ඇඟිල්ලෙන් කට වසා, යුඩියෝමීටරය යටිකුරු කර ජල භාජනයේ තබන්න. කලම්පයෙන් සවි කරන්න.", invert: "භාජනයේ යටිකුරු කරන්න",
+  tGog: "පළමුව ආරක්ෂිත කණ්ණාඩි පළඳින්න. හයිඩ්‍රොක්ලෝරික් අම්ලය විඛාදකයි.", tWaterFirst: "පළමුව අම්ලය මත ජලය ස්තරයක් ලෙස එක් කරන්න. නැතහොත් Mg වහාම අම්ලය ස්පර්ශ කර, නළය යටිකුරු කිරීමට පෙර හයිඩ්‍රජන් පිටවී යයි.",
+  tInsertFirst: "යටිකුරු කිරීමට පෙර කූඩුවේ ඇති මැග්නීසියම් ඇතුළු කරන්න.", tAcidFirst: "පළමුව අම්ලය වත් කරන්න. අම්ලය ජලයට වඩා ඝනත්වයෙන් වැඩි නිසා එය පළමුව දමා පහළින් තිබිය යුතුය.",
+  p_react: "බලන්න: ඝනත්වය වැඩි අම්ලය ජලය හරහා පහළට ගිලෙයි. සියලු මැග්නීසියම් ප්‍රතික්‍රියා කරන තුරු රැඳී සිටින්න.", reacting: "ප්‍රතික්‍රියා වෙමින්… Mg වලින් {p}% ක් භාවිත විය",
+  tWait: "සියලු මැග්නීසියම් ප්‍රතික්‍රියා කරන තුරු රැඳී සිටින්න. සෑම Mg කොටසකින්ම හයිඩ්‍රජන් නිපදවිය යුතුය, නැතහොත් පරිමාව අඩු වේ.",
+  p_level: "ඇතුළත ද්‍රව මට්ටම පිටත ජල මට්ටමට සමාන වන තුරු යුඩියෝමීටරය ඉහළ හෝ පහළ කරන්න. ඉන්පසු වායු පරිමාව කියවන්න.", levelL: "යුඩියෝමීටරයේ උස", lower: "පහත් කරන්න", raise: "ඉහළ නංවන්න",
+  lvEq: "මට්ටම් සමානයි", lvIn: "ඇතුළත මට්ටම පිටත මට්ටමට වඩා {d} mm {w}", above: "ඉහළින්", below: "පහළින්", fV: "H₂ පරිමාව, V / cm³",
+  vNotEq: "පළමුව මට්ටම් සමාන කරන්න. එවිට පමණක් වායු පීඩනය වායුගෝලීය පීඩනයට සමාන වේ. {why}", whyHigh: "දැන් ඇතුළත මට්ටම ඉහළින් ඇති නිසා වායුව වායුගෝලීය පීඩනයට වඩා අඩු පීඩනයක පවතින අතර පරිමාව වැඩියෙන් කියවේ.", whyLow: "දැන් ඇතුළත මට්ටම පහළින් ඇති නිසා වායුව සම්පීඩනය වී පරිමාව අඩුවෙන් කියවේ.",
+  vBad: "තවම නිවැරදි නැත. මෙනිස්කසයේ පහළ කෙළවර 0.1 cm³ දක්වා කියවන්න. නළය යටිකුරු නිසා අංක පහළට වැඩි වේ.",
+  p_record: "උෂ්ණත්වමානයෙන් උෂ්ණත්වය සහ වායුපීඩනමානයෙන් වායුගෝලීය පීඩනය සටහන් කරන්න.", fT: "උෂ්ණත්වය / °C", fP: "වායුගෝලීය පීඩනය / mmHg", tpBad: "උෂ්ණත්වමානය සහ වායුපීඩනමානය නැවත කියවන්න. දෙකම මේසය මත පෙන්වා ඇත.",
+  p_calc: "ඔබේම පාඨාංක භාවිතයෙන් ගණනය පියවරෙන් පියවර කරන්න. R = 8.314 J K⁻¹ mol⁻¹.",
+  c1: "{T} °C හිදී ජල වාෂ්ප පීඩනය, P(H₂O) (mmHg) වගුවෙන්", c2: "P(H₂) = P(වායුගෝලීය) − P(H₂O) (mmHg)", c3: "P(H₂) Pa වලින් = P(H₂) × 101325 ÷ 760", c4: "n(H₂) = PV ÷ RT (mol), V m³ වලින් සහ T K වලින්", c5: "n(Mg) (mol)", c6: "Ar(Mg) = ස්කන්ධය ÷ n(Mg)",
+  h1: "වාෂ්ප පීඩන වගුවේ {T} °C සොයන්න.", h2: "{a} − {b}.", h3: "{a} × 101325 ÷ 760.", h4: "n = {p} × ({v} × 10⁻⁶) ÷ (8.314 × {K}). cm³ m³ බවට හැරවීමට × 10⁻⁶ ද, °C K බවට හැරවීමට + 273 ද කරන්න.", h5: "Mg + 2HCl → MgCl₂ + H₂: Mg මවුල 1 කින් H₂ මවුල 1 ක් ලැබේ.", h6: "{m} ÷ {n}.",
+  vpH: "ජල වාෂ්ප පීඩනය", thT: "T / °C", thP: "P(H₂O) / mmHg",
+  resultT: "ඔබ ලබා ගත් Mg හි සාපේක්ෂ පරමාණුක ස්කන්ධය {v}. පිළිගත් අගය 24.3. ප්‍රතිශත දෝෂය: {e} %.",
+  errH: "ඔබේ අගය හරියටම 24.3 නොවන්නේ ඇයි", errs: ["H₂ ස්වල්පයක් පිටවී යාම හෝ දිය වීම නිසා n(H₂) අඩු වන අතර Ar වැඩි වේ.", "පටිය මත ඉතිරි වූ ඔක්සයිඩ් H₂ නොදී ස්කන්ධය වැඩි කරන නිසා Ar වැඩි වේ.", "වායුව හරියටම කාමර උෂ්ණත්වයේ නොතිබිය හැකි අතර මට්ටම් හරියටම සමාන නොවිය හැක.", "ස්කන්ධය ඉතා කුඩාය (ආසන්න වශයෙන් 0.035 g), එබැවින් 0.0001 g කිරීමේ දෝෂයක් ආසන්න වශයෙන් 0.3 % කි."],
+  splint: "දැල්වෙන කූරකින් වායුව පරීක්ෂා කරන්න", tPop: "'පොප්' හඬක්: වායුව හයිඩ්‍රජන් ය.",
+  pDone: "සියලු පියවර අවසන්. දැන් ප්‍රශ්න ටැබය උත්සාහ කරන්න.",
+  chipFizz: "Mg බුබුළු දමයි", chipAcid: "අම්ලය ගිලෙයි",
+  cvDull: "අඳුරු අළු (ඔක්සයිඩ් ස්තරය)", cvShiny: "දිලිසෙන අළු Mg පටිය", cvCage: "තඹ කම්බි කූඩුව", cvAcid: "තනුක HCl (අවර්ණ)", cvWater: "ජලය (අවර්ණ)", cvH2: "අවර්ණ වායුව (H₂)", cvSink: "අම්ලය ගිලෙයි", cvFizz: "Mg බුබුළු දමයි", cvOut: "පිටත මට්ටම", cvIn: "ඇතුළත මට්ටම", cvZoom: "යුඩියෝමීටර පරිමාණය · ×10", cvBalance: "විශ්ලේෂණ තුලාව", cvBar: "වායුපීඩනමානය", cvTherm: "උෂ්ණත්වමානය", cvJar: "ජල භාජනය", cvSand: "වැලි කඩදාසි", cvGone: "පටිය නැති වී ඇත",
+  lClean: "අඳුරු අළු පටිය දිලිසෙන අළු පැහැ වන තුරු වැලි කඩදාසියෙන් අතුල්ලන ලදී.", lM: "මැග්නීසියම් ස්කන්ධය = {m} g.", lCage: "පටිය තඹ කම්බි කූඩුවක ඔතන ලදී.",
+  lSetup: "තනුක HCl 10 cm³ පමණ යුඩියෝමීටරයට වත් කර, ඒ මත ජලය ස්තරයක් ලෙස එක් කර, කූඩුවේ ඇති Mg ඇතුළු කර, නළය ජල භාජනයක යටිකුරු කරන ලදී.",
+  lAcid: "ඝනත්වය වැඩි අම්ලය ජලය හරහා මැග්නීසියම් දෙසට ගිලෙයි.", lFizz: "අම්ලය මැග්නීසියම් කරා ළඟා වූ විට බුබුළු දමයි: අවර්ණ වායු බුබුළු ඉහළ නැඟී මුදුනේ එක්රැස් වේ.",
+  lDone: "පටිය සම්පූර්ණයෙන්ම අතුරුදහන් වේ. ද්‍රාවණය අවර්ණව පවතී; අවර්ණ වායුව (H₂) එක්රැස් වී ඇත.",
+  lV: "මට්ටම් සමාන කරන ලදී. එක්රැස් වූ H₂ පරිමාව, V = {v} cm³.", lTP: "උෂ්ණත්වය = {T} °C, වායුගෝලීය පීඩනය = {P} mmHg.", lCalc: "Ar(Mg) = {v} (දෝෂය {e} %).", lPop: "දැල්වෙන කූරක් 'පොප්' හඬක් දෙයි: වායුව හයිඩ්‍රජන් ය.",
+  tabGuide: "මාර්ගෝපදේශය", tabObs: "නිරීක්ෂණ", tabColours: "වර්ණ", tabQuiz: "ප්‍රශ්න",
+  aimH: "අරමුණ", aim: "දන්නා ස්කන්ධයක Mg වැඩිපුර තනුක HCl සමඟ ප්‍රතික්‍රියා කරවා, H₂ පරිමාව මැන, Mg හි සාපේක්ෂ පරමාණුක ස්කන්ධය ගණනය කිරීම.",
+  appH: "උපකරණ සහ රසායන ද්‍රව්‍ය", app: ["යුඩියෝමීටරය (වායු මිනුම් නළය)", "Mg පටිය (ආසන්න වශයෙන් 0.03–0.04 g)", "වැලි කඩදාසි", "තඹ කම්බි කූඩුව", "තනුක HCl", "ජල භාජනය හෝ බීකරය", "විශ්ලේෂණ තුලාව", "උෂ්ණත්වමානය", "වායුපීඩනමානය"],
+  procH: "ක්‍රියා පිළිවෙළ", steps: ["Mg පටිය පිරිසිදු කර කිරන්න; එය තඹ කම්බි කූඩුවක ඔතන්න", "යුඩියෝමීටරයට HCl වත් කර, ඒ මත ජලය ස්තරයක් ලෙස එක් කර, Mg ඇතුළු කර, ජල බීකරයක යටිකුරු කරන්න", "Mg සම්පූර්ණයෙන් ප්‍රතික්‍රියා කරන තුරු H₂ එක්රැස් කරන්න", "මට්ටම් සීරුමාරු කර පරිමාව කියවන්න; T සහ P සටහන් කරන්න", "P(H₂) = P(වායුගෝලීය) − P(H₂O); PV = nRT මගින් n(H₂) සොයන්න; n(Mg) = n(H₂); Ar = ස්කන්ධය ÷ n"],
+  safeH: "ආරක්ෂාව", safe: ["ආරක්ෂිත කණ්ණාඩි පළඳින්න. තනුක හයිඩ්‍රොක්ලෝරික් අම්ලය විඛාදකයි.", "හයිඩ්‍රජන් දහනශීලීයි: කුඩා කූරු පරීක්ෂාව හැර, ගිනිදැල් ඈත් කර තබන්න.", "සමේ අම්ලය ගෑවුණොත් ජලය බහුලව යොදා සෝදන්න.", "යුඩියෝමීටරයේ කට වැසූ පසු ඇඟිල්ල සෝදන්න."],
+  logH: "නිරීක්ෂණ සටහන", resH: "ප්‍රතිඵල", none: "තවම කිසිවක් සටහන් කර නැත.",
+  rM: "Mg ස්කන්ධය", rV: "H₂ පරිමාව, V", rT: "උෂ්ණත්වය", rP: "වායුගෝලීය පීඩනය", rPw: "P(H₂O)", rPH: "P(H₂)", rPa: "P(H₂) Pa වලින්", rN: "n(H₂) = n(Mg)", rAr: "Ar(Mg)", rE: "ප්‍රතිශත දෝෂය",
+  coloursH: "වර්ණ සහ දෘශ්‍යමාන වෙනස්කම්", coloursIntro: "සෑම කාඩ්පතකම පෙර සහ පසු තත්ත්වය පෙළපොතේ නාමය සමඟ දැක්වේ. එය සටහන් කිරීමට මේසය මත පියවර කරන්න, ඉන්පසු පහතින් සෙමින් නැවත බලන්න.",
+  k1b: "අඳුරු අළු පටිය (ඔක්සයිඩ් ස්තරය)", k1r: "වැලි කඩදාසියෙන් අතුල්ලන්න", k1a: "දිලිසෙන අළු Mg පටිය",
+  k2b: "දිලිසෙන අළු Mg පටිය", k2r: "තනුක HCl", k2a: "පටිය අතුරුදහන් වේ; අවර්ණ වායු බුබුළු (H₂); ද්‍රාවණය අවර්ණව පවතී", k2v: "අතරමැදදී දකින්නේ: පටිය බුබුළු දමමින් කුඩා වේ",
+  before: "පෙර", after: "පසු", seen: "සටහන් විය", notYet: "තවම කර නැත",
+  replayH: "නැවත බැලීම: පටිය ප්‍රතික්‍රියා කිරීම", play: "සෙමින් ධාවනය", pause: "නවතන්න", rNone: "එය සටහන් කිරීමට Mg ප්‍රතික්‍රියා කිරීමට ඉඩ දෙන්න.", rAt: "භාවිත වූ Mg: {p}% · වායුව: {v} cm³",
+  quizH: "දැනුම පරීක්ෂාව", tryAgain: "නැවත උත්සාහ කරන්න", best: "උපරිම {p}%", scoreLeft: "ඉතිරි {n}", correct: "නිවැරදියි. ", notQuite: "තවම නිවැරදි නැත. ", tDone: "ප්‍රායෝගිකය අවසන්! දැන් ප්‍රශ්න ටැබයේ ප්‍රශ්නවලට පිළිතුරු දෙන්න.",
+  canvasAria: "මැග්නීසියම් පටියක්, වැලි කඩදාසි, විශ්ලේෂණ තුලාවක් සහ අම්ලය හා ජලයෙන් පුරවා හයිඩ්‍රජන් එක්රැස් කිරීමට ජල භාජනයක යටිකුරු කරන යුඩියෝමීටරයක් ඇති මේසය.",
+  quiz: [
+    { q: "Mg + 2HCl → MgCl₂ + H₂. Mg මවුල = …", o: ["H₂ මවුල × 2", "H₂ මවුල", "H₂ මවුල × ½", "HCl මවුල"], e: "1 : 1 අනුපාතය." },
+    { q: "Mg පටිය වැලි කඩදාසියෙන් පිරිසිදු කරන්නේ ඇයි?", o: ["ඔක්සයිඩ් ස්තරය ඉවත් කිරීමට", "එය සැහැල්ලු කිරීමට", "එය දිලිසෙන ලෙස සෑදීමට", "එය කිරීමට"], e: "MgO H₂ නොදී ප්‍රතික්‍රියා කරයි." },
+    { q: "H₂ ස්වල්පයක් පිටවී ගියහොත් ගණනය කළ Ar(Mg)…", o: ["වැඩි වේ", "අඩු වේ", "නිවැරදි වේ", "ශුන්‍ය වේ"], e: "මවුල අඩු වීම → ස්කන්ධය/n වැඩි වේ." },
+    { q: "එක්රැස් කළ වායුව හඳුනා ගන්නේ…", o: ["කූරක් නැවත දැල්වීමෙන්", "දැල්වෙන කූරකින් 'පොප්' හඬක් ඇසීමෙන්", "හුණු දියර කිරි පැහැ කිරීමෙන්", "ලිට්මස් විරංජනය කිරීමෙන්"], e: "හයිඩ්‍රජන් පරීක්ෂාව." },
+  ],
+},
+ta: {
+  eyebrow: "க.பொ.த (உ/த) இரசாயனவியல் · அலகு 04 · வாயு நிலை · பரிசோதனை 6", title: "H₂ கனவளவிலிருந்து மகனீசியத்தின் சார் அணுத்திணிவு", student: "மாணவர்: {name}{cls}", reset: "மீண்டும் தொடங்கு",
+  gog: "பாதுகாப்புக் கண்ணாடி அணி", gogOn: "கண்ணாடி அணிந்துள்ளீர்", record: "பதி", check: "சரிபார்", mchip: "Mg {m} g",
+  p_clean: "மகனீசிய நாடா முழுவதும் பளபளப்பான சாம்பல் நிறமாகும் வரை மணற்றாளால் தேய்க்க.", clean: "மணற்றாளால் தேய்",
+  p_weigh: "சுத்தமான நாடாவைப் பகுப்புத் தராசில் நிறுத்து அதன் திணிவைப் பதிக.", weigh: "நாடாவைத் தராசில் வை", fM: "Mg இன் திணிவு / g",
+  tCleanFirst: "முதலில் நாடாவைச் சுத்தமாக்குக. மங்கிய படை மகனீசியம் ஒட்சைட்டு: அது அமிலத்துடன் தாக்கமுற்றாலும் H₂ ஐத் தராது; எனவே உருவாகும் ஐதரசனுக்குத் திணிவு அதிகமாகும்.",
+  mBad: "சரியில்லை. காட்சியில் உள்ளவாறே 0.0001 g வரை வாசிப்பை உள்ளிடுக.", mType: "திணிவைக் கிராமில் உள்ளிடுக, உ-ம் 0.0352.",
+  p_cage: "நிறுத்த நாடாவைச் சிறிய செப்புக் கம்பிக் கூட்டில் சுற்றுக; அப்போது அது இடம் மாறாது, மேலே மிதக்காது.", cage: "செப்புக் கூட்டில் சுற்று",
+  p_acid: "சுமார் 10 cm³ ஐதான HCl ஐ வாயுமானிக்குள் ஊற்றுக.", acid: "ஐதான HCl ஊற்று",
+  p_water: "அமிலத்தின் மேல், கலக்காமல், விளிம்பு வரை கவனமாக நீரை அடுக்காக இடுக.", water: "மேலே நீரை அடுக்காக இடு",
+  p_insert: "Mg உள்ள செப்புக் கூட்டை வாயருகே நீர் அடுக்குக்குள் தள்ளுக.", insert: "கூட்டிலுள்ள Mg ஐ உட்செலுத்து",
+  p_invert: "பெருவிரலால் வாயை மூடி, வாயுமானியைத் தலைகீழாக்கி நீர்ச் சாடிக்குள் நிறுத்துக. கவ்வியால் பொருத்துக.", invert: "சாடிக்குள் தலைகீழாக்கு",
+  tGog: "முதலில் பாதுகாப்புக் கண்ணாடி அணிக. ஐதரோகுளோரிக் அமிலம் அரிக்கும் தன்மையுடையது.", tWaterFirst: "முதலில் அமிலத்தின் மேல் நீரை அடுக்காக இடுக. இல்லையெனில் Mg உடனே அமிலத்தைத் தொட்டு, குழாயைத் தலைகீழாக்கும் முன் ஐதரசன் வெளியேறும்.",
+  tInsertFirst: "தலைகீழாக்கும் முன் கூட்டிலுள்ள மகனீசியத்தை உட்செலுத்துக.", tAcidFirst: "முதலில் அமிலத்தை ஊற்றுக. அமிலம் நீரை விட அடர்த்தி கூடியது; எனவே அது முதலில் சென்று கீழே இருக்க வேண்டும்.",
+  p_react: "பாருங்கள்: அடர்த்தி கூடிய அமிலம் நீர் வழியே கீழே அமிழ்கிறது. எல்லா மகனீசியமும் தாக்கமுறும் வரை காத்திருக்க.", reacting: "தாக்கமுறுகிறது… Mg இல் {p}% பயன்பட்டது",
+  tWait: "எல்லா மகனீசியமும் தாக்கமுறும் வரை காத்திருக்க. ஒவ்வொரு Mg துண்டும் தன் ஐதரசனைத் தர வேண்டும்; இல்லையெனில் கனவளவு குறையும்.",
+  p_level: "உள்ளேயுள்ள திரவ மட்டம் வெளி நீர் மட்டத்துக்குச் சமமாகும் வரை வாயுமானியை உயர்த்துக அல்லது தாழ்த்துக. பின் வாயுவின் கனவளவை வாசிக்க.", levelL: "வாயுமானியின் உயரம்", lower: "தாழ்த்து", raise: "உயர்த்து",
+  lvEq: "மட்டங்கள் சமம்", lvIn: "உள் மட்டம் வெளி மட்டத்தை விட {d} mm {w}", above: "மேலே", below: "கீழே", fV: "H₂ இன் கனவளவு, V / cm³",
+  vNotEq: "முதலில் மட்டங்களைச் சமமாக்குக. அப்போது மட்டுமே வாயு அமுக்கம் வளிமண்டல அமுக்கத்துக்குச் சமமாகும். {why}", whyHigh: "இப்போது உள் மட்டம் உயரமாக உள்ளதால் வாயு வளிமண்டல அமுக்கத்தை விடக் குறைந்த அமுக்கத்தில் உள்ளது; கனவளவு அதிகமாக வாசிக்கப்படும்.", whyLow: "இப்போது உள் மட்டம் தாழ்வாக உள்ளதால் வாயு நெருக்கப்பட்டுக் கனவளவு குறைவாக வாசிக்கப்படும்.",
+  vBad: "சரியில்லை. பிறையின் அடிப்பகுதியை 0.1 cm³ வரை வாசிக்க. குழாய் தலைகீழாக இருப்பதால் எண்கள் கீழ்நோக்கி அதிகரிக்கின்றன.",
+  p_record: "வெப்பமானியிலிருந்து வெப்பநிலையையும் பாரமானியிலிருந்து வளிமண்டல அமுக்கத்தையும் பதிக.", fT: "வெப்பநிலை / °C", fP: "வளிமண்டல அமுக்கம் / mmHg", tpBad: "வெப்பமானியையும் பாரமானியையும் மீண்டும் வாசிக்க. இரண்டும் மேசையில் காட்டப்பட்டுள்ளன.",
+  p_calc: "உங்கள் சொந்த வாசிப்புகளைப் பயன்படுத்திக் கணிப்பைப் படிப்படியாகச் செய்க. R = 8.314 J K⁻¹ mol⁻¹.",
+  c1: "{T} °C இல் நீராவி அமுக்கம், P(H₂O) (mmHg) அட்டவணையிலிருந்து", c2: "P(H₂) = P(வளிமண்டலம்) − P(H₂O) (mmHg)", c3: "P(H₂) Pa இல் = P(H₂) × 101325 ÷ 760", c4: "n(H₂) = PV ÷ RT (mol), V ஐ m³ இலும் T ஐ K இலும் எடுக்க", c5: "n(Mg) (mol)", c6: "Ar(Mg) = திணிவு ÷ n(Mg)",
+  h1: "நீராவி அமுக்க அட்டவணையில் {T} °C ஐக் காண்க.", h2: "{a} − {b}.", h3: "{a} × 101325 ÷ 760.", h4: "n = {p} × ({v} × 10⁻⁶) ÷ (8.314 × {K}). cm³ ஐ m³ ஆக்க × 10⁻⁶, °C ஐ K ஆக்க + 273.", h5: "Mg + 2HCl → MgCl₂ + H₂: 1 mol Mg 1 mol H₂ ஐத் தரும்.", h6: "{m} ÷ {n}.",
+  vpH: "நீரின் ஆவியமுக்கம்", thT: "T / °C", thP: "P(H₂O) / mmHg",
+  resultT: "நீங்கள் பெற்ற Mg இன் சார் அணுத்திணிவு {v}. ஏற்றுக்கொள்ளப்பட்ட பெறுமானம் 24.3. சதவீத வழு: {e} %.",
+  errH: "உங்கள் பெறுமானம் சரியாக 24.3 அல்லாததற்குக் காரணம்", errs: ["சிறிதளவு H₂ வெளியேறுவதால் அல்லது கரைவதால் n(H₂) குறைந்து Ar அதிகமாகிறது.", "நாடாவில் எஞ்சிய ஒட்சைட்டு H₂ ஐத் தராமல் திணிவைக் கூட்டுவதால் Ar அதிகமாகிறது.", "வாயு சரியாக அறை வெப்பநிலையில் இல்லாதிருக்கலாம்; மட்டங்களும் சரியாகச் சமமாக இல்லாதிருக்கலாம்.", "திணிவு மிகச் சிறியது (சுமார் 0.035 g); எனவே 0.0001 g நிறுவை வழு சுமார் 0.3 %."],
+  splint: "எரியும் குச்சியால் வாயுவைச் சோதி", tPop: "'பொப்' ஒலி: வாயு ஐதரசன்.",
+  pDone: "எல்லாப் படிகளும் முடிந்தன. இப்போது வினாக்கள் தாவலை முயல்க.",
+  chipFizz: "Mg நுரைக்கிறது", chipAcid: "அமிலம் அமிழ்கிறது",
+  cvDull: "மங்கிய சாம்பல் (ஒட்சைட்டுப் படை)", cvShiny: "பளபளப்பான சாம்பல் Mg நாடா", cvCage: "செப்புக் கம்பிக் கூடு", cvAcid: "ஐதான HCl (நிறமற்றது)", cvWater: "நீர் (நிறமற்றது)", cvH2: "நிறமற்ற வாயு (H₂)", cvSink: "அமிலம் அமிழ்கிறது", cvFizz: "Mg நுரைக்கிறது", cvOut: "வெளி மட்டம்", cvIn: "உள் மட்டம்", cvZoom: "வாயுமானி அளவுகோல் · ×10", cvBalance: "பகுப்புத் தராசு", cvBar: "பாரமானி", cvTherm: "வெப்பமானி", cvJar: "நீர்ச் சாடி", cvSand: "மணற்றாள்", cvGone: "நாடா மறைந்தது",
+  lClean: "மங்கிய சாம்பல் நாடா பளபளப்பான சாம்பல் நிறமாகும் வரை மணற்றாளால் தேய்க்கப்பட்டது.", lM: "மகனீசியத்தின் திணிவு = {m} g.", lCage: "நாடா செப்புக் கம்பிக் கூட்டில் சுற்றப்பட்டது.",
+  lSetup: "சுமார் 10 cm³ ஐதான HCl வாயுமானிக்குள் ஊற்றப்பட்டு, மேலே நீர் அடுக்காக இடப்பட்டு, கூட்டிலுள்ள Mg உட்செலுத்தப்பட்டு, குழாய் நீர்ச் சாடியில் தலைகீழாக்கப்பட்டது.",
+  lAcid: "அடர்த்தி கூடிய அமிலம் நீர் வழியே மகனீசியத்தை நோக்கி அமிழ்கிறது.", lFizz: "அமிலம் மகனீசியத்தை அடைந்ததும் அது நுரைக்கிறது: நிறமற்ற வாயுக் குமிழிகள் மேலெழுந்து மேலே சேகரிக்கப்படுகின்றன.",
+  lDone: "நாடா முழுமையாக மறைகிறது. கரைசல் நிறமற்றதாகவே உள்ளது; நிறமற்ற வாயு (H₂) சேகரிக்கப்பட்டுள்ளது.",
+  lV: "மட்டங்கள் சமமாக்கப்பட்டன. சேகரித்த H₂ இன் கனவளவு, V = {v} cm³.", lTP: "வெப்பநிலை = {T} °C, வளிமண்டல அமுக்கம் = {P} mmHg.", lCalc: "Ar(Mg) = {v} (வழு {e} %).", lPop: "எரியும் குச்சி 'பொப்' ஒலியைத் தருகிறது: வாயு ஐதரசன்.",
+  tabGuide: "வழிகாட்டி", tabObs: "அவதானிப்புகள்", tabColours: "நிறங்கள்", tabQuiz: "வினாக்கள்",
+  aimH: "நோக்கம்", aim: "அறிந்த திணிவுள்ள Mg ஐ மிகை ஐதான HCl உடன் தாக்கமுறச் செய்து, H₂ இன் கனவளவை அளந்து, Mg இன் சார் அணுத்திணிவைக் கணித்தல்.",
+  appH: "உபகரணங்களும் இரசாயனங்களும்", app: ["வாயுமானி (வாயு அளக்கும் குழாய்)", "Mg நாடா (சுமார் 0.03–0.04 g)", "மணற்றாள்", "செப்புக் கம்பிக் கூடு", "ஐதான HCl", "நீர்ச் சாடி அல்லது முகவை", "பகுப்புத் தராசு", "வெப்பமானி", "பாரமானி"],
+  procH: "செய்முறை", steps: ["Mg நாடாவைச் சுத்தமாக்கி நிறுக்க; அதைச் செப்புக் கம்பிக் கூட்டில் சுற்றுக", "வாயுமானிக்குள் HCl ஊற்றி, மேலே நீரை அடுக்காக இட்டு, Mg ஐ உட்செலுத்தி, நீர் முகவைக்குள் தலைகீழாக்குக", "Mg முழுமையாகத் தாக்கமுறும் வரை H₂ ஐச் சேகரிக்க", "மட்டங்களைச் சீராக்கிக் கனவளவை வாசிக்க; T, P ஐப் பதிக", "P(H₂) = P(வளிமண்டலம்) − P(H₂O); PV = nRT மூலம் n(H₂) ஐக் காண்க; n(Mg) = n(H₂); Ar = திணிவு ÷ n"],
+  safeH: "பாதுகாப்பு", safe: ["பாதுகாப்புக் கண்ணாடி அணிக. ஐதான ஐதரோகுளோரிக் அமிலம் அரிக்கும்.", "ஐதரசன் எரியக்கூடியது: சிறிய குச்சிச் சோதனையைத் தவிரச் சுவாலைகளை விலக்கி வைக்க.", "தோலில் அமிலம் பட்டால் அதிக நீரால் கழுவுக.", "வாயுமானியின் வாயை மூடிய பின் பெருவிரலைக் கழுவுக."],
+  logH: "அவதானிப்புப் பதிவு", resH: "முடிவுகள்", none: "இதுவரை எதுவும் பதியப்படவில்லை.",
+  rM: "Mg இன் திணிவு", rV: "H₂ இன் கனவளவு, V", rT: "வெப்பநிலை", rP: "வளிமண்டல அமுக்கம்", rPw: "P(H₂O)", rPH: "P(H₂)", rPa: "P(H₂) Pa இல்", rN: "n(H₂) = n(Mg)", rAr: "Ar(Mg)", rE: "சதவீத வழு",
+  coloursH: "நிற மற்றும் காணக்கூடிய மாற்றங்கள்", coloursIntro: "ஒவ்வொரு அட்டையும் முன்னும் பின்னுமான நிலையைப் பாடநூல் பெயருடன் காட்டுகிறது. பதிவு செய்ய மேசையில் அப்படியைச் செய்து, பின் கீழே மெதுவாக மீண்டும் பாருங்கள்.",
+  k1b: "மங்கிய சாம்பல் நாடா (ஒட்சைட்டுப் படை)", k1r: "மணற்றாளால் தேய்", k1a: "பளபளப்பான சாம்பல் Mg நாடா",
+  k2b: "பளபளப்பான சாம்பல் Mg நாடா", k2r: "ஐதான HCl", k2a: "நாடா மறைகிறது; நிறமற்ற வாயுக் குமிழிகள் (H₂); கரைசல் நிறமற்றதாகவே உள்ளது", k2v: "இடையில் காண்பது: நாடா நுரைத்துச் சிறிதாகிறது",
+  before: "முன்", after: "பின்", seen: "பதியப்பட்டது", notYet: "இன்னும் செய்யவில்லை",
+  replayH: "மீண்டும் பார்: நாடா தாக்கமுறுதல்", play: "மெதுவாக இயக்கு", pause: "நிறுத்து", rNone: "பதிவு செய்ய Mg ஐத் தாக்கமுற விடுக.", rAt: "பயன்பட்ட Mg: {p}% · வாயு: {v} cm³",
+  quizH: "அறிவுச் சோதனை", tryAgain: "மீண்டும் முயல்க", best: "அதிகூடியது {p}%", scoreLeft: "{n} மீதம்", correct: "சரி. ", notQuite: "சரியில்லை. ", tDone: "செய்முறை முடிந்தது! இப்போது வினாக்கள் தாவலில் உள்ள வினாக்களுக்கு விடையளிக்க.",
+  canvasAria: "மகனீசிய நாடா, மணற்றாள், பகுப்புத் தராசு, அமிலமும் நீரும் நிரப்பப்பட்டு ஐதரசனைச் சேகரிக்க நீர்ச் சாடியில் தலைகீழாக்கப்படும் வாயுமானி உள்ள மேசை.",
+  quiz: [
+    { q: "Mg + 2HCl → MgCl₂ + H₂. Mg இன் மூல்கள் = …", o: ["2 × H₂ இன் மூல்கள்", "H₂ இன் மூல்கள்", "½ × H₂ இன் மூல்கள்", "HCl இன் மூல்கள்"], e: "1 : 1 விகிதம்." },
+    { q: "Mg நாடா ஏன் மணற்றாளால் சுத்தமாக்கப்படுகிறது?", o: ["ஒட்சைட்டுப் படையை அகற்ற", "அதை இலேசாக்க", "அதைப் பளபளப்பாக்க", "அதை நிறுக்க"], e: "MgO H₂ ஐத் தராமல் தாக்கமுறுகிறது." },
+    { q: "சிறிதளவு H₂ வெளியேறினால் கணித்த Ar(Mg)…", o: ["அதிகமாகும்", "குறைவாகும்", "சரியாக இருக்கும்", "பூச்சியமாகும்"], e: "குறைந்த மூல்கள் → திணிவு/n அதிகம்." },
+    { q: "சேகரித்த வாயு இனங்காணப்படுவது…", o: ["குச்சியை மீண்டும் எரிய வைப்பதால்", "எரியும் குச்சியுடன் 'பொப்' ஒலியால்", "சுண்ணாம்பு நீரைப் பால் நிறமாக்குவதால்", "பாசிச்சாயத்தை வெளிற்றுவதால்"], e: "ஐதரசன் சோதனை." },
+  ],
+},
+};
+const QUIZ_ANS = [1, 0, 0, 1];
+let LANG = "en";
+try { const s = localStorage.getItem("svl-lang") || localStorage.getItem("kmno4-lang"); if (s && I18N[s]) LANG = s; else { const n = (navigator.language || "").slice(0, 2); if (I18N[n]) LANG = n; } } catch (e) {}
+function t(key, p) { let s = I18N[LANG][key]; if (s === undefined) s = I18N.en[key]; if (s === undefined) return key; if (p && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (_, k) => p[k] ?? ""); return s; }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+
+// =====================================================================
+// MODEL
+// =====================================================================
+const VP = { 20: 17.5, 21: 18.7, 22: 19.8, 23: 21.1, 24: 22.4, 25: 23.8, 26: 25.2, 27: 26.7, 28: 28.3, 29: 30.0, 30: 31.8 };
+const RL = 62.364, AR = 24.31;
+const PH = ["clean", "weigh", "cage", "acid", "water", "insert", "invert", "react", "level", "record", "calc", "done"];
+const idx = p => PH.indexOf(p);
+let S;
+function freshState() {
+  return {
+    ph: "clean", gog: false, ev: {}, logs: [], answered: {}, done: false, confetti: [], warned: {},
+    T: ri(26, 30), P: ri(752, 763), mg: ri(300, 400) / 10000 + ri(0, 9) / 100000, ferr: .985 + Math.random() * .03,
+    rec: {}, note: null, oxide: 1, cleanT: -1, onBal: false, caged: false, acidV: 0, waterV: 0, inserted: false, inverted: false, pourT: -1, pour: null,
+    front: 0, f: 0, yTop: 110, bubbles: [], hist: [], histT: 0, calc: { k: 0, vals: {}, note: null }, final: null, popped: false, popT: -1,
+  };
+}
+const Pw = () => VP[S.T];
+const nH2 = () => S.f * (Math.round(S.mg * 10000) / 10000) / AR;
+const Veq = n => n * RL * (S.T + 273) / (S.P - Pw()) * 1000 * S.ferr;
+// eudiometer geometry: 1 cm³ = 5 px, closed end at yTop, 0 mark 10 px below; outside surface SURF
+const SURF = 270, PX = 5, EB = 10, ELEN = 290, EX = 720, EW = 13, CAGE_V = 47;
+function gasState() {
+  if (!S.inverted) return { V: 0, yIn: S.yTop + EB, s: 0 };
+  let V = Veq(nH2()), s = 0;
+  for (let k = 0; k < 3; k++) { const yIn = S.yTop + EB + V * PX; s = (SURF - yIn) * 1; V = nH2() * RL * (S.T + 273) / (S.P - s / 13.6 - Pw()) * 1000 * S.ferr; }
+  return { V, yIn: S.yTop + EB + V * PX, s };
+}
+
+// =====================================================================
+// CANVAS
+// =====================================================================
+const W = 960, H = 540;
+const cv = $("cv"), ctx = cv.getContext("2d"), vp = $("viewport");
+let dpr = 1, cw = 0, ch = 0, sc = 1, ox = 0, oy = 0, T = {};
+function resize() { const r = vp.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2.5); cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); sc = Math.min(cw / W, ch / H); ox = (cw - W * sc) / 2; oy = (ch - H * sc) / 2; }
+function readTokens() { const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim(); T = { wallTop: g("--wall-top"), wallBot: g("--wall-bot"), bench: g("--bench"), benchEdge: g("--bench-edge"), glass: g("--glass"), ink: g("--ink"), muted: g("--muted"), accent: g("--accent") }; }
+new ResizeObserver(resize).observe(vp);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTokens);
+new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const FONT = (w, s) => `${w} ${s}px 'IBM Plex Sans','Noto Sans Sinhala','Noto Sans Tamil',sans-serif`;
+const MONO = (w, s) => `${w} ${s}px 'IBM Plex Mono', monospace`;
+function rr(c, x, y, w, h, r) { c.beginPath(); c.roundRect(x, y, w, h, r); }
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let hatch = null, hatchA = null;
+function makeHatch(c, col, ang) { const h = document.createElement("canvas"); h.width = h.height = 10; const x = h.getContext("2d"); x.strokeStyle = col; x.lineWidth = 1; x.beginPath(); if (ang) { x.moveTo(0, 0); x.lineTo(10, 10); } else { x.moveTo(0, 10); x.lineTo(10, 0); } x.stroke(); return c.createPattern(h, "repeat"); }
+const BENCH = 500;
+function bench() { ctx.fillStyle = T.bench; ctx.fillRect(-ox / sc - 2, BENCH, cw / sc + 4, (ch - oy) / sc - BENCH + 4); ctx.fillStyle = T.benchEdge; ctx.fillRect(-ox / sc - 2, BENCH, cw / sc + 4, 4); }
+const DULL = [128, 132, 128], SHINY = [205, 210, 216];
+const ribbonCol = ox => DULL.map((v, i) => Math.round(SHINY[i] + (v - SHINY[i]) * ox));
+const css = (c, a = 1) => `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+function drawRibbon(c, x, y, len, ox, coiled, rot) {
+  c.save(); c.translate(x, y); if (rot) c.rotate(rot);
+  const col = ribbonCol(ox);
+  if (coiled) { c.strokeStyle = css(col); c.lineWidth = 3; c.beginPath(); for (let k = 0; k <= 60; k++) { const a = k / 60 * Math.PI * 6, r = 7; const px = Math.cos(a) * r, py = -len / 2 + k / 60 * len; k ? c.lineTo(px, py) : c.moveTo(px, py); } c.stroke(); }
+  else { const g = c.createLinearGradient(0, -3, 0, 3); g.addColorStop(0, css(col.map(v => Math.min(255, v + (1 - ox) * 40)))); g.addColorStop(1, css(col.map(v => v * .8))); c.fillStyle = g; c.fillRect(-len / 2, -3, len, 6); }
+  c.restore();
+}
+function drawCage(c, x, y, h) { c.save(); c.translate(x, y); c.strokeStyle = "#b5651d"; c.lineWidth = 1.4; c.beginPath(); for (let k = 0; k <= 80; k++) { const a = k / 80 * Math.PI * 10, px = Math.cos(a) * 10, py = -h / 2 + k / 80 * h; k ? c.lineTo(px, py) : c.moveTo(px, py); } c.stroke(); c.beginPath(); c.moveTo(0, -h / 2); c.lineTo(0, -h / 2 - 18); c.stroke(); c.restore(); }
+function drawBarometer(x, y) { ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(x, y, 34, 0, 7); ctx.fill(); ctx.strokeStyle = "#6d5638"; ctx.lineWidth = 4; ctx.stroke();
+  ctx.strokeStyle = "#1c2a31"; ctx.lineWidth = 1; for (let k = 0; k <= 20; k++) { const a = Math.PI * .8 + k / 20 * Math.PI * 1.4; ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * 26, y + Math.sin(a) * 26); ctx.lineTo(x + Math.cos(a) * (k % 5 ? 29 : 31), y + Math.sin(a) * (k % 5 ? 29 : 31)); ctx.stroke(); }
+  const a = Math.PI * .8 + (S.P - 740) / 40 * Math.PI * 1.4; ctx.strokeStyle = "#c0392b"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * 24, y + Math.sin(a) * 24); ctx.stroke();
+  ctx.fillStyle = "#1c2a31"; ctx.font = MONO(600, 9); ctx.textAlign = "center"; ctx.fillText(S.P + " mmHg", x, y + 17); ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.fillText(t("cvBar"), x, y + 48); }
+function drawThermo(x, y) { ctx.fillStyle = "rgba(240,246,250,.95)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 1.2; rr(ctx, x - 6, y, 12, 240, 6); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#c0392b"; ctx.beginPath(); ctx.arc(x, y + 242, 8, 0, 7); ctx.fill(); const top = y + 232 - S.T * 5; ctx.fillRect(x - 2, top, 4, y + 242 - top);
+  ctx.strokeStyle = "#1c2a31"; for (let k = 0; k <= 40; k += 5) { const yy = y + 232 - k * 5; ctx.beginPath(); ctx.moveTo(x - 6, yy); ctx.lineTo(x - 2, yy); ctx.stroke(); }
+  ctx.fillStyle = T.ink; ctx.font = MONO(600, 10); ctx.textAlign = "left"; ctx.fillText(S.T + " °C", x + 9, top); ctx.font = FONT(600, 10); ctx.textAlign = "center"; ctx.fillText(t("cvTherm"), x, y + 266); }
+function drawScene() {
+  bench(); const p = S.ph;
+  drawBarometer(60, 150); drawThermo(915, 150);
+  // prep table: tile, ribbon, sandpaper, balance
+  ctx.fillStyle = "#ffffff"; rr(ctx, 110, 488, 200, 10, 2); ctx.fill();
+  const onTile = !S.onBal && !S.inserted;
+  if (onTile) { if (S.caged) { drawCage(ctx, 200, 455, 50); drawRibbon(ctx, 200, 455, 46, 0, true); } else drawRibbon(ctx, 210, 482, 130, S.oxide, false);
+    ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "center"; ctx.fillText(S.caged ? t("cvCage") : (S.oxide > .5 ? t("cvDull") : t("cvShiny")), 210, S.caged ? 418 : 470); }
+  // sandpaper
+  const sx = S.cleanT >= 0 ? 160 + Math.sin(S.cleanT * 14) * 50 : 130, sy = S.cleanT >= 0 ? 476 : 470;
+  ctx.fillStyle = "#c9a66b"; ctx.save(); ctx.translate(sx, sy); ctx.rotate(S.cleanT >= 0 ? 0 : -.2); rr(ctx, -22, -9, 44, 18, 2); ctx.fill(); ctx.fillStyle = "rgba(90,60,20,.35)"; for (let k = 0; k < 30; k++) ctx.fillRect(-20 + (k * 7) % 40, -7 + (k * 3) % 14, 1.5, 1.5); ctx.restore();
+  if (S.cleanT < 0 && idx(p) <= idx("weigh")) { ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "center"; ctx.fillText(t("cvSand"), 130, 452); }
+  // analytical balance
+  const bx = 330; ctx.fillStyle = "#e9eef0"; rr(ctx, bx, 420, 180, 80, 8); ctx.fill(); ctx.strokeStyle = "#7d878c"; ctx.stroke();
+  ctx.strokeStyle = "rgba(120,150,165,.6)"; ctx.lineWidth = 1.5; ctx.fillStyle = "rgba(225,240,247,.25)"; rr(ctx, bx + 20, 330, 140, 92, 4); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#b9c3c8"; ctx.beginPath(); ctx.ellipse(bx + 90, 418, 40, 5, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = "#1c2a31"; rr(ctx, bx + 40, 440, 100, 28, 4); ctx.fill(); ctx.fillStyle = "#9fe6b8"; ctx.font = MONO(600, 15); ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  ctx.fillText((S.onBal ? Math.round(S.mg * 10000) / 10000 : 0).toFixed(4) + " g", bx + 134, 455);
+  if (S.onBal) drawRibbon(ctx, bx + 90, 412, 70, S.oxide, false);
+  ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "center"; ctx.textBaseline = "alphabetic"; ctx.fillText(t("cvBalance"), bx + 90, 322);
+  // jar of water
+  const jx0 = 630, jx1 = 810, jtop = 230;
+  ctx.fillStyle = "rgba(225,240,247,.75)"; ctx.fillRect(jx0, SURF, jx1 - jx0, BENCH - SURF); ctx.fillStyle = hatch; ctx.fillRect(jx0, SURF, jx1 - jx0, BENCH - SURF);
+  // eudiometer
+  if (!S.inverted) drawUpright(); else drawInverted();
+  ctx.strokeStyle = T.glass; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(jx0, jtop); ctx.lineTo(jx0, BENCH); ctx.lineTo(jx1, BENCH); ctx.lineTo(jx1, jtop); ctx.stroke();
+  ctx.strokeStyle = "#3a6a80"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(jx0, SURF); ctx.lineTo(S.inverted ? EX - EW : jx1, SURF); if (S.inverted) { ctx.moveTo(EX + EW, SURF); ctx.lineTo(jx1, SURF); } ctx.stroke();
+  ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "left"; ctx.fillText(t("cvJar") + " · " + t("cvWater"), jx0 + 6, BENCH - 10);
+  if (["level", "record"].includes(p)) drawLevelInset(gasState());
+  if (S.popT >= 0) { const q = S.popT; ctx.fillStyle = `rgba(255,200,80,${Math.max(0, 1 - q)})`; ctx.beginPath(); ctx.arc(EX, S.yTop - 10, 10 + q * 40, 0, 7); ctx.fill(); ctx.fillStyle = T.ink; ctx.font = FONT(700, 16); ctx.textAlign = "center"; ctx.fillText("POP!", EX, S.yTop - 40); }
+}
+function drawUpright() { // open end up on the bench at x 560
+  const x = 560, bot = BENCH - 6, top = bot - ELEN, ppx = PX;
+  ctx.fillStyle = "#3b4a52"; rr(ctx, x - 26, BENCH - 8, 52, 8, 2); ctx.fill();
+  const acidH = S.acidV * ppx, waterH = S.waterV * ppx;
+  if (acidH > 0) { ctx.fillStyle = "rgba(214,228,236,.95)"; ctx.fillRect(x - EW, bot - acidH, 2 * EW, acidH); ctx.fillStyle = hatchA; ctx.fillRect(x - EW, bot - acidH, 2 * EW, acidH); }
+  if (waterH > 0) { ctx.fillStyle = "rgba(232,244,250,.9)"; ctx.fillRect(x - EW, bot - acidH - waterH, 2 * EW, waterH); ctx.fillStyle = hatch; ctx.fillRect(x - EW, bot - acidH - waterH, 2 * EW, waterH); }
+  if (S.inserted) { drawCage(ctx, x, top + 40, 40); drawRibbon(ctx, x, top + 40, 36, 0, true); }
+  ctx.strokeStyle = T.glass; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x - EW, top); ctx.lineTo(x - EW, bot - 6); ctx.quadraticCurveTo(x - EW, bot, x - EW + 6, bot); ctx.lineTo(x + EW - 6, bot); ctx.quadraticCurveTo(x + EW, bot, x + EW, bot - 6); ctx.lineTo(x + EW, top); ctx.stroke();
+  ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "left";
+  if (acidH > 0) ctx.fillText(t("cvAcid"), x + EW + 6, bot - acidH / 2); if (waterH > 0) ctx.fillText(t("cvWater"), x + EW + 6, bot - acidH - waterH / 2);
+  if (S.pour) { const yy = S.pour === "acid" ? bot - acidH : bot - acidH - waterH; ctx.strokeStyle = "rgba(170,205,225,.9)"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(x - 30, top - 30); ctx.quadraticCurveTo(x - 2, top - 20, x - 2, yy); ctx.stroke();
+    ctx.fillStyle = "rgba(214,234,242,.6)"; ctx.strokeStyle = T.glass; ctx.save(); ctx.translate(x - 40, top - 40); ctx.rotate(-.9); rr(ctx, -16, -40, 32, 46, 4); ctx.fill(); ctx.stroke(); ctx.restore(); }
+}
+function drawInverted() {
+  const g = gasState(), top = S.yTop, bot = S.yTop + ELEN;
+  ctx.save(); ctx.beginPath(); ctx.moveTo(EX - EW, bot); ctx.lineTo(EX - EW, top + 6); ctx.quadraticCurveTo(EX - EW, top, EX - EW + 6, top); ctx.lineTo(EX + EW - 6, top); ctx.quadraticCurveTo(EX + EW, top, EX + EW, top + 6); ctx.lineTo(EX + EW, bot); ctx.closePath(); ctx.clip();
+  ctx.fillStyle = "#f2f8fb"; ctx.fillRect(EX - EW, top, 2 * EW, ELEN);
+  // liquid: acid layer sinking from the closed end towards the mouth
+  ctx.fillStyle = "rgba(232,244,250,.92)"; ctx.fillRect(EX - EW, g.yIn, 2 * EW, bot - g.yIn); ctx.fillStyle = hatch; ctx.fillRect(EX - EW, g.yIn, 2 * EW, bot - g.yIn);
+  const fy = top + EB + Math.min(1, S.front) * (CAGE_V + 4) * PX, ay = Math.max(g.yIn, top + EB);
+  if (fy > ay) { const gr = ctx.createLinearGradient(0, ay, 0, fy + 30); gr.addColorStop(0, "rgba(200,216,226,.95)"); gr.addColorStop(.8, "rgba(205,220,230,.7)"); gr.addColorStop(1, "rgba(205,220,230,0)"); ctx.fillStyle = gr; ctx.fillRect(EX - EW, ay, 2 * EW, fy + 30 - ay); ctx.fillStyle = hatchA; ctx.fillRect(EX - EW, ay, 2 * EW, fy - ay); }
+  ctx.restore();
+  ctx.strokeStyle = "#3a6a80"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(EX - EW, g.yIn + 2); ctx.quadraticCurveTo(EX, g.yIn + 6, EX + EW, g.yIn + 2); ctx.stroke();
+  // Mg in cage near the mouth
+  const cy = top + EB + CAGE_V * PX; drawCage(ctx, EX, cy, 34); if (S.f < 1) drawRibbon(ctx, EX, cy, 30 * (1 - S.f) + 1, 0, true);
+  // glass + scale
+  ctx.strokeStyle = T.glass; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(EX - EW, bot); ctx.lineTo(EX - EW, top + 6); ctx.quadraticCurveTo(EX - EW, top, EX - EW + 6, top); ctx.lineTo(EX + EW - 6, top); ctx.quadraticCurveTo(EX + EW, top, EX + EW, top + 6); ctx.lineTo(EX + EW, bot); ctx.stroke();
+  ctx.strokeStyle = "#1c2a31"; ctx.fillStyle = "#1c2a31"; ctx.font = MONO(500, 9); ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  for (let v = 0; v <= 50; v++) { const y = top + EB + v * PX; ctx.lineWidth = v % 5 === 0 ? 1.2 : .6; ctx.beginPath(); ctx.moveTo(EX - EW, y); ctx.lineTo(EX - EW + (v % 5 === 0 ? 9 : 5), y); ctx.stroke(); if (v % 10 === 0) ctx.fillText(String(v), EX - EW - 3, y); }
+  // bubbles
+  S.bubbles.forEach(b => { ctx.strokeStyle = "rgba(60,100,120,.7)"; ctx.fillStyle = "rgba(255,255,255,.8)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, 7); ctx.fill(); ctx.stroke(); });
+  // clamp
+  ctx.fillStyle = "#2b353b"; ctx.fillRect(EX + EW, top + 30, 140, 6); ctx.fillStyle = "#4a5359"; ctx.fillRect(870, 20, 9, 480);
+  // labels
+  ctx.fillStyle = T.ink; ctx.font = FONT(600, 10); ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+  if (g.V > 1) ctx.fillText(t("cvH2"), EX + EW + 6, top + EB + Math.min(g.V, 40) * PX / 2);
+  if (S.front > .02 && S.front < 1) ctx.fillText(t("cvSink"), EX + EW + 6, fy);
+  if (S.f > 0 && S.f < 1) ctx.fillText(t("cvFizz"), EX + EW + 6, cy + 4);
+  if (S.f >= 1) ctx.fillText(t("cvGone"), EX + EW + 6, cy + 4);
+  ctx.fillText(t("cvWater"), EX + EW + 6, Math.min(bot - 8, cy + 26));
+}
+function drawLevelInset(g) {
+  const x = 380, y = 14, w = 210, h = 230, k = 10; ctx.save(); ctx.fillStyle = "#ffffff"; rr(ctx, x, y, w, h, 12); ctx.fill(); ctx.strokeStyle = "#cbd5d4"; ctx.stroke(); rr(ctx, x, y, w, h, 12); ctx.clip();
+  const cy = y + h / 2, toY = yy => cy + (yy - g.yIn) * k, cx0 = x + 46, cx1 = x + 136;
+  ctx.fillStyle = "rgba(225,240,247,.9)"; ctx.fillRect(x, toY(SURF), w, h * 3); ctx.fillStyle = hatch; ctx.fillRect(x, toY(SURF), w, h * 3);
+  ctx.fillStyle = "#f2f8fb"; ctx.fillRect(cx0, y, cx1 - cx0, h);
+  ctx.fillStyle = "rgba(225,240,247,.95)"; ctx.fillRect(cx0, cy, cx1 - cx0, h); ctx.fillStyle = hatch; ctx.fillRect(cx0, cy, cx1 - cx0, h);
+  ctx.strokeStyle = "#1c2a31"; ctx.fillStyle = "#1c2a31"; ctx.font = MONO(600, 11); ctx.textAlign = "left"; ctx.textBaseline = "middle";
+  for (let v10 = Math.floor((g.V - 2.5) * 10); v10 <= (g.V + 2.5) * 10; v10++) { const v = v10 / 10; if (v < 0 || v > 50) continue; const yy = toY(S.yTop + EB + v * PX); const big = v10 % 10 === 0, mid = v10 % 5 === 0; ctx.lineWidth = big ? 1.6 : 1; ctx.beginPath(); ctx.moveTo(cx0, yy); ctx.lineTo(cx0 + (big ? 30 : mid ? 20 : 11), yy); ctx.stroke(); if (big) ctx.fillText(String(Math.round(v)), cx0 + 34, yy); }
+  ctx.strokeStyle = "#3a6a80"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(cx0, cy - 6); ctx.quadraticCurveTo((cx0 + cx1) / 2, cy + 8, cx1, cy - 6); ctx.stroke();
+  ctx.strokeStyle = "#7a9aa8"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx0, y); ctx.lineTo(cx0, y + h); ctx.moveTo(cx1, y); ctx.lineTo(cx1, y + h); ctx.stroke();
+  const eq = Math.abs(g.s) < 2.5; ctx.strokeStyle = eq ? "#2c7a4d" : "#c0392b"; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, toY(SURF)); ctx.lineTo(x + w, toY(SURF)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = "#1c2a31"; ctx.font = FONT(600, 10); ctx.textAlign = "right"; ctx.fillText(t("cvOut"), x + w - 4, toY(SURF) - 8); ctx.textAlign = "left"; ctx.fillText(t("cvIn"), cx1 + 4, cy + 12);
+  ctx.restore(); ctx.fillStyle = T.ink; ctx.font = FONT(600, 11); ctx.textAlign = "center"; ctx.fillText(t("cvZoom"), x + w / 2, y + h + 14);
+}
+
+// =====================================================================
+// LOOP
+// =====================================================================
+let time = 0, last = performance.now(), uiT = 0;
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now; time += dt;
+  step(dt);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const gr = ctx.createLinearGradient(0, 0, 0, ch); gr.addColorStop(0, T.wallTop); gr.addColorStop(1, T.wallBot); ctx.fillStyle = gr; ctx.fillRect(0, 0, cw, ch);
+  ctx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, dpr * oy);
+  if (!hatch) { hatch = makeHatch(ctx, "rgba(60,90,110,.3)"); hatchA = makeHatch(ctx, "rgba(60,80,100,.45)", 1); }
+  drawScene();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  S.confetti.forEach(p => { p.vy += 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-3, -1.5, 6, 3); ctx.restore(); });
+  S.confetti = S.confetti.filter(p => p.y < ch + 20);
+  if (playing) { const r = Math.min(1000, +$("replay").value + dt / 4 * 1000); $("replay").value = r; if (r >= 1000) { playing = false; renderReplayCtl(); } }
+  uiT += dt; if (uiT > .12) { uiT = 0; renderLive(); if (!$("pane-colours").hidden) drawMini(); }
+  requestAnimationFrame(frame);
+}
+function step(dt) {
+  if (S.cleanT >= 0) { S.cleanT += dt; S.oxide = Math.max(0, 1 - S.cleanT / 1.4); if (S.cleanT >= 1.4) { S.cleanT = -1; S.oxide = 0; S.ev.clean = 1; log(["lClean"]); setPh("weigh"); } }
+  if (S.pourT >= 0) { S.pourT += dt; const q = Math.min(1, S.pourT / 1.2);
+    if (S.pour === "acid") S.acidV = 10 * q; else S.waterV = (ELEN / PX - 6 - 10) * q;
+    if (q >= 1) { const w = S.pour; S.pourT = -1; S.pour = null; setPh(w === "acid" ? "water" : "insert"); } }
+  if (S.ph === "react") {
+    if (S.front < 1) { S.front = Math.min(1, S.front + dt / 6); if (S.front >= 1 && !S.warned.fizz) { S.warned.fizz = 1; log(["lFizz"]); } }
+    else if (S.f < 1) { S.f = Math.min(1, S.f + dt / 14 * (1 + .6 * Math.sin(S.f * 3))); if (!reduceMotion && Math.random() < 30 * dt) S.bubbles.push({ x: EX + (Math.random() - .5) * 10, y: S.yTop + EB + CAGE_V * PX, r: 1.5 + Math.random() * 2, vy: -90 - Math.random() * 60 });
+      S.histT += dt; if (S.histT > .1) { S.histT = 0; S.hist.push([S.f, gasState().V]); }
+      if (S.f >= 1) { S.ev.react = 1; S.hist.push([1, gasState().V]); log(["lDone"]); toast("lDone", "good", 4200); setPh("level"); } }
+  }
+  const g = gasState(); S.bubbles.forEach(b => { b.y += b.vy * dt; b.x += Math.sin(time * 9 + b.r) * .3; }); S.bubbles = S.bubbles.filter(b => b.y > g.yIn);
+  if (S.popT >= 0) { S.popT += dt; if (S.popT > 1) S.popT = -1; }
+}
+
+// =====================================================================
+// ACTIONS
+// =====================================================================
+function setPh(p) { S.ph = p; render(); }
+function cleanIt() { S.cleanT = 0; renderPanel(); }
+function putOnBal() { if (S.oxide > 0) return toast("tCleanFirst", "warn", 5200); S.onBal = true; renderPanel(); }
+function recordM() {
+  const v = parseFloat(($("mIn") || {}).value), truth = Math.round(S.mg * 10000);
+  if (!isFinite(v)) { S.note = ["bad", "mType"]; return renderPanel(); }
+  if (Math.round(v * 10000) !== truth) { S.note = ["bad", "mBad"]; return renderPanel(); }
+  S.note = null; S.rec.m = truth / 10000; log(["lM", { m: S.rec.m.toFixed(4) }]); S.onBal = false; setPh("cage");
+}
+function cageIt() { S.caged = true; S.ev.prep = 1; log(["lCage"]); setPh("acid"); }
+function pourAcid() { if (!S.gog) return toast("tGog", "warn", 4000); S.pour = "acid"; S.pourT = 0; renderPanel(); }
+function pourWater() { S.pour = "water"; S.pourT = 0; renderPanel(); }
+function insertMg() { if (S.ph === "acid") return toast("tAcidFirst", "warn", 4600); if (S.ph === "water") return toast("tWaterFirst", "warn", 5200); S.inserted = true; setPh("invert"); }
+function invertIt() { if (!S.inserted) return toast(S.ph === "water" ? "tWaterFirst" : "tInsertFirst", "warn", 5200); S.inverted = true; S.yTop = 110; S.ev.setup = 1; log(["lSetup"]); log(["lAcid"]); setPh("react"); }
+function setY(v) { S.yTop = Math.max(-20, Math.min(200, v)); const el = $("lev"); if (el) el.value = Math.round(200 - S.yTop); }
+function recordV() {
+  const g = gasState(), v = parseFloat(($("vIn") || {}).value);
+  if (Math.abs(g.s) >= 2.5) { S.note = ["bad", "vNotEq", { why: t(g.s > 0 ? "whyHigh" : "whyLow") }]; return renderPanel(); }
+  if (!isFinite(v) || Math.abs(v - g.V) > .11) { S.note = ["bad", "vBad"]; return renderPanel(); }
+  S.note = null; S.rec.V = Math.round(v * 10) / 10; log(["lV", { v: S.rec.V.toFixed(1) }]); setPh("record");
+}
+function recordTP() {
+  S.tpv = [($("tIn") || {}).value || "", ($("pIn") || {}).value || ""]; const tv = parseFloat(S.tpv[0]), pv = parseFloat(S.tpv[1]);
+  if (tv !== S.T || pv !== S.P) { S.note = ["bad", "tpBad"]; return renderPanel(); }
+  S.note = null; S.rec.T = S.T; S.rec.P = S.P; S.ev.level = 1; log(["lTP", { T: S.T, P: S.P }]); setPh("calc");
+}
+function checkStep() {
+  const c = S.calc, k = c.k, v = parseFloat(($("cIn") || {}).value), r = S.rec, own = c.vals;
+  const pw = own[0] ?? Pw(), ph = own[1] ?? (r.P - pw), pa = own[2] ?? ph * 101325 / 760, n = own[3] ?? pa * r.V * 1e-6 / (8.314 * (r.T + 273)), nm = own[4] ?? n;
+  const exp = [Pw(), r.P - pw, ph * 101325 / 760, pa * r.V * 1e-6 / (8.314 * (r.T + 273)), n, r.m / nm][k];
+  const tol = [.051, .151, Math.abs(exp) * .004, Math.abs(exp) * .015, Math.abs(exp) * .012, Math.abs(exp) * .015][k];
+  if (!isFinite(v) || Math.abs(v - exp) > tol) { c.note = ["bad", "h" + (k + 1), { T: r.T, K: r.T + 273, a: k === 1 ? r.P : ph.toFixed(1), b: pw, p: pa.toFixed(0), v: r.V.toFixed(1), m: r.m.toFixed(4), n: nm.toExponential(3) }]; return renderPanel(); }
+  own[k] = v; c.note = null; c.k++;
+  if (c.k >= 6) { const ar = own[5], e = (ar - 24.3) / 24.3 * 100; S.final = { ar, e, pw: own[0], ph: own[1], pa: own[2], n: own[3] }; S.ev.calc = 1; log(["lCalc", { v: ar.toFixed(1), e: (e >= 0 ? "+" : "") + e.toFixed(1) }]); setPh("done"); if (!S.done) { S.done = true; celebrate(); } return; }
+  renderPanel();
+}
+function pop() { if (S.popped) return; S.popped = true; S.popT = 0; toast("tPop", "good", 3600); log(["lPop"]); renderPanel(); }
+
+// =====================================================================
+// UI
+// =====================================================================
+let toastT;
+function toast(k, kind = "", ms = 3600, p) { const el = $("toast"); el.textContent = t(k, p); el.className = "toast show " + kind; clearTimeout(toastT); toastT = setTimeout(() => el.className = "toast " + kind, ms); }
+function log(...parts) { S.logs.unshift({ time: new Date().toTimeString().slice(0, 8), parts }); renderLog(); }
+function renderLog() { const box = $("log"); box.innerHTML = ""; S.logs.forEach(e => { const d = document.createElement("div"), s = document.createElement("span"), m = document.createElement("div"); s.textContent = e.time; m.textContent = e.parts.map(([k, p]) => t(k, p)).join(" "); d.append(s, m); box.append(d); }); }
+function promptText() { if (S.ph === "react" && S.front >= 1) return t("reacting", { p: Math.round(S.f * 100) }); return t({ clean: "p_clean", weigh: "p_weigh", cage: "p_cage", acid: "p_acid", water: "p_water", insert: "p_insert", invert: "p_invert", react: "p_react", level: "p_level", record: "p_record", calc: "p_calc", done: "pDone" }[S.ph]); }
+const noteHTML = n => n ? `<div class="note ${n[0]}">${esc(t(n[1], n[2]))}</div>` : "";
+function vpTable() { return `<table class="vpt"><tr><th>${esc(t("thT"))}</th><th>${esc(t("thP"))}</th></tr>${Object.entries(VP).map(([k, v]) => `<tr class="${+k === S.T && idx(S.ph) >= idx("calc") ? "hl" : ""}"><td>${k}</td><td>${v.toFixed(1)}</td></tr>`).join("")}</table>`; }
+function renderPanel() {
+  const p = S.ph, P = $("panel"); let h = `<p>${esc(promptText())}</p>`;
+  const btn = (id, k, primary, dis) => `<button class="btn ${primary ? "primary" : ""}" id="${id}" ${dis ? "disabled" : ""}>${esc(t(k))}</button>`;
+  if (p === "clean") h += `<div class="row">${btn("clBtn", "clean", 1, S.cleanT >= 0)}${btn("wbBtn", "weigh")}</div>`;
+  if (p === "weigh") h += S.onBal ? `<div class="row"><label class="label" for="mIn">${esc(t("fM"))}</label><input type="number" id="mIn" step="0.0001" inputmode="decimal" placeholder="0.0000"><button class="btn primary" id="mBtn">${esc(t("record"))}</button></div>` + noteHTML(S.note) : `<div class="row">${btn("wbBtn", "weigh", 1)}</div>`;
+  if (p === "cage") h += `<div class="row">${btn("cgBtn", "cage", 1)}</div>`;
+  if (p === "acid") h += `<div class="row">${btn("acBtn", "acid", 1, S.pourT >= 0)}${btn("inBtn", "insert")}</div>`;
+  if (p === "water") h += `<div class="row">${btn("waBtn", "water", 1, S.pourT >= 0)}${btn("inBtn", "insert")}${btn("ivBtn", "invert")}</div>`;
+  if (p === "insert") h += `<div class="row">${btn("inBtn", "insert", 1)}${btn("ivBtn", "invert")}</div>`;
+  if (p === "invert") h += `<div class="row">${btn("ivBtn", "invert", 1)}</div>`;
+  if (p === "react") h += `<div class="row"><button class="btn" id="earlyBtn">${esc(t("fV"))}</button></div>`;
+  if (p === "level") h += `<div class="row"><label class="label" for="lev">${esc(t("levelL"))}</label><button class="btn sm" id="lvDn">${esc(t("lower"))}</button><div class="slider"><input type="range" id="lev" min="0" max="220" value="${Math.round(200 - S.yTop)}"></div><button class="btn sm" id="lvUp">${esc(t("raise"))}</button></div>
+    <div class="row"><label class="label" for="vIn">${esc(t("fV"))}</label><input type="number" id="vIn" step="0.1" inputmode="decimal" placeholder="0.0"><button class="btn primary" id="vBtn">${esc(t("record"))}</button></div>` + noteHTML(S.note);
+  if (p === "record") h += `<div class="fields" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px"><label class="small" style="display:flex;flex-direction:column;gap:4px">${esc(t("fT"))}<input type="number" id="tIn" step="1" inputmode="decimal" value="${esc((S.tpv || [""])[0])}"></label><label class="small" style="display:flex;flex-direction:column;gap:4px">${esc(t("fP"))}<input type="number" id="pIn" step="1" inputmode="decimal" value="${esc((S.tpv || ["", ""])[1])}"></label></div><div class="row"><button class="btn primary" id="tpBtn">${esc(t("record"))}</button></div>` + noteHTML(S.note);
+  if (p === "calc") { const c = S.calc; h += `<div>${[0, 1, 2, 3, 4, 5].map(k => { const lab = t("c" + (k + 1), { T: S.rec.T });
+      if (k < c.k) return `<div class="cstep"><span>${esc(lab)}</span><b>${c.vals[k]}</b></div>`;
+      if (k === c.k) return `<div class="cstep"><span>${esc(lab)}</span><div class="row"><input type="number" id="cIn" step="any" inputmode="decimal" aria-label="${esc(lab)}"><button class="btn primary" id="cBtn">${esc(t("check"))}</button></div></div>`;
+      return `<div class="cstep muted"><span>${esc(lab)}</span><span>…</span></div>`; }).join("")}</div>` + noteHTML(c.note) + (c.k === 0 ? `<div class="tablewrap">${vpTable()}</div>` : ""); }
+  if (p === "done") { const f = S.final; h = `<div class="note ok">${esc(t("resultT", { v: f.ar.toFixed(1), e: (f.e >= 0 ? "+" : "") + f.e.toFixed(1) }))}</div><div><h3>${esc(t("errH"))}</h3><ul class="errlist">${t("errs").map(x => `<li>${esc(x)}</li>`).join("")}</ul></div><div class="row">${btn("popBtn", "splint", 0, S.popped)}</div>`; }
+  P.innerHTML = h;
+  const on = (id, fn) => { const el = $(id); if (el) el.onclick = fn; };
+  on("clBtn", cleanIt); on("wbBtn", putOnBal); on("mBtn", recordM); on("cgBtn", cageIt); on("acBtn", pourAcid); on("waBtn", pourWater); on("inBtn", insertMg); on("ivBtn", invertIt);
+  on("earlyBtn", () => toast("tWait", "warn", 4600)); on("vBtn", recordV); on("tpBtn", recordTP); on("cBtn", checkStep); on("popBtn", pop);
+  on("lvDn", () => setY(S.yTop + 1)); on("lvUp", () => setY(S.yTop - 1));
+  if ($("lev")) $("lev").oninput = e => setY(200 - +e.target.value);
+  [["mIn", recordM], ["vIn", recordV], ["cIn", checkStep], ["pIn", recordTP]].forEach(([id, fn]) => { const el = $(id); if (el) el.onkeydown = e => { if (e.key === "Enter") fn(); }; });
+}
+function stepsDone() { return [!!S.ev.prep, !!S.ev.setup, !!S.ev.react, !!S.ev.level, !!S.ev.calc]; }
+function renderGuide() { const d = stepsDone(), cur = d.indexOf(false), k = d.filter(Boolean).length;
+  $("steps").innerHTML = t("steps").map((s, i) => `<li class="${d[i] ? "done" : i === cur ? "now" : ""}"><span class="tick">${d[i] ? "✓" : i + 1}</span><span>${esc(s)}</span></li>`).join("");
+  $("ringTxt").textContent = `${k}/5`; $("ringArc").style.strokeDashoffset = String(113.1 * (1 - k / 5)); }
+function renderLive() {
+  const c = [];
+  if (S.ph === "react") { if (S.front < 1) c.push(`<span class="chip">${esc(t("chipAcid"))}</span>`); else c.push(`<span class="chip">${esc(t("chipFizz"))} · ${Math.round(S.f * 100)}%</span>`); }
+  if (S.ph === "level") { const g = gasState(), eq = Math.abs(g.s) < 2.5; c.push(`<span class="chip ${eq ? "ok" : "bad"}">${esc(eq ? "✓ " + t("lvEq") : t("lvIn", { d: Math.abs(Math.round(g.s)), w: t(g.s > 0 ? "above" : "below") }))}</span>`); }
+  const h = c.join(""); if ($("chips").innerHTML !== h) $("chips").innerHTML = h;
+  const pt = promptText(); if ($("prompt").textContent !== pt) { $("prompt").textContent = pt; const fp = $("panel").querySelector("p"); if (fp && S.ph === "react") fp.textContent = pt; }
+  if (S.rec.m) { $("mchip").hidden = false; $("mchip").textContent = t("mchip", { m: S.rec.m.toFixed(4) }); } else $("mchip").hidden = true;
+}
+function renderTables() {
+  const r = S.rec, f = S.final, row = (k, v) => `<tr><td>${esc(t(k))}</td><td class="num">${v}</td></tr>`, a = [];
+  if (r.m) a.push(row("rM", r.m.toFixed(4) + " g")); if (r.V) a.push(row("rV", r.V.toFixed(1) + " cm³"));
+  if (r.T) { a.push(row("rT", r.T + " °C (" + (r.T + 273) + " K)")); a.push(row("rP", r.P + " mmHg")); }
+  if (f) { a.push(row("rPw", f.pw.toFixed(1) + " mmHg")); a.push(row("rPH", f.ph.toFixed(1) + " mmHg")); a.push(row("rPa", Math.round(f.pa) + " Pa")); a.push(row("rN", f.n.toExponential(3) + " mol")); a.push(row("rAr", f.ar.toFixed(1))); a.push(row("rE", (f.e >= 0 ? "+" : "") + f.e.toFixed(1) + " %")); }
+  $("tbR").innerHTML = a.length ? a.join("") : `<tr><td class="muted">${esc(t("none"))}</td></tr>`; $("vpObs").innerHTML = vpTable();
+}
+function render() { $("gogBtn").textContent = t(S.gog ? "gogOn" : "gog"); $("gogBtn").setAttribute("aria-pressed", String(S.gog)); $("prompt").textContent = promptText(); renderPanel(); renderGuide(); renderTables(); renderLive(); renderCards(); }
+function celebrate() { toast("tDone", "party", 5200); $("quizTab").classList.add("ping");
+  if (!reduceMotion) { const cols = ["#c9ccd0", "#4BA3E3", "#b5651d", "#9fe6b8"]; for (let i = 0; i < 90; i++) S.confetti.push({ x: cw / 2 + (Math.random() - .5) * 200, y: ch * .3, vx: (Math.random() - .5) * 340, vy: -150 - Math.random() * 220, rot: Math.random() * 6, vr: (Math.random() - .5) * 10, c: cols[i % cols.length] }); } }
+// colour cards
+function ribbonSVG(ox) { const c = ribbonCol(ox); return `<svg viewBox="0 0 90 60" aria-hidden="true"><rect width="90" height="60" fill="#ffffff"/><rect x="10" y="26" width="70" height="8" fill="${css(c)}"/>${ox ? "" : `<rect x="10" y="26" width="70" height="2.5" fill="rgba(255,255,255,.8)"/>`}</svg>`; }
+function tubeSVG(gone) { return `<svg viewBox="0 0 90 60" aria-hidden="true"><defs><pattern id="hm${gone}" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="rgba(60,90,110,.3)"/></pattern></defs><rect width="90" height="60" fill="#ffffff"/><rect x="36" y="${gone ? 22 : 4}" width="18" height="${gone ? 38 : 56}" fill="#e1f0f7"/><rect x="36" y="${gone ? 22 : 4}" width="18" height="${gone ? 38 : 56}" fill="url(#hm${gone})"/><path d="M36 60 L36 6 Q36 2 40 2 L50 2 Q54 2 54 6 L54 60" fill="none" stroke="#4f6b78" stroke-width="1.5"/>${gone ? `<circle cx="45" cy="36" r="2" fill="#fff" stroke="#3a6a80"/>` : `<path d="M41 44 Q45 46 49 44 Q45 48 41 50 Q45 52 49 50" stroke="#c9ccd0" stroke-width="2.5" fill="none"/>`}<path d="M40 40 L50 40 M40 54 L50 54" stroke="#b5651d"/></svg>`; }
+function renderCards() {
+  const card = (ok, b, bs, r, a, as, v) => `<div class="cc"><div class="ttl"><em class="${ok ? "ok" : ""}">${ok ? "✓ " + esc(t("seen")) : esc(t("notYet"))}</em></div><div class="flow"><div class="st"><small>${esc(t("before"))}</small>${bs}<span>${esc(t(b))}</span></div><div class="arrow"><b>→</b><span>${esc(t(r))}</span></div><div class="st"><small>${esc(t("after"))}</small>${as}<span>${esc(t(a))}</span></div></div>${v ? `<div class="via">${esc(t(v))}</div>` : ""}</div>`;
+  $("cards").innerHTML = card(!!S.ev.clean, "k1b", ribbonSVG(1), "k1r", "k1a", ribbonSVG(0)) + card(!!S.ev.react, "k2b", tubeSVG(0), "k2r", "k2a", tubeSVG(1), "k2v");
+}
+const mini = $("mini"), mctx = mini.getContext("2d"); let playing = false;
+function drawMini() {
+  const w = mini.width, h = mini.height, hs = S.hist, ok = hs.length > 5; mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.fillStyle = "#ffffff"; mctx.fillRect(0, 0, w, h);
+  const [f, V] = ok ? hs[Math.min(hs.length - 1, Math.round(+$("replay").value / 1000 * (hs.length - 1)))] : [0, 0];
+  const x0 = w / 2 - 34, x1 = w / 2 + 34, top = 20, bot = h - 10, gasY = top + 10 + V * 7;
+  mctx.fillStyle = "#f2f8fb"; mctx.fillRect(x0, top, x1 - x0, bot - top);
+  mctx.fillStyle = "rgba(225,240,247,.95)"; mctx.fillRect(x0, gasY, x1 - x0, bot - gasY);
+  mctx.strokeStyle = "rgba(60,90,110,.3)"; for (let y = gasY; y < bot; y += 9) { mctx.beginPath(); mctx.moveTo(x0, y + 9); mctx.lineTo(x1, y); mctx.stroke(); }
+  mctx.strokeStyle = "#3a6a80"; mctx.lineWidth = 2; mctx.beginPath(); mctx.moveTo(x0, gasY); mctx.lineTo(x1, gasY); mctx.stroke();
+  const cy = bot - 50; mctx.strokeStyle = "#b5651d"; mctx.lineWidth = 2; mctx.beginPath(); for (let k = 0; k <= 80; k++) { const a = k / 80 * Math.PI * 10; const px = w / 2 + Math.cos(a) * 26, py = cy - 40 + k; k ? mctx.lineTo(px, py) : mctx.moveTo(px, py); } mctx.stroke();
+  if (f < 1) { mctx.strokeStyle = css(SHINY); mctx.lineWidth = 7; mctx.beginPath(); const L = 70 * (1 - f) + 2; for (let k = 0; k <= 40; k++) { const a = k / 40 * Math.PI * 5, px = w / 2 + Math.cos(a) * 14, py = cy - L / 2 + k / 40 * L; k ? mctx.lineTo(px, py) : mctx.moveTo(px, py); } mctx.stroke(); }
+  if (f > 0 && f < 1) for (let i = 0; i < 12; i++) { mctx.strokeStyle = "rgba(60,100,120,.7)"; mctx.fillStyle = "#fff"; mctx.lineWidth = 1; mctx.beginPath(); mctx.arc(w / 2 + (seed(i) - .5) * 40, gasY + 10 + seed(i + 5) * (cy - gasY - 30), 4, 0, 7); mctx.fill(); mctx.stroke(); }
+  mctx.strokeStyle = "#4f6b78"; mctx.lineWidth = 3; mctx.beginPath(); mctx.moveTo(x0, bot); mctx.lineTo(x0, top + 8); mctx.quadraticCurveTo(x0, top, x0 + 8, top); mctx.lineTo(x1 - 8, top); mctx.quadraticCurveTo(x1, top, x1, top + 8); mctx.lineTo(x1, bot); mctx.stroke();
+  $("rname").textContent = ok ? t("rAt", { p: Math.round(f * 100), v: V.toFixed(1) }) : t("rNone");
+}
+const seed = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+function renderReplayCtl() { const ok = S.hist.length > 5; $("replay").disabled = !ok; $("playBtn").disabled = !ok; $("playBtn").textContent = t(playing ? "pause" : "play"); }
+// quiz
+function readScores() { try { return JSON.parse(localStorage.getItem("svl-scores") || "{}") || {}; } catch (e) { return {}; } }
+function saveScore(pct) { try { const s = readScores(); if (!(s[SIM_ID] >= pct)) { s[SIM_ID] = pct; localStorage.setItem("svl-scores", JSON.stringify(s)); } } catch (e) {} }
+function renderQuiz() { const Q = t("quiz"), L = ["A", "B", "C", "D"];
+  $("quiz").innerHTML = Q.map((q, i) => `<div class="q" id="q${i}"><p>${i + 1}. ${esc(q.q)}</p>${q.o.map((o, j) => `<button data-q="${i}" data-o="${j}">${L[j]}) ${esc(o)}</button>`).join("")}<div class="exp"></div></div>`).join("");
+  Object.entries(S.answered).forEach(([i, j]) => markAnswer(+i, j)); score(); }
+function markAnswer(i, j) { const ok = j === QUIZ_ANS[i];
+  $("q" + i).querySelectorAll("button").forEach((x, k) => { x.disabled = true; if (k === QUIZ_ANS[i]) x.classList.add("right"); else if (k === j) x.classList.add("wrong"); });
+  const d = document.createElement("div"); d.className = "note " + (ok ? "ok" : "bad"); d.textContent = t(ok ? "correct" : "notQuite") + t("quiz")[i].e; const ex = $("q" + i).querySelector(".exp"); ex.innerHTML = ""; ex.append(d); }
+$("quiz").onclick = e => { const b = e.target.closest("button[data-q]"); if (!b) return; const i = +b.dataset.q, j = +b.dataset.o; if (i in S.answered) return; S.answered[i] = j; markAnswer(i, j); score(); };
+function score() { const n = Object.keys(S.answered).length, s = Object.entries(S.answered).filter(([i, j]) => j === QUIZ_ANS[+i]).length, N = QUIZ_ANS.length;
+  if (n === N) saveScore(Math.round(s / N * 100)); const best = readScores()[SIM_ID];
+  $("score").textContent = `${s} / ${N}` + (n < N ? " · " + t("scoreLeft", { n: N - n }) : "") + (best !== undefined ? " · " + t("best", { p: best }) : ""); }
+$("retryBtn").onclick = () => { S.answered = {}; renderQuiz(); };
+function applyStatic() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("#langSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  cv.setAttribute("aria-label", t("canvasAria"));
+  $("appList").innerHTML = t("app").map(a => `<span>${esc(a)}</span>`).join(""); $("safeList").innerHTML = t("safe").map(a => `<li>${esc(a)}</li>`).join("");
+  try { const st = JSON.parse(localStorage.getItem("svl-student") || "null"); if (st && st.name) { $("student").hidden = false; $("student").textContent = t("student", { name: st.name, cls: st.cls ? " · " + st.cls : "" }); } } catch (e) {}
+}
+function fullRender() { applyStatic(); render(); renderLog(); renderQuiz(); renderReplayCtl(); }
+function applyLang(l) { LANG = l; try { localStorage.setItem("svl-lang", l); } catch (e) {} fullRender(); }
+document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  ["guide", "obs", "colours", "quiz"].forEach(id => $("pane-" + id).hidden = id !== b.dataset.tab);
+  if (b.dataset.tab === "quiz") b.classList.remove("ping"); if (b.dataset.tab === "colours") { renderReplayCtl(); drawMini(); } });
+$("gogBtn").onclick = () => { S.gog = !S.gog; render(); };
+$("resetBtn").onclick = () => { const ans = S.answered; S = freshState(); S.answered = ans; $("quizTab").classList.remove("ping"); fullRender(); };
+$("replay").oninput = () => { playing = false; renderReplayCtl(); drawMini(); };
+$("playBtn").onclick = () => { playing = !playing; if (playing && +$("replay").value >= 1000) $("replay").value = 0; renderReplayCtl(); };
+let tDrag = null;
+function toLogical(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left - ox) / sc, y: (e.clientY - r.top - oy) / sc }; }
+cv.addEventListener("pointerdown", e => { if (S.ph !== "level") return; const p = toLogical(e); if (Math.abs(p.x - EX) < 40 && p.y > S.yTop - 10 && p.y < S.yTop + ELEN + 10) { tDrag = { y: p.y, y0: S.yTop }; cv.setPointerCapture(e.pointerId); } });
+cv.addEventListener("pointermove", e => { if (!tDrag) return; const p = toLogical(e); setY(tDrag.y0 + (p.y - tDrag.y) * .5); });
+["pointerup", "pointercancel"].forEach(ev => cv.addEventListener(ev, () => { tDrag = null; }));
+cv.addEventListener("keydown", e => { if (S.ph !== "level") return; if (e.key === "ArrowUp") { e.preventDefault(); setY(S.yTop - 1); } if (e.key === "ArrowDown") { e.preventDefault(); setY(S.yTop + 1); } });
+
+readTokens(); resize(); S = freshState(); fullRender();
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>

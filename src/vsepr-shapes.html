@@ -1,0 +1,865 @@
+<title>VSEPR Model Kit</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: 3D model-kit stage on the left with a stage-by-stage builder dock, working notebook on the right. Same system as the KMnO₄ bench. */
+:root{
+  --bg:#e7eceb; --surface:#f8faf9; --surface-2:#eef2f1; --ink:#162127; --muted:#56666c; --line:#cbd5d4;
+  --accent:#8b1d6f; --accent-soft:#f3dcea; --on-accent:#ffffff; --current:#b7791f;
+  --ok:#2c7a4d; --ok-soft:#dcefe3; --warn:#9a520a; --warn-soft:#f8e8d5; --bad:#a3302b; --bad-soft:#f6dedc;
+  --stage-top:#f3f6f6; --stage-bot:#d9e1e1;
+  --f-display:"Bricolage Grotesque", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", "Noto Sans Sinhala", "Noto Sans Tamil", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --stage-top:#1d2a31; --stage-bot:#0f171b;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --stage-top:#1d2a31; --stage-bot:#0f171b;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 28px}
+:lang(si) body,:lang(ta) body{line-height:1.65}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.top > div:first-child{min-width:0}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+:lang(si) .eyebrow,:lang(ta) .eyebrow{letter-spacing:.02em;font-size:12.5px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 6px;text-wrap:balance;letter-spacing:-.01em}
+:lang(si) h1,:lang(ta) h1{letter-spacing:0;font-size:clamp(22px,2.6vw,32px);line-height:1.3}
+.sub{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.top-actions{display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap}
+.student{font-size:13px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;min-height:44px;font-weight:500;font-size:14px;transition:background .15s,border-color .15s,transform .05s;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.next{border-color:var(--current);box-shadow:0 0 0 3px color-mix(in srgb,var(--current) 30%,transparent)}
+.btn[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.prompt{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.prompt .dot{width:9px;height:9px;border-radius:50%;background:var(--current);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--current) 25%,transparent)}
+.prompt p{margin:0;font-weight:500;min-width:0}
+.viewport{position:relative;height:clamp(320px,calc(100vh - 470px),560px);background:linear-gradient(var(--stage-top),var(--stage-bot));user-select:none;-webkit-user-select:none}
+@media (max-width:980px){.viewport{height:clamp(300px,80vw,520px)}}
+canvas#cv{display:block;width:100%;height:100%;touch-action:none;cursor:grab}
+canvas#cv.dragging{cursor:grabbing}
+.chips{position:absolute;left:10px;top:10px;display:flex;flex-direction:column;gap:6px;pointer-events:none;align-items:flex-start;max-width:70%}
+.chip{font-family:var(--f-mono);font-size:12.5px;background:#0E1A2B;color:#D4C4FF;border:1px solid rgba(212,196,255,.25);padding:3px 10px;border-radius:999px}
+.chip.big{font-size:18px;padding:4px 14px;font-weight:500}
+.hintr{position:absolute;right:12px;bottom:10px;font-size:12px;color:var(--muted);pointer-events:none}
+.toast{position:absolute;left:50%;bottom:14px;transform:translate(-50%,10px);opacity:0;transition:opacity .25s,transform .25s;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 28px);width:max-content;pointer-events:none;text-align:center;z-index:3}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.toast.party{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);font-weight:600}
+.dock{display:flex;flex-direction:column;gap:12px;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-right:2px}
+:lang(si) .label,:lang(ta) .label{letter-spacing:0;font-size:12.5px}
+select{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px;max-width:100%}
+select.ok{border-color:var(--ok);background:var(--ok-soft)}
+select.bad{border-color:var(--bad);background:var(--bad-soft)}
+.tracker{display:flex;gap:4px;flex-wrap:wrap}
+.tracker span{font-size:12.5px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:var(--surface)}
+.tracker span.done{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.tracker span.now{border-color:var(--current);color:var(--ink);box-shadow:0 0 0 2px color-mix(in srgb,var(--current) 25%,transparent)}
+.panelbox{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:10px}
+.panelbox > p{margin:0;font-weight:500}
+.balls{display:flex;flex-wrap:wrap;gap:8px}
+.balls button{display:flex;align-items:center;gap:8px}
+.balls svg{flex:none}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.fields label{display:flex;flex-direction:column;gap:4px;font-size:13px;min-width:0}
+.palette{display:flex;flex-wrap:wrap;gap:8px}
+.piece{display:inline-flex;align-items:center;gap:8px;touch-action:none;user-select:none;-webkit-user-select:none}
+.piece i{width:22px;height:22px;border-radius:50%;flex:none;border:1px solid rgba(0,0,0,.25);display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700}
+.piece i.lp{border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:rgba(150,110,220,.45);border:1px dashed #7b4fc4}
+.ghost{position:fixed;z-index:50;pointer-events:none;transform:translate(-50%,-50%);padding:6px 10px;border-radius:999px;background:var(--surface);border:2px solid var(--accent);font-size:13px;font-weight:600;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+.note{font-size:13.5px;padding:8px 10px;border-radius:8px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.note.info{background:var(--surface);border:1px solid var(--line)}
+.slider{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-width:0}
+.slider input{flex:1;min-width:0}
+input[type=range]{accent-color:var(--accent);min-height:30px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.tabs button{flex:1;min-width:0;border:0;background:transparent;padding:12px 4px;min-height:46px;font-weight:600;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;line-height:1.3;position:relative}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs button.ping::after{content:"";position:absolute;top:8px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--current)}
+.pane{padding:16px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:980px){.pane{max-height:none}}
+h2{font-family:var(--f-display);font-size:18px;font-weight:700;margin:0}
+h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+:lang(si) h3,:lang(ta) h3{letter-spacing:0;font-size:13px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2)}
+.box.safety{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.box.safety h3{color:var(--warn)}
+.box.safety ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ring{position:relative;width:46px;height:46px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;font-weight:500}
+.chiplist{display:flex;flex-wrap:wrap;gap:6px}
+.chiplist span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;background:var(--surface)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid transparent}
+.steps li .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-family:var(--f-mono);color:var(--muted);margin-top:2px}
+.steps li.done{color:var(--muted)}
+.steps li.done .tick{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.steps li.now{background:var(--surface);border-color:var(--current)}
+.steps li.now .tick{border-color:var(--current);color:var(--current)}
+.prog{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin-top:6px}
+.prog i{display:block;height:100%;background:var(--ok)}
+.log{font-size:13.5px;display:flex;flex-direction:column;gap:5px;max-height:240px;overflow:auto}
+.log > div{display:grid;grid-template-columns:58px 1fr;gap:6px}
+.log span{font-family:var(--f-mono);color:var(--muted);font-size:11.5px;padding-top:2px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:7px 8px;background:var(--surface-2);font-weight:600;vertical-align:bottom}
+:lang(si) th,:lang(ta) th{letter-spacing:0;font-size:12px}
+td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+td:first-child{font-family:var(--f-mono);font-weight:500;white-space:nowrap}
+td.pend{color:var(--muted)}
+.key{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.key div{display:flex;gap:8px;align-items:center;font-size:13px;min-width:0}
+.key i{width:26px;height:26px;border-radius:50%;flex:none;border:1px solid rgba(0,0,0,.25);display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:700}
+.replaycv{width:100%;max-width:100%;aspect-ratio:4/3;border-radius:10px;border:1px solid var(--line);display:block;background:linear-gradient(var(--stage-top),var(--stage-bot))}
+.q{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}
+.q p{margin:0 0 4px;font-weight:600}
+.q button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px}
+.q button:hover:not(:disabled){border-color:var(--accent)}
+.q button.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.q button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.q button:disabled{cursor:default}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--accent);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1 data-i18n="title"></h1>
+      <div class="sub">NIE Practical Handbook (2018) · al-exp-02</div>
+    </div>
+    <div class="top-actions">
+      <span class="student" id="student" hidden></span>
+      <div class="seg lang" role="group" aria-label="Language / භාෂාව / மொழி" id="langSeg" style="display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface-2)">
+        <button data-lang="si" lang="si" aria-pressed="false" style="font-family:'Noto Sans Sinhala',var(--f-body)">සිංහල</button>
+        <button data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button data-lang="ta" lang="ta" aria-pressed="false" style="font-family:'Noto Sans Tamil',var(--f-body)">தமிழ்</button>
+      </div>
+      <button class="btn" id="resetBtn" data-i18n="reset"></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="prompt"><span class="dot"></span><p id="prompt" aria-live="polite"></p></div>
+      <div class="viewport" id="viewport">
+        <canvas id="cv" role="img" tabindex="0" data-i18n-aria="canvasAria"></canvas>
+        <div class="chips" id="chips"></div>
+        <div class="hintr" data-i18n="rotHint"></div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+      <div class="dock">
+        <div class="row">
+          <label class="label" for="molSel" data-i18n="molL"></label>
+          <select id="molSel"></select>
+          <button class="btn" id="prevBtn" data-i18n="prev"></button>
+          <button class="btn" id="nextBtn" data-i18n="nextB"></button>
+          <div class="tracker" id="tracker"></div>
+        </div>
+        <div class="panelbox" id="stagePanel" aria-live="polite"></div>
+        <div class="row">
+          <span class="label" data-i18n="viewL"></span>
+          <button class="btn" id="rotBtn" aria-pressed="true" data-i18n="autoRot"></button>
+          <button class="btn" id="viewBtn" data-i18n="resetView"></button>
+          <button class="btn" id="dipBtn" aria-pressed="false" data-i18n="dipoles"></button>
+          <button class="btn" id="angBtn" aria-pressed="true" data-i18n="angles"></button>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="guide" data-i18n="tabGuide"></button>
+        <button role="tab" aria-selected="false" data-tab="obs" data-i18n="tabObs"></button>
+        <button role="tab" aria-selected="false" data-tab="colours" data-i18n="tabColours"></button>
+        <button role="tab" aria-selected="false" data-tab="quiz" data-i18n="tabQuiz" id="quizTab"></button>
+      </div>
+      <div class="pane" id="pane-guide">
+        <div class="headrow">
+          <div><h3 data-i18n="aimH"></h3><p class="small" data-i18n="aim"></p></div>
+          <div class="ring" aria-hidden="true"><svg width="46" height="46"><circle cx="23" cy="23" r="18" fill="none" stroke="var(--line)" stroke-width="4"/><circle id="ringArc" cx="23" cy="23" r="18" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><span id="ringTxt">0/5</span></div>
+        </div>
+        <div><h3 data-i18n="appH"></h3><div class="chiplist" id="appList"></div></div>
+        <div><h3 data-i18n="procH"></h3><ul class="steps" id="steps"></ul></div>
+        <div class="box"><h3 data-i18n="ruleH"></h3><p class="small" data-i18n="rule"></p></div>
+        <div class="box safety"><h3 data-i18n="safeH"></h3><ul id="safeList"></ul></div>
+      </div>
+      <div class="pane" id="pane-obs" hidden>
+        <div><h3 data-i18n="logH"></h3><div class="log" id="log"></div></div>
+        <div><h3 data-i18n="resH"></h3>
+          <div class="tablewrap"><table>
+            <thead><tr><th data-i18n="thMol"></th><th data-i18n="thPairs"></th><th data-i18n="thEPG"></th><th data-i18n="thShape"></th><th data-i18n="thAngle"></th><th data-i18n="thPol"></th></tr></thead>
+            <tbody id="tbody"></tbody>
+          </table></div>
+        </div>
+      </div>
+      <div class="pane" id="pane-colours" hidden>
+        <div><h2 data-i18n="coloursH"></h2><p class="small muted" style="margin-top:4px" data-i18n="noColour"></p></div>
+        <div><h3 data-i18n="keyH"></h3><div class="key" id="key"></div></div>
+        <div class="box" style="display:flex;flex-direction:column;gap:8px">
+          <h3 data-i18n="snapH" style="margin:0"></h3>
+          <p class="small muted" data-i18n="snapIntro"></p>
+          <canvas id="mini" class="replaycv" width="640" height="480" aria-hidden="true"></canvas>
+          <input type="range" id="replay" min="0" max="1000" value="1000" data-i18n-aria="snapH">
+          <div class="row"><button class="btn" id="playBtn"></button><span class="small" id="rname"></span></div>
+        </div>
+      </div>
+      <div class="pane" id="pane-quiz" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <h2 data-i18n="quizH"></h2><span class="score" id="score"></span>
+        </div>
+        <div id="quiz" style="display:flex;flex-direction:column;gap:12px"></div>
+        <button class="btn" id="retryBtn" data-i18n="tryAgain" style="align-self:flex-start"></button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const SIM_ID = "al-exp-02", PROG_KEY = "svl-al-exp-02-progress";
+
+// =====================================================================
+// LANGUAGES
+// =====================================================================
+const I18N = {
+en: {
+  eyebrow: "A/L Chemistry · Unit 02 · Structure and bonding · Experiment 2", title: "Shapes of molecules and ions (VSEPR)", student: "Student: {name}{cls}", reset: "Start again",
+  molL: "Molecule or ion", prev: "← Previous", nextB: "Next →", extra: "extra", viewL: "View", autoRot: "Auto-rotate", resetView: "Reset view", dipoles: "Bond dipoles", angles: "Bond angles",
+  rotHint: "Drag to rotate", canvasAria: "3D model of the selected molecule or ion. Drag to rotate it. Drop atoms and lone pairs here to build it.",
+  stA: "Central atom", stB: "Count pairs", stC: "Build", stD: "Name", stE: "Polarity",
+  aQ: "Pick the ball for {c} in {f}. It needs one hole for every electron pair around {c}.", aQd: "{f} has only two atoms. Choose how to join them.",
+  holes: "{n} holes", diaBall: "No central atom (join two atoms)",
+  aHint1: "Not quite. Each bond and each lone pair on {c} needs its own hole.", aHint2: "{c} in {f} has {b} bond pair(s) and {lp} lone pair(s), so its ball needs {sn} holes.",
+  aDiaWrong: "{f} has a central atom, {c}, with other atoms around it.", aWrongDia: "{f} has only two atoms, so there is no central atom. Just join the two atoms.",
+  bQ: "Count the electron pairs on {c}. Count a double or triple bond as one bond pair.", bQd: "Count the shared pairs between the two {e} atoms and the lone pairs on each atom.",
+  fSN: "Electron pairs around {c}", fBP: "Bond pairs", fLP: "Lone pairs on {c}", fShared: "Shared pairs between the atoms", fLPeach: "Lone pairs on each atom", choose: "Choose…",
+  check: "Check", working: "Show working", bBad: "Some numbers are not right. The wrong ones are marked in red.",
+  wk: "{c} has {v} valence electrons. {u} of them are used in bonds ({bonds}){fc}. Lone pairs = ({v} − {u}{fcm}) ÷ 2 = {lp}. Electron pairs = {b} bond pairs + {lp} lone pairs = {sn}.",
+  wkFC: ", and {c} carries a formal charge of +1", wkD: "Each {e} atom has {v} valence electron(s). The two atoms share {s} pair(s), leaving {lp} lone pair(s) on each atom.",
+  cQ: "Drag {n} {e} atom(s) and {lp} lone pair(s) onto {c}. You can also tap a piece to add it.", cQd: "Drag one more {e} atom onto the first one.",
+  lonePair: "lone pair", undo: "Undo", added: "Added {k} of {n} pieces",
+  cWrongEl: "{f} has {e} atoms around {c}, not {x}.", cTooMany: "All the {e} atoms are already on. Now add the lone pairs.", cTooManyLP: "{c} in {f} has only {lp} lone pair(s).", cNoLP: "{c} in {f} has no lone pairs, so every hole holds an atom.",
+  cDiaLP: "For a molecule of two atoms just join the atoms. Lone pairs cannot change the shape of a straight line.", cDiaWrong: "{f} is made of two {e} atoms.", cOrder: "Finish this step first: {s}.",
+  snapped: "The model snapped into shape: the electron pairs pushed as far apart as possible.",
+  fEPG: "Electron-pair geometry", fShape: "Shape", fAngle: "Bond angle",
+  dHintEPG: "Electron-pair geometry uses all {sn} electron pairs on {c}, including lone pairs.", dHintShape: "The shape names where the atoms are. The lone pairs are there, but they are not part of the shape's name.",
+  dHintAngle: "Check the angle on the model. Lone pairs repel more strongly than bond pairs, so they squeeze the bond angles.", dOk: "Correct.",
+  eQ: "Is {f} polar or non-polar? Switch on the bond dipoles to help you decide.", polar: "Polar", nonpolar: "Non-polar",
+  eBadPolar: "The bond dipoles are arranged symmetrically, so they cancel. {f} has no net dipole.", eBadNon: "The dipoles do not cancel. {why}", whyLP: "The lone pair(s) make the shape unsymmetrical.", whyO3: "The central O has a + formal charge and the two end O atoms share the − charge.",
+  eDiaBad: "Both atoms are the same element, so the bonding electrons are shared equally.", ionNote: "For an ion, non-polar means the charge is spread out symmetrically.",
+  doneT: "{f} is complete.", nextMol: "Next molecule →",
+  logRow: "{f}: {sn} electron pairs ({b} bond pairs, {lp} lone pairs). Electron-pair geometry {g}; shape {s}; bond angle {a}; {p}.", logDia: "{f}: two atoms sharing {s} pair(s). Shape linear; non-polar.",
+  chipPairs: "{sn} pairs · {b} bond · {lp} lone", chipNet0: "net dipole = 0", chipNet: "net dipole ≠ 0",
+  lbNet: "net dipole", lbLP: "lone pair",
+  tabGuide: "Guide", tabObs: "Observations", tabColours: "Colours", tabQuiz: "Questions",
+  aimH: "Aim", aim: "Build models of molecules and ions and deduce their electron-pair geometry and shape using VSEPR theory.",
+  appH: "Apparatus", app: ["Molecular model kit", "Balls with 2–6 holes", "Sticks", "Lone-pair balloons"],
+  procH: "Procedure", steps: ["Choose the central atom (ball with the right number of holes)", "Count valence-shell electron pairs, bonding pairs and lone pairs", "Build O₃, BeCl₂, BF₃, CH₄, NH₃, H₂O, PCl₃, SF₆, SF₄, ClF₃, XeF₂, XeF₄, IF₅, NH₄⁺, SO₄²⁻, CO₃²⁻, NO₃⁻, O₂, N₂, H₂ ({n}/20 done)", "Name the electron-pair geometry and the shape; compare bond angles", "Decide polarity from symmetry"],
+  ruleH: "VSEPR rule", rule: "Electron pairs around the central atom repel each other and get as far apart as possible. Repulsion: lone pair–lone pair > lone pair–bond pair > bond pair–bond pair.",
+  safeH: "Safety", safe: ["No chemicals are used in this practical.", "Model kits have small parts. Keep them away from your mouth and count them back into the box.", "Push sticks in gently so the balls do not crack."],
+  logH: "Observation log", resH: "Results table", thMol: "Species", thPairs: "Bond / lone pairs", thEPG: "Electron-pair geometry", thShape: "Shape", thAngle: "Bond angle", thPol: "Polarity", pend: "not built yet",
+  coloursH: "Colours", noColour: "There is no colour change in this practical. The colours below are the model-kit colours used to tell the atoms apart, and each is also written in words with the symbol on the ball.",
+  keyH: "Atom colour key", snapH: "Visible change: the snap", snapIntro: "When the last piece is added, the electron pairs push apart into the VSEPR shape. Replay it with the slider for the current molecule.",
+  play: "Play slowly", pause: "Pause", snapNone: "Build the current molecule to replay its snap.", snapP: "{p}% spread out",
+  quizH: "Knowledge check", tryAgain: "Try again", best: "best {p}%", scoreLeft: "{n} left", correct: "Correct. ", notQuite: "Not quite. ", tDone: "All 20 built! Now try the Questions tab.",
+  g: { lin: "linear", tp: "trigonal planar", tet: "tetrahedral", tbp: "trigonal bipyramidal", oct: "octahedral", none: "none (no central atom)", bent: "bent (V-shaped)", tpyr: "trigonal pyramidal", seesaw: "see-saw", tshape: "T-shaped", sqpyr: "square pyramidal", sqpl: "square planar" },
+  a: { a180: "180°", a120: "120°", a117: "about 117° (less than 120°)", a1095: "109.5°", a107: "about 107°", a1045: "about 104.5°", a100: "about 100°", a90: "90°", aSeesaw: "about 102° and 173°", aT: "about 87.5° (less than 90°)", aSqPyr: "about 82° (less than 90°)", aNone: "no bond angle (only one bond)" },
+  el: { H: ["hydrogen", "white"], Be: ["beryllium", "grey-green"], B: ["boron", "salmon pink"], C: ["carbon", "black"], N: ["nitrogen", "blue"], O: ["oxygen", "red"], F: ["fluorine", "pale green"], Cl: ["chlorine", "green"], P: ["phosphorus", "orange"], S: ["sulfur", "yellow"], Xe: ["xenon", "teal"], I: ["iodine", "purple"], lp: ["lone pair", "translucent violet lobe"] },
+  quiz: [
+    { q: "Shape of NH₃:", o: ["trigonal planar", "trigonal pyramidal", "tetrahedral", "bent"], e: "4 pairs, 1 lone pair." },
+    { q: "Shape of XeF₄:", o: ["tetrahedral", "see-saw", "square planar", "octahedral"], e: "6 pairs, 2 lone pairs opposite each other." },
+    { q: "Bond angle in H₂O is less than 109.5° because…", o: ["lone pairs repel more strongly than bonding pairs", "O is small", "H is small", "it is ionic"], e: "lp–lp > lp–bp > bp–bp repulsion." },
+    { q: "CO₂ is non-polar because…", o: ["C=O bonds are non-polar", "it is linear so the bond dipoles cancel", "it is a gas", "it has lone pairs"], e: "Symmetry cancels dipoles." },
+  ],
+},
+si: {
+  eyebrow: "උ.පෙ. රසායන විද්‍යාව · ඒකකය 02 · ව්‍යුහය සහ බන්ධන · පරීක්ෂණය 2", title: "අණු සහ අයනවල හැඩ (VSEPR)", student: "ශිෂ්‍යයා: {name}{cls}", reset: "නැවත අරඹන්න",
+  molL: "අණුව හෝ අයනය", prev: "← පෙර", nextB: "ඊළඟ →", extra: "අමතර", viewL: "දර්ශනය", autoRot: "ස්වයං භ්‍රමණය", resetView: "දර්ශනය යළි සකසන්න", dipoles: "බන්ධන ද්විධ්‍රැව", angles: "බන්ධන කෝණ",
+  rotHint: "භ්‍රමණය කිරීමට අදින්න", canvasAria: "තෝරාගත් අණුවේ හෝ අයනයේ ත්‍රිමාණ ආකෘතිය. භ්‍රමණය කිරීමට අදින්න. එය ගොඩනැගීමට පරමාණු සහ එකසර යුගල මෙහි දමන්න.",
+  stA: "මධ්‍ය පරමාණුව", stB: "යුගල ගණනය", stC: "ගොඩනැගීම", stD: "නම් කිරීම", stE: "ධ්‍රැවීයතාව",
+  aQ: "{f} හි {c} සඳහා බෝලය තෝරන්න. {c} වටා ඇති සෑම ඉලෙක්ට්‍රෝන යුගලයකටම එක් සිදුරක් අවශ්‍යයි.", aQd: "{f} හි ඇත්තේ පරමාණු දෙකක් පමණි. ඒවා සම්බන්ධ කරන ආකාරය තෝරන්න.",
+  holes: "සිදුරු {n}", diaBall: "මධ්‍ය පරමාණුවක් නැත (පරමාණු දෙක සම්බන්ධ කරන්න)",
+  aHint1: "තවම නිවැරදි නැත. {c} මත ඇති සෑම බන්ධනයකටම සහ සෑම එකසර යුගලයකටම වෙනම සිදුරක් අවශ්‍යයි.", aHint2: "{f} හි {c} සතුව බන්ධන යුගල {b} ක් සහ එකසර යුගල {lp} ක් ඇත, එබැවින් එහි බෝලයට සිදුරු {sn} ක් අවශ්‍යයි.",
+  aDiaWrong: "{f} සතුව මධ්‍ය පරමාණුවක් ({c}) ඇති අතර අනෙක් පරමාණු එය වටා පිහිටයි.", aWrongDia: "{f} හි ඇත්තේ පරමාණු දෙකක් පමණක් නිසා මධ්‍ය පරමාණුවක් නැත. පරමාණු දෙක සම්බන්ධ කරන්න.",
+  bQ: "{c} මත ඇති ඉලෙක්ට්‍රෝන යුගල ගණනය කරන්න. ද්විත්ව හෝ ත්‍රිත්ව බන්ධනයක් එක් බන්ධන යුගලයක් ලෙස ගණන් කරන්න.", bQd: "{e} පරමාණු දෙක අතර හවුල් යුගල සහ එක් එක් පරමාණුව මත එකසර යුගල ගණනය කරන්න.",
+  fSN: "{c} වටා ඉලෙක්ට්‍රෝන යුගල", fBP: "බන්ධන යුගල", fLP: "{c} මත එකසර යුගල", fShared: "පරමාණු අතර හවුල් යුගල", fLPeach: "එක් එක් පරමාණුව මත එකසර යුගල", choose: "තෝරන්න…",
+  check: "පරීක්ෂා කරන්න", working: "විසඳුම පෙන්වන්න", bBad: "සමහර අගයන් නිවැරදි නැත. වැරදි ඒවා රතු පැහැයෙන් සලකුණු කර ඇත.",
+  wk: "{c} සතුව සංයුජතා ඉලෙක්ට්‍රෝන {v} ක් ඇත. ඉන් {u} ක් බන්ධන සඳහා යොදා ගැනේ ({bonds}){fc}. එකසර යුගල = ({v} − {u}{fcm}) ÷ 2 = {lp}. ඉලෙක්ට්‍රෝන යුගල = බන්ධන යුගල {b} + එකසර යුගල {lp} = {sn}.",
+  wkFC: ", තවද {c} මත +1 විධිමත් ආරෝපණයක් ඇත", wkD: "සෑම {e} පරමාණුවකටම සංයුජතා ඉලෙක්ට්‍රෝන {v} ක් ඇත. පරමාණු දෙක යුගල {s} ක් හවුලේ තබා ගන්නා අතර සෑම පරමාණුවකම එකසර යුගල {lp} ක් ඉතිරි වේ.",
+  cQ: "{e} පරමාණු {n} ක් සහ එකසර යුගල {lp} ක් {c} මතට අදින්න. කොටසක් තට්ටු කිරීමෙන්ද එක් කළ හැක.", cQd: "තවත් {e} පරමාණුවක් පළමු පරමාණුව මතට අදින්න.",
+  lonePair: "එකසර යුගලය", undo: "අහෝසි කරන්න", added: "කොටස් {n} න් {k} ක් එක් කළා",
+  cWrongEl: "{f} හි {c} වටා ඇත්තේ {e} පරමාණු මිස {x} නොවේ.", cTooMany: "සියලු {e} පරමාණු දැනටමත් සවි කර ඇත. දැන් එකසර යුගල එක් කරන්න.", cTooManyLP: "{f} හි {c} සතුව ඇත්තේ එකසර යුගල {lp} ක් පමණි.", cNoLP: "{f} හි {c} සතුව එකසර යුගල නැත, එබැවින් සෑම සිදුරකම පරමාණුවක් ඇත.",
+  cDiaLP: "පරමාණු දෙකක අණුවක් සඳහා පරමාණු දෙක සම්බන්ධ කරන්න. එකසර යුගලවලට සරල රේඛාවක හැඩය වෙනස් කළ නොහැක.", cDiaWrong: "{f} සෑදී ඇත්තේ {e} පරමාණු දෙකකිනි.", cOrder: "පළමුව මෙම පියවර අවසන් කරන්න: {s}.",
+  snapped: "ආකෘතිය හැඩයට පිහිටියේය: ඉලෙක්ට්‍රෝන යුගල හැකි තරම් එකිනෙකින් ඈත් විය.",
+  fEPG: "ඉලෙක්ට්‍රෝන යුගල ජ්‍යාමිතිය", fShape: "හැඩය", fAngle: "බන්ධන කෝණය",
+  dHintEPG: "ඉලෙක්ට්‍රෝන යුගල ජ්‍යාමිතිය සඳහා එකසර යුගල ඇතුළුව {c} මත ඇති ඉලෙක්ට්‍රෝන යුගල {sn} ම භාවිත කෙරේ.", dHintShape: "හැඩයෙන් කියවෙන්නේ පරමාණු පිහිටන ආකාරයයි. එකසර යුගල පවතින නමුත් ඒවා හැඩයේ නමට ඇතුළත් නොවේ.",
+  dHintAngle: "ආකෘතියේ කෝණය පරීක්ෂා කරන්න. එකසර යුගල බන්ධන යුගලවලට වඩා ප්‍රබලව විකර්ෂණය කරන නිසා බන්ධන කෝණ හැකිළේ.", dOk: "නිවැරදියි.",
+  eQ: "{f} ධ්‍රැවීයද නිර්ධ්‍රැවීයද? තීරණය කිරීමට බන්ධන ද්විධ්‍රැව ක්‍රියාත්මක කරන්න.", polar: "ධ්‍රැවීය", nonpolar: "නිර්ධ්‍රැවීය",
+  eBadPolar: "බන්ධන ද්විධ්‍රැව සමමිතිකව පිහිටන නිසා ඒවා එකිනෙක අවලංගු වේ. {f} හි ශුද්ධ ද්විධ්‍රැවයක් නැත.", eBadNon: "ද්විධ්‍රැව අවලංගු නොවේ. {why}", whyLP: "එකසර යුගල නිසා හැඩය අසමමිතික වේ.", whyO3: "මධ්‍ය O මත + විධිමත් ආරෝපණයක් ඇති අතර කෙළවර O පරමාණු දෙක − ආරෝපණය බෙදා ගනී.",
+  eDiaBad: "පරමාණු දෙකම එකම මූලද්‍රව්‍යය නිසා බන්ධන ඉලෙක්ට්‍රෝන සමානව බෙදී ඇත.", ionNote: "අයනයක් සඳහා නිර්ධ්‍රැවීය යනු ආරෝපණය සමමිතිකව පැතිරී ඇති බවයි.",
+  doneT: "{f} සම්පූර්ණයි.", nextMol: "ඊළඟ අණුව →",
+  logRow: "{f}: ඉලෙක්ට්‍රෝන යුගල {sn} (බන්ධන යුගල {b}, එකසර යුගල {lp}). ඉලෙක්ට්‍රෝන යුගල ජ්‍යාමිතිය {g}; හැඩය {s}; බන්ධන කෝණය {a}; {p}.", logDia: "{f}: යුගල {s} ක් හවුලේ ඇති පරමාණු දෙකක්. හැඩය රේඛීය; නිර්ධ්‍රැවීය.",
+  chipPairs: "යුගල {sn} · බන්ධන {b} · එකසර {lp}", chipNet0: "ශුද්ධ ද්විධ්‍රැවය = 0", chipNet: "ශුද්ධ ද්විධ්‍රැවය ≠ 0",
+  lbNet: "ශුද්ධ ද්විධ්‍රැවය", lbLP: "එකසර යුගලය",
+  tabGuide: "මාර්ගෝපදේශය", tabObs: "නිරීක්ෂණ", tabColours: "වර්ණ", tabQuiz: "ප්‍රශ්න",
+  aimH: "අරමුණ", aim: "අණු සහ අයනවල ආකෘති ගොඩනගා VSEPR වාදය භාවිතයෙන් ඒවායේ ඉලෙක්ට්‍රෝන යුගල ජ්‍යාමිතිය සහ හැඩය නිර්ණය කිරීම.",
+  appH: "උපකරණ", app: ["අණුක ආකෘති කට්ටලය", "සිදුරු 2–6 ඇති බෝල", "කූරු", "එකසර යුගල බැලූන"],
+  procH: "ක්‍රියා පිළිවෙළ", steps: ["මධ්‍ය පරමාණුව තෝරන්න (නිවැරදි සිදුරු ගණන ඇති බෝලය)", "සංයුජතා කවචයේ ඉලෙක්ට්‍රෝන යුගල, බන්ධන යුගල සහ එකසර යුගල ගණනය කරන්න", "O₃, BeCl₂, BF₃, CH₄, NH₃, H₂O, PCl₃, SF₆, SF₄, ClF₃, XeF₂, XeF₄, IF₅, NH₄⁺, SO₄²⁻, CO₃²⁻, NO₃⁻, O₂, N₂, H₂ ගොඩනගන්න ({n}/20 අවසන්)", "ඉලෙක්ට්‍රෝන යුගල ජ්‍යාමිතිය සහ හැඩය නම් කර බන්ධන කෝණ සසඳන්න", "සමමිතිය අනුව ධ්‍රැවීයතාව තීරණය කරන්න"],
+  ruleH: "VSEPR නීතිය", rule: "මධ්‍ය පරමාණුව වටා ඇති ඉලෙක්ට්‍රෝන යුගල එකිනෙක විකර්ෂණය කර හැකි තරම් ඈත් වේ. විකර්ෂණය: එකසර–එකසර > එකසර–බන්ධන > බන්ධන–බන්ධන.",
+  safeH: "ආරක්ෂාව", safe: ["මෙම ප්‍රායෝගිකයේදී රසායන ද්‍රව්‍ය භාවිත නොවේ.", "ආකෘති කට්ටලවල කුඩා කොටස් ඇත. ඒවා මුඛයෙන් ඈත් කර තබා, ගණන් කර නැවත පෙට්ටියට දමන්න.", "බෝල පිපිරීම වැළැක්වීමට කූරු සෙමින් ඇතුළු කරන්න."],
+  logH: "නිරීක්ෂණ සටහන", resH: "ප්‍රතිඵල වගුව", thMol: "විශේෂය", thPairs: "බන්ධන / එකසර යුගල", thEPG: "ඉලෙක්ට්‍රෝන යුගල ජ්‍යාමිතිය", thShape: "හැඩය", thAngle: "බන්ධන කෝණය", thPol: "ධ්‍රැවීයතාව", pend: "තවම ගොඩනගා නැත",
+  coloursH: "වර්ණ", noColour: "මෙම ප්‍රායෝගිකයේ වර්ණ වෙනසක් නැත. පහත වර්ණ පරමාණු වෙන් කර හඳුනා ගැනීමට භාවිත කරන ආකෘති කට්ටලයේ වර්ණ වන අතර, ඒ සෑම එකක්ම වචනයෙන් ද බෝලය මත සංකේතයෙන් ද දක්වා ඇත.",
+  keyH: "පරමාණු වර්ණ සටහන", snapH: "දෘශ්‍යමාන වෙනස: හැඩයට පිහිටීම", snapIntro: "අවසන් කොටස එක් කළ විට ඉලෙක්ට්‍රෝන යුගල එකිනෙකින් ඈත් වී VSEPR හැඩය ගනී. වත්මන් අණුව සඳහා ස්ලයිඩරයෙන් එය නැවත බලන්න.",
+  play: "සෙමින් ධාවනය", pause: "නවතන්න", snapNone: "එහි පිහිටීම නැවත බැලීමට වත්මන් අණුව ගොඩනගන්න.", snapP: "{p}% ක් ඈත් වී ඇත",
+  quizH: "දැනුම පරීක්ෂාව", tryAgain: "නැවත උත්සාහ කරන්න", best: "උපරිම {p}%", scoreLeft: "ඉතිරි {n}", correct: "නිවැරදියි. ", notQuite: "තවම නිවැරදි නැත. ", tDone: "විශේෂ 20 ම ගොඩනගා අවසන්! දැන් ප්‍රශ්න ටැබය උත්සාහ කරන්න.",
+  g: { lin: "රේඛීය", tp: "තලීය ත්‍රිකෝණාකාර", tet: "චතුස්තලීය", tbp: "ත්‍රිකෝණාකාර ද්විපිරමිඩාකාර", oct: "අෂ්ටතලීය", none: "නැත (මධ්‍ය පරමාණුවක් නැත)", bent: "කෝණික (V-හැඩැති)", tpyr: "ත්‍රිකෝණාකාර පිරමිඩාකාර", seesaw: "සී-සෝ හැඩැති", tshape: "T-හැඩැති", sqpyr: "සමචතුරස්‍රාකාර පිරමිඩාකාර", sqpl: "තලීය සමචතුරස්‍රාකාර" },
+  a: { a180: "180°", a120: "120°", a117: "ආසන්න වශයෙන් 117° (120° ට අඩු)", a1095: "109.5°", a107: "ආසන්න වශයෙන් 107°", a1045: "ආසන්න වශයෙන් 104.5°", a100: "ආසන්න වශයෙන් 100°", a90: "90°", aSeesaw: "ආසන්න වශයෙන් 102° සහ 173°", aT: "ආසන්න වශයෙන් 87.5° (90° ට අඩු)", aSqPyr: "ආසන්න වශයෙන් 82° (90° ට අඩු)", aNone: "බන්ධන කෝණයක් නැත (එක් බන්ධනයක් පමණි)" },
+  el: { H: ["හයිඩ්‍රජන්", "සුදු"], Be: ["බෙරිලියම්", "අළු-කොළ"], B: ["බෝරෝන්", "ළා රෝස-තැඹිලි"], C: ["කාබන්", "කළු"], N: ["නයිට්‍රජන්", "නිල්"], O: ["ඔක්සිජන්", "රතු"], F: ["ෆ්ලෝරීන්", "ළා කොළ"], Cl: ["ක්ලෝරීන්", "කොළ"], P: ["පොස්පරස්", "තැඹිලි"], S: ["සල්ෆර්", "කහ"], Xe: ["සෙනෝන්", "නිල්-කොළ"], I: ["අයඩීන්", "දම්"], lp: ["එකසර යුගලය", "පාරභාසක දම් පැහැති පෙත්ත"] },
+  quiz: [
+    { q: "NH₃ හි හැඩය:", o: ["තලීය ත්‍රිකෝණාකාර", "ත්‍රිකෝණාකාර පිරමිඩාකාර", "චතුස්තලීය", "කෝණික"], e: "යුගල 4, එකසර යුගල 1." },
+    { q: "XeF₄ හි හැඩය:", o: ["චතුස්තලීය", "සී-සෝ", "තලීය සමචතුරස්‍රාකාර", "අෂ්ටතලීය"], e: "යුගල 6, එකිනෙකට ප්‍රතිවිරුද්ධව එකසර යුගල 2." },
+    { q: "H₂O හි බන්ධන කෝණය 109.5° ට වඩා අඩු වන්නේ…", o: ["එකසර යුගල බන්ධන යුගලවලට වඩා ප්‍රබලව විකර්ෂණය කරන නිසා", "O කුඩා නිසා", "H කුඩා නිසා", "එය අයනික නිසා"], e: "එකසර–එකසර > එකසර–බන්ධන > බන්ධන–බන්ධන විකර්ෂණය." },
+    { q: "CO₂ නිර්ධ්‍රැවීය වන්නේ…", o: ["C=O බන්ධන නිර්ධ්‍රැවීය නිසා", "එය රේඛීය නිසා බන්ධන ද්විධ්‍රැව අවලංගු වන බැවින්", "එය වායුවක් නිසා", "එහි එකසර යුගල ඇති නිසා"], e: "සමමිතිය නිසා ද්විධ්‍රැව අවලංගු වේ." },
+  ],
+},
+ta: {
+  eyebrow: "க.பொ.த (உ/த) இரசாயனவியல் · அலகு 02 · கட்டமைப்பும் பிணைப்பும் · பரிசோதனை 2", title: "மூலக்கூறுகளினதும் அயன்களினதும் வடிவங்கள் (VSEPR)", student: "மாணவர்: {name}{cls}", reset: "மீண்டும் தொடங்கு",
+  molL: "மூலக்கூறு அல்லது அயன்", prev: "← முந்தையது", nextB: "அடுத்தது →", extra: "மேலதிகம்", viewL: "தோற்றம்", autoRot: "தானாகச் சுழல்", resetView: "தோற்றத்தை மீளமை", dipoles: "பிணைப்பு இருமுனைவுகள்", angles: "பிணைப்புக் கோணங்கள்",
+  rotHint: "சுழற்ற இழுக்கவும்", canvasAria: "தெரிவு செய்த மூலக்கூறின் அல்லது அயனின் முப்பரிமாண மாதிரி. சுழற்ற இழுக்கவும். அதைக் கட்ட அணுக்களையும் தனிச்சோடிகளையும் இங்கே விடவும்.",
+  stA: "மைய அணு", stB: "சோடிகளை எண்ணு", stC: "கட்டு", stD: "பெயரிடு", stE: "முனைவு",
+  aQ: "{f} இல் {c} இற்கான பந்தைத் தெரிவு செய்க. {c} ஐச் சூழவுள்ள ஒவ்வோர் இலத்திரன் சோடிக்கும் ஒரு துளை தேவை.", aQd: "{f} இல் இரண்டு அணுக்கள் மட்டுமே உள்ளன. அவற்றை இணைக்கும் வழியைத் தெரிவு செய்க.",
+  holes: "{n} துளைகள்", diaBall: "மைய அணு இல்லை (இரு அணுக்களை இணை)",
+  aHint1: "சரியில்லை. {c} மீதுள்ள ஒவ்வொரு பிணைப்புக்கும் ஒவ்வொரு தனிச்சோடிக்கும் தனித் துளை தேவை.", aHint2: "{f} இல் {c} இற்கு {b} பிணைப்புச் சோடி(கள்) மற்றும் {lp} தனிச்சோடி(கள்) உள்ளன, எனவே அதன் பந்துக்கு {sn} துளைகள் தேவை.",
+  aDiaWrong: "{f} இற்கு மைய அணு ({c}) உள்ளது; ஏனைய அணுக்கள் அதைச் சூழ்ந்துள்ளன.", aWrongDia: "{f} இல் இரண்டு அணுக்கள் மட்டுமே உள்ளதால் மைய அணு இல்லை. இரு அணுக்களையும் இணைக்க.",
+  bQ: "{c} மீதுள்ள இலத்திரன் சோடிகளை எண்ணுக. இரட்டை அல்லது மும்மைப் பிணைப்பை ஒரு பிணைப்புச் சோடியாக எண்ணுக.", bQd: "இரு {e} அணுக்களுக்கிடையிலான பகிர்ந்த சோடிகளையும் ஒவ்வோர் அணுவிலுமுள்ள தனிச்சோடிகளையும் எண்ணுக.",
+  fSN: "{c} ஐச் சூழவுள்ள இலத்திரன் சோடிகள்", fBP: "பிணைப்புச் சோடிகள்", fLP: "{c} மீதுள்ள தனிச்சோடிகள்", fShared: "அணுக்களுக்கிடையிலான பகிர்ந்த சோடிகள்", fLPeach: "ஒவ்வோர் அணுவிலுமுள்ள தனிச்சோடிகள்", choose: "தெரிவு…",
+  check: "சரிபார்", working: "தீர்வைக் காட்டு", bBad: "சில எண்கள் சரியில்லை. பிழையானவை சிவப்பில் குறிக்கப்பட்டுள்ளன.",
+  wk: "{c} இடம் {v} வலுவளவு இலத்திரன்கள் உள்ளன. அவற்றில் {u} பிணைப்புகளுக்குப் பயன்படுகின்றன ({bonds}){fc}. தனிச்சோடிகள் = ({v} − {u}{fcm}) ÷ 2 = {lp}. இலத்திரன் சோடிகள் = பிணைப்புச் சோடிகள் {b} + தனிச்சோடிகள் {lp} = {sn}.",
+  wkFC: ", மேலும் {c} மீது +1 முறைசார் ஏற்றம் உள்ளது", wkD: "ஒவ்வொரு {e} அணுவிலும் {v} வலுவளவு இலத்திரன்(கள்) உள்ளன. இரு அணுக்களும் {s} சோடி(களை)ப் பகிர்கின்றன; ஒவ்வோர் அணுவிலும் {lp} தனிச்சோடி(கள்) எஞ்சுகின்றன.",
+  cQ: "{n} {e} அணு(க்)களையும் {lp} தனிச்சோடி(களை)யும் {c} மீது இழுத்து விடுக. ஒரு பகுதியைத் தட்டியும் சேர்க்கலாம்.", cQd: "இன்னும் ஒரு {e} அணுவை முதல் அணுவின் மீது இழுத்து விடுக.",
+  lonePair: "தனிச்சோடி", undo: "செயல்தவிர்", added: "{n} பகுதிகளில் {k} சேர்க்கப்பட்டன",
+  cWrongEl: "{f} இல் {c} ஐச் சூழ்ந்திருப்பவை {e} அணுக்கள், {x} அல்ல.", cTooMany: "எல்லா {e} அணுக்களும் ஏற்கனவே இணைக்கப்பட்டுள்ளன. இப்போது தனிச்சோடிகளைச் சேர்க்க.", cTooManyLP: "{f} இல் {c} இற்கு {lp} தனிச்சோடி(கள்) மட்டுமே உள்ளன.", cNoLP: "{f} இல் {c} இற்குத் தனிச்சோடிகள் இல்லை; எனவே ஒவ்வொரு துளையிலும் ஓர் அணு உள்ளது.",
+  cDiaLP: "இரு அணு மூலக்கூறுக்கு அணுக்களை மட்டும் இணைக்க. தனிச்சோடிகள் நேர்கோட்டின் வடிவத்தை மாற்ற முடியாது.", cDiaWrong: "{f} இரண்டு {e} அணுக்களால் ஆனது.", cOrder: "முதலில் இப்படியை முடிக்க: {s}.",
+  snapped: "மாதிரி வடிவத்துக்கு வந்தது: இலத்திரன் சோடிகள் இயன்றவரை ஒன்றையொன்று விலகிச் சென்றன.",
+  fEPG: "இலத்திரன் சோடிக் கேத்திரகணிதம்", fShape: "வடிவம்", fAngle: "பிணைப்புக் கோணம்",
+  dHintEPG: "இலத்திரன் சோடிக் கேத்திரகணிதம் தனிச்சோடிகள் உட்பட {c} மீதுள்ள எல்லா {sn} இலத்திரன் சோடிகளையும் கருதுகிறது.", dHintShape: "வடிவம் அணுக்களின் அமைவைப் பெயரிடுகிறது. தனிச்சோடிகள் உள்ளன, ஆனால் வடிவப் பெயரில் சேர்க்கப்படுவதில்லை.",
+  dHintAngle: "மாதிரியிலுள்ள கோணத்தைப் பாருங்கள். தனிச்சோடிகள் பிணைப்புச் சோடிகளை விட வலிமையாகத் தள்ளுவதால் பிணைப்புக் கோணங்கள் குறைகின்றன.", dOk: "சரி.",
+  eQ: "{f} முனைவுள்ளதா, முனைவற்றதா? தீர்மானிக்கப் பிணைப்பு இருமுனைவுகளை இயக்குக.", polar: "முனைவுள்ள", nonpolar: "முனைவற்ற",
+  eBadPolar: "பிணைப்பு இருமுனைவுகள் சமச்சீராக அமைந்துள்ளதால் ஒன்றையொன்று இரத்துச் செய்கின்றன. {f} இற்கு விளையுள் இருமுனைவு இல்லை.", eBadNon: "இருமுனைவுகள் இரத்தாவதில்லை. {why}", whyLP: "தனிச்சோடி(கள்) வடிவத்தைச் சமச்சீரற்றதாக்குகின்றன.", whyO3: "மைய O மீது + முறைசார் ஏற்றம் உள்ளது; இரு முனை O அணுக்களும் − ஏற்றத்தைப் பகிர்கின்றன.",
+  eDiaBad: "இரு அணுக்களும் ஒரே மூலகம் என்பதால் பிணைப்பு இலத்திரன்கள் சமமாகப் பகிரப்படுகின்றன.", ionNote: "அயனுக்கு, முனைவற்றது என்பது ஏற்றம் சமச்சீராகப் பரவியுள்ளது என்பதாகும்.",
+  doneT: "{f} முடிந்தது.", nextMol: "அடுத்த மூலக்கூறு →",
+  logRow: "{f}: {sn} இலத்திரன் சோடிகள் ({b} பிணைப்புச் சோடிகள், {lp} தனிச்சோடிகள்). இலத்திரன் சோடிக் கேத்திரகணிதம் {g}; வடிவம் {s}; பிணைப்புக் கோணம் {a}; {p}.", logDia: "{f}: {s} சோடி(களை)ப் பகிரும் இரு அணுக்கள். வடிவம் நேர்கோட்டு; முனைவற்றது.",
+  chipPairs: "{sn} சோடிகள் · {b} பிணைப்பு · {lp} தனி", chipNet0: "விளையுள் இருமுனைவு = 0", chipNet: "விளையுள் இருமுனைவு ≠ 0",
+  lbNet: "விளையுள் இருமுனைவு", lbLP: "தனிச்சோடி",
+  tabGuide: "வழிகாட்டி", tabObs: "அவதானிப்புகள்", tabColours: "நிறங்கள்", tabQuiz: "வினாக்கள்",
+  aimH: "நோக்கம்", aim: "மூலக்கூறுகளினதும் அயன்களினதும் மாதிரிகளைக் கட்டி, VSEPR கொள்கையைப் பயன்படுத்தி அவற்றின் இலத்திரன் சோடிக் கேத்திரகணிதத்தையும் வடிவத்தையும் உய்த்தறிதல்.",
+  appH: "உபகரணங்கள்", app: ["மூலக்கூற்று மாதிரித் தொகுதி", "2–6 துளைகளுள்ள பந்துகள்", "குச்சிகள்", "தனிச்சோடிப் பலூன்கள்"],
+  procH: "செய்முறை", steps: ["மைய அணுவைத் தெரிவு செய்க (சரியான எண்ணிக்கைத் துளைகளுள்ள பந்து)", "வலுவளவு ஓட்டு இலத்திரன் சோடிகள், பிணைப்புச் சோடிகள், தனிச்சோடிகளை எண்ணுக", "O₃, BeCl₂, BF₃, CH₄, NH₃, H₂O, PCl₃, SF₆, SF₄, ClF₃, XeF₂, XeF₄, IF₅, NH₄⁺, SO₄²⁻, CO₃²⁻, NO₃⁻, O₂, N₂, H₂ ஆகியவற்றைக் கட்டுக ({n}/20 முடிந்தது)", "இலத்திரன் சோடிக் கேத்திரகணிதத்தையும் வடிவத்தையும் பெயரிட்டுப் பிணைப்புக் கோணங்களை ஒப்பிடுக", "சமச்சீரிலிருந்து முனைவைத் தீர்மானிக்க"],
+  ruleH: "VSEPR விதி", rule: "மைய அணுவைச் சூழவுள்ள இலத்திரன் சோடிகள் ஒன்றையொன்று தள்ளி இயன்றவரை விலகியிருக்கின்றன. தள்ளுகை: தனி–தனி > தனி–பிணைப்பு > பிணைப்பு–பிணைப்பு.",
+  safeH: "பாதுகாப்பு", safe: ["இச்செய்முறையில் இரசாயனங்கள் பயன்படுத்தப்படுவதில்லை.", "மாதிரித் தொகுதிகளில் சிறிய பகுதிகள் உள்ளன. அவற்றை வாயிலிருந்து விலக்கி வைத்து, எண்ணிப் பெட்டியில் மீண்டும் இடுக.", "பந்துகள் வெடிக்காமலிருக்கக் குச்சிகளை மெதுவாகச் செருகுக."],
+  logH: "அவதானிப்புப் பதிவு", resH: "முடிவுகள் அட்டவணை", thMol: "இனம்", thPairs: "பிணைப்பு / தனிச் சோடிகள்", thEPG: "இலத்திரன் சோடிக் கேத்திரகணிதம்", thShape: "வடிவம்", thAngle: "பிணைப்புக் கோணம்", thPol: "முனைவு", pend: "இன்னும் கட்டவில்லை",
+  coloursH: "நிறங்கள்", noColour: "இச்செய்முறையில் நிறமாற்றம் இல்லை. கீழுள்ள நிறங்கள் அணுக்களை வேறுபடுத்தப் பயன்படும் மாதிரித் தொகுதி நிறங்கள்; ஒவ்வொன்றும் சொல்லாலும் பந்திலுள்ள குறியீட்டாலும் காட்டப்பட்டுள்ளது.",
+  keyH: "அணு நிறக் குறிப்பு", snapH: "காணக்கூடிய மாற்றம்: வடிவத்துக்கு வருதல்", snapIntro: "கடைசிப் பகுதி சேர்க்கப்படும்போது இலத்திரன் சோடிகள் விலகி VSEPR வடிவத்தை அடைகின்றன. தற்போதைய மூலக்கூறுக்கு வழுக்கியால் அதை மீண்டும் பாருங்கள்.",
+  play: "மெதுவாக இயக்கு", pause: "நிறுத்து", snapNone: "இதை மீண்டும் பார்க்கத் தற்போதைய மூலக்கூறைக் கட்டுக.", snapP: "{p}% விலகியுள்ளது",
+  quizH: "அறிவுச் சோதனை", tryAgain: "மீண்டும் முயல்க", best: "அதிகூடியது {p}%", scoreLeft: "{n} மீதம்", correct: "சரி. ", notQuite: "சரியில்லை. ", tDone: "20 உம் கட்டி முடிந்தது! இப்போது வினாக்கள் தாவலை முயல்க.",
+  g: { lin: "நேர்கோட்டு", tp: "தள முக்கோணி", tet: "நான்முகி", tbp: "முக்கோண இருகூம்பகம்", oct: "எண்முகி", none: "இல்லை (மைய அணு இல்லை)", bent: "கோணல் (V-வடிவ)", tpyr: "முக்கோணக் கூம்பகம்", seesaw: "சீ-சோ வடிவம்", tshape: "T-வடிவம்", sqpyr: "சதுரக் கூம்பகம்", sqpl: "தளச் சதுரம்" },
+  a: { a180: "180°", a120: "120°", a117: "சுமார் 117° (120° இலும் குறைவு)", a1095: "109.5°", a107: "சுமார் 107°", a1045: "சுமார் 104.5°", a100: "சுமார் 100°", a90: "90°", aSeesaw: "சுமார் 102° உம் 173° உம்", aT: "சுமார் 87.5° (90° இலும் குறைவு)", aSqPyr: "சுமார் 82° (90° இலும் குறைவு)", aNone: "பிணைப்புக் கோணம் இல்லை (ஒரு பிணைப்பு மட்டும்)" },
+  el: { H: ["ஐதரசன்", "வெள்ளை"], Be: ["பெரிலியம்", "சாம்பல்-பச்சை"], B: ["போரன்", "இளஞ்சிவப்பு-செம்மஞ்சள்"], C: ["காபன்", "கருப்பு"], N: ["நைதரசன்", "நீலம்"], O: ["ஒட்சிசன்", "சிவப்பு"], F: ["புளோரின்", "வெளிர் பச்சை"], Cl: ["குளோரின்", "பச்சை"], P: ["பொசுபரசு", "செம்மஞ்சள்"], S: ["கந்தகம்", "மஞ்சள்"], Xe: ["செனன்", "நீலப்பச்சை"], I: ["அயடின்", "ஊதா"], lp: ["தனிச்சோடி", "ஒளிகசியும் ஊதா மடல்"] },
+  quiz: [
+    { q: "NH₃ இன் வடிவம்:", o: ["தள முக்கோணி", "முக்கோணக் கூம்பகம்", "நான்முகி", "கோணல்"], e: "4 சோடிகள், 1 தனிச்சோடி." },
+    { q: "XeF₄ இன் வடிவம்:", o: ["நான்முகி", "சீ-சோ", "தளச் சதுரம்", "எண்முகி"], e: "6 சோடிகள், ஒன்றுக்கொன்று எதிரே 2 தனிச்சோடிகள்." },
+    { q: "H₂O இல் பிணைப்புக் கோணம் 109.5° இலும் குறைவாக இருப்பதற்குக் காரணம்…", o: ["தனிச்சோடிகள் பிணைப்புச் சோடிகளை விட வலிமையாகத் தள்ளுவது", "O சிறியது", "H சிறியது", "அது அயன் சேர்வை"], e: "தனி–தனி > தனி–பிணைப்பு > பிணைப்பு–பிணைப்பு தள்ளுகை." },
+    { q: "CO₂ முனைவற்றது, ஏனெனில்…", o: ["C=O பிணைப்புகள் முனைவற்றவை", "அது நேர்கோட்டு வடிவம் என்பதால் பிணைப்பு இருமுனைவுகள் இரத்தாகின்றன", "அது ஒரு வாயு", "அதில் தனிச்சோடிகள் உள்ளன"], e: "சமச்சீர் இருமுனைவுகளை இரத்துச் செய்கிறது." },
+  ],
+},
+};
+const QUIZ_ANS = [1, 2, 0, 1];
+let LANG = "en";
+try { const s = localStorage.getItem("svl-lang") || localStorage.getItem("kmno4-lang"); if (s && I18N[s]) LANG = s; else { const n = (navigator.language || "").slice(0, 2); if (I18N[n]) LANG = n; } } catch (e) {}
+function t(key, p) { let s = I18N[LANG][key]; if (s === undefined) s = I18N.en[key]; if (s === undefined) return key; if (p && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (_, k) => p[k] ?? ""); return s; }
+const gN = k => (I18N[LANG].g || I18N.en.g)[k], aN = k => (I18N[LANG].a || I18N.en.a)[k], elN = k => (I18N[LANG].el || I18N.en.el)[k];
+
+// =====================================================================
+// DATA
+// =====================================================================
+const EL = {
+  H: { col: "#F4F4F2", r: .27, en: 2.20, ink: "#222" }, Be: { col: "#8FB08F", r: .4, en: 1.57, ink: "#111" }, B: { col: "#F5A97F", r: .4, en: 2.04, ink: "#111" },
+  C: { col: "#3a3f44", r: .42, en: 2.55, ink: "#fff" }, N: { col: "#3058E8", r: .42, en: 3.04, ink: "#fff" }, O: { col: "#E03A35", r: .42, en: 3.44, ink: "#fff" },
+  F: { col: "#9BE07A", r: .38, en: 3.98, ink: "#111" }, Cl: { col: "#2EA043", r: .46, en: 3.16, ink: "#fff" }, P: { col: "#F28C28", r: .5, en: 2.19, ink: "#111" },
+  S: { col: "#F2C81F", r: .5, en: 2.58, ink: "#111" }, Xe: { col: "#3BA7B0", r: .56, en: 2.60, ink: "#111" }, I: { col: "#7B3FA0", r: .56, en: 2.66, ink: "#fff" },
+};
+const M = (id, f, c, v, L, bo, lp, eg, sh, an, polar, o = {}) => ({ id, f, c, v, L, bo, lp, sn: bo.length + lp, eg, sh, an, polar, fc: 0, ...o });
+const MOLS = [
+  M("O3", "O₃", "O", 6, "O", [2, 1], 1, "tp", "bent", "a117", true, { fc: 1, target: 116.8, o3: true }),
+  M("BeCl2", "BeCl₂", "Be", 2, "Cl", [1, 1], 0, "lin", "lin", "a180", false),
+  M("BF3", "BF₃", "B", 3, "F", [1, 1, 1], 0, "tp", "tp", "a120", false),
+  M("CH4", "CH₄", "C", 4, "H", [1, 1, 1, 1], 0, "tet", "tet", "a1095", false),
+  M("NH3", "NH₃", "N", 5, "H", [1, 1, 1], 1, "tet", "tpyr", "a107", true, { target: 107 }),
+  M("H2O", "H₂O", "O", 6, "H", [1, 1], 2, "tet", "bent", "a1045", true, { target: 104.5 }),
+  M("PCl3", "PCl₃", "P", 5, "Cl", [1, 1, 1], 1, "tet", "tpyr", "a100", true, { target: 100.3 }),
+  M("SF6", "SF₆", "S", 6, "F", [1, 1, 1, 1, 1, 1], 0, "oct", "oct", "a90", false),
+  M("SF4", "SF₄", "S", 6, "F", [1, 1, 1, 1], 1, "tbp", "seesaw", "aSeesaw", true, { target: 101.6 }),
+  M("ClF3", "ClF₃", "Cl", 7, "F", [1, 1, 1], 2, "tbp", "tshape", "aT", true, { target: 87.5 }),
+  M("XeF2", "XeF₂", "Xe", 8, "F", [1, 1], 3, "tbp", "lin", "a180", false),
+  M("XeF4", "XeF₄", "Xe", 8, "F", [1, 1, 1, 1], 2, "oct", "sqpl", "a90", false, { meas: [0, 2] }),
+  M("IF5", "IF₅", "I", 7, "F", [1, 1, 1, 1, 1], 1, "oct", "sqpyr", "aSqPyr", true, { target: 81.9 }),
+  M("NH4", "NH₄⁺", "N", 5, "H", [1, 1, 1, 1], 0, "tet", "tet", "a1095", false, { fc: 1, ion: true }),
+  M("SO4", "SO₄²⁻", "S", 6, "O", [2, 2, 1, 1], 0, "tet", "tet", "a1095", false, { ion: true }),
+  M("CO3", "CO₃²⁻", "C", 4, "O", [2, 1, 1], 0, "tp", "tp", "a120", false, { ion: true }),
+  M("NO3", "NO₃⁻", "N", 5, "O", [2, 1, 1], 0, "tp", "tp", "a120", false, { fc: 1, ion: true }),
+  M("O2", "O₂", "O", 6, "O", [2], 0, "none", "lin", "aNone", false, { dia: true, lpEach: 2 }),
+  M("N2", "N₂", "N", 5, "N", [3], 0, "none", "lin", "aNone", false, { dia: true, lpEach: 1 }),
+  M("H2", "H₂", "H", 1, "H", [1], 0, "none", "lin", "aNone", false, { dia: true, lpEach: 0 }),
+  M("CO2", "CO₂", "C", 4, "O", [2, 2], 0, "lin", "lin", "a180", false, { extra: true }),
+];
+const HANDBOOK = MOLS.filter(m => !m.extra).map(m => m.id);
+const EG_OPTS = ["lin", "tp", "tet", "tbp", "oct", "none"], SH_OPTS = ["lin", "bent", "tp", "tet", "tpyr", "seesaw", "tshape", "oct", "sqpyr", "sqpl"], AN_OPTS = ["a180", "a120", "a117", "a1095", "a107", "a1045", "a100", "a90", "aSeesaw", "aT", "aSqPyr", "aNone"];
+const PALETTE = ["H", "N", "O", "F", "Cl", "lp"];
+
+// vector helpers
+const V = (x, y, z) => [x, y, z];
+const add = (a, b) => [a[0] + b[0], a[1] + b[1], a[2] + b[2]], sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]], mul = (a, s) => [a[0] * s, a[1] * s, a[2] * s];
+const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2], len = a => Math.sqrt(dot(a, a)), nrm = a => { const l = len(a) || 1; return mul(a, 1 / l); };
+const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+const angDeg = (a, b) => Math.acos(Math.max(-1, Math.min(1, dot(nrm(a), nrm(b))))) * 180 / Math.PI;
+
+function baseSlots(sn) {
+  if (sn === 2) return [V(1, 0, 0), V(-1, 0, 0)];
+  if (sn === 3) return [V(0, 1, 0), V(.8660254, -.5, 0), V(-.8660254, -.5, 0)];
+  if (sn === 4) { const r = Math.sqrt(8 / 9); return [V(0, 1, 0), ...[90, 210, 330].map(a => V(r * Math.cos(a * Math.PI / 180), -1 / 3, r * Math.sin(a * Math.PI / 180)))]; }
+  if (sn === 5) return [...[90, 210, 330].map(a => V(Math.cos(a * Math.PI / 180), 0, Math.sin(a * Math.PI / 180))), V(0, 1, 0), V(0, -1, 0)];
+  if (sn === 6) return [V(0, 1, 0), V(0, -1, 0), V(1, 0, 0), V(-1, 0, 0), V(0, 0, 1), V(0, 0, -1)];
+  return [V(1, 0, 0)];
+}
+// final directions: lone-pair slots first in the order, then bond slots; bonds pushed away from lone pairs to match the real angle
+function finalGeom(m) {
+  if (m.dia) return { bonds: [V(1, 0, 0)], lps: [] };
+  const s = baseSlots(m.sn), lps = s.slice(0, m.lp), bonds0 = s.slice(m.lp);
+  const L = lps.reduce((a, b) => add(a, b), V(0, 0, 0));
+  const meas = m.meas || [0, 1];
+  const push = k => bonds0.map(b => nrm(sub(b, mul(L, k))));
+  let k = 0;
+  if (m.target && len(L) > 1e-6) { let lo = 0, hi = 2.5; for (let i = 0; i < 50; i++) { const mid = (lo + hi) / 2, b = push(mid), a = angDeg(b[meas[0]], b[meas[1]]); if (a > m.target) lo = mid; else hi = mid; } k = (lo + hi) / 2; }
+  return { bonds: push(k), lps: lps.map(l => nrm(l)), meas };
+}
+MOLS.forEach(m => m.geo = finalGeom(m));
+
+// =====================================================================
+// STATE
+// =====================================================================
+const freshRec = () => ({ stage: 0, aTries: 0, ball: null, counts: null, items: [], snapT: -1, snapped: false, named: null, pol: null, done: false, showWork: false, bWrong: null, dNote: null, eNote: null });
+let S;
+function freshState() { const recs = {}; MOLS.forEach(m => recs[m.id] = freshRec()); return { cur: "O3", recs, ev: {}, logs: [], answered: {}, celebrated: false, confetti: [] }; }
+function loadProgress() {
+  try { const p = JSON.parse(localStorage.getItem(PROG_KEY) || "null"); if (!p || !p.done) return;
+    p.done.forEach(id => { const m = MOLS.find(x => x.id === id); if (m) completeRec(m, true); }); S.ev = Object.assign(S.ev, p.ev || {}); S.celebrated = !!p.celebrated;
+  } catch (e) {}
+}
+function saveProgress() { try { localStorage.setItem(PROG_KEY, JSON.stringify({ done: MOLS.filter(m => S.recs[m.id].done).map(m => m.id), ev: S.ev, celebrated: S.celebrated })); } catch (e) {} }
+function completeRec(m, silent) {
+  const r = S.recs[m.id]; r.stage = 5; r.ball = m.dia ? "dia" : m.sn; r.counts = true; r.done = true; r.snapped = true; r.snapT = 99; r.named = true; r.pol = m.polar;
+  r.items = []; const g = m.geo; g.bonds.forEach((d, i) => r.items.push({ kind: "atom", el: m.L, from: d, to: d })); g.lps.forEach(d => r.items.push({ kind: "lp", from: d, to: d }));
+}
+const mol = () => MOLS.find(m => m.id === S.cur), rec = () => S.recs[S.cur];
+
+// =====================================================================
+// 3D RENDERER (hand-written canvas)
+// =====================================================================
+const cv = $("cv"), ctx = cv.getContext("2d"), vp = $("viewport");
+let dpr = 1, cw = 0, ch = 0, Rm = null, autoRot = true, showDip = false, showAng = true, dragRot = null;
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+if (reduceMotion) autoRot = false;
+function rotX(a) { const c = Math.cos(a), s = Math.sin(a); return [[1, 0, 0], [0, c, -s], [0, s, c]]; }
+function rotY(a) { const c = Math.cos(a), s = Math.sin(a); return [[c, 0, s], [0, 1, 0], [-s, 0, c]]; }
+function mm(A, B) { return A.map(r => [0, 1, 2].map(j => r[0] * B[0][j] + r[1] * B[1][j] + r[2] * B[2][j])); }
+function mv(A, v) { return A.map(r => r[0] * v[0] + r[1] * v[1] + r[2] * v[2]); }
+const tr = A => [[A[0][0], A[1][0], A[2][0]], [A[0][1], A[1][1], A[2][1]], [A[0][2], A[1][2], A[2][2]]];
+function defaultR() { return mm(rotX(0.32), rotY(-0.55)); }
+Rm = defaultR();
+function resize() { const r = vp.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2.5); cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); }
+new ResizeObserver(resize).observe(vp);
+const hexRGB = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const shade = (h, f) => { const c = hexRGB(h); return `rgb(${c.map(v => Math.round(f > 0 ? v + (255 - v) * f : v * (1 + f))).join(",")})`; };
+const ease = x => x < 0 ? 0 : x > 1 ? 1 : x * x * (3 - 2 * x);
+function dirAt(it, p) { if (p >= 1) return it.to; const e = ease(p); let d = add(mul(it.from, 1 - e), mul(it.to, e)); if (len(d) < 1e-3) d = add(d, V(0, 0, .05)); return nrm(d); }
+const BOND = 1.65, LPL = 1.0;
+
+// draws a molecule; p = snap progress (0 → loose, 1 → VSEPR)
+function drawModel(c, w, h, R, m, r, p, opt) {
+  const S0 = Math.min(w, h) * (m.sn >= 5 ? .23 : .27), cx = w / 2, cy = h / 2 + (opt.mini ? 0 : 6), Dp = 7;
+  const proj = v => { const q = mv(R, v), k = Dp / (Dp - q[2]); return { x: cx + q[0] * S0 * k, y: cy - q[1] * S0 * k, z: q[2], k }; };
+  const cpos = m.dia ? V(-BOND / 2, 0, 0) : V(0, 0, 0), objs = [];
+  const cEl = EL[m.c], cR = cEl.r * (m.dia ? 1 : 1.12);
+  const ballChosen = r.ball !== null;
+  objs.push({ z: proj(cpos).z, f: () => sphere(c, proj(cpos), cR * S0, m.c, ballChosen ? 1 : .55) });
+  // sockets (ball holes) before the model snaps
+  if (ballChosen && !r.snapped && !m.dia) {
+    baseSlots(m.sn).forEach(d => { const P = proj(add(cpos, mul(d, cR * .92))); objs.push({ z: P.z + .001, f: () => { if (mv(R, d)[2] < -0.15) return; c.fillStyle = "rgba(20,20,20,.75)"; c.beginPath(); c.arc(P.x, P.y, Math.max(2, S0 * .055 * P.k), 0, 7); c.fill(); } }); });
+  }
+  const bondDirs = [], lpDirs = [];
+  r.items.forEach((it, i) => {
+    const d = dirAt(it, r.snapped ? p : 0);
+    if (it.kind === "atom") {
+      const bi = bondDirs.length; bondDirs.push(d); const pos = add(cpos, mul(d, BOND)), L = EL[it.el], P = proj(pos), P0 = proj(cpos), bo = m.bo[bi] || 1;
+      const a = add(cpos, mul(d, cR * .8)), b = add(pos, mul(d, -L.r * .8));
+      objs.push({ z: (proj(a).z + proj(b).z) / 2 - .02, f: () => stick(c, proj(a), proj(b), m.c, it.el, S0 * .085, bo, S0) });
+      objs.push({ z: P.z, f: () => sphere(c, P, L.r * S0, it.el, 1) });
+    } else {
+      lpDirs.push(d); const ctr = add(cpos, mul(d, LPL * .72)), tip = add(cpos, mul(d, LPL * 1.25)), P = proj(ctr), T = proj(tip), B = proj(add(cpos, mul(d, cR * .6)));
+      objs.push({ z: P.z, f: () => lobe(c, B, P, T, S0) });
+    }
+  });
+  objs.sort((a, b) => a.z - b.z).forEach(o => o.f());
+  const done = r.snapped && p >= 1;
+  // angle arc
+  if (opt.angles && done && !m.dia && bondDirs.length >= 2) {
+    const [i, j] = m.geo.meas || [0, 1], A = bondDirs[i], Bv = bondDirs[j], rad = .78, pts = [];
+    for (let s = 0; s <= 24; s++) { const q = s / 24; pts.push(proj(add(cpos, mul(nrm(add(mul(A, 1 - q), mul(Bv, q))), rad)))); }
+    c.strokeStyle = "#b7791f"; c.lineWidth = 2.2; c.beginPath(); pts.forEach((P, k) => k ? c.lineTo(P.x, P.y) : c.moveTo(P.x, P.y)); c.stroke();
+    const mid = proj(add(cpos, mul(nrm(add(A, Bv)), rad + .42))), txt = angDeg(A, Bv).toFixed(1).replace(/\.0$/, "") + "°";
+    c.font = `600 ${Math.round(Math.max(12, S0 * .16))}px 'IBM Plex Mono', monospace`; c.textAlign = "center"; c.textBaseline = "middle";
+    const tw = c.measureText(txt).width; c.fillStyle = "rgba(14,26,43,.88)"; c.beginPath(); c.roundRect(mid.x - tw / 2 - 6, mid.y - 11, tw + 12, 22, 6); c.fill(); c.fillStyle = "#ffe08a"; c.fillText(txt, mid.x, mid.y);
+  }
+  // dipoles
+  if (opt.dipoles && done) {
+    bondDirs.forEach((d, i) => { const dEN = EL[m.L].en - EL[m.c].en; if (Math.abs(dEN) < 0.05) return;
+      const from = dEN > 0 ? add(cpos, mul(d, .35)) : add(cpos, mul(d, BOND - .35)), to = dEN > 0 ? add(cpos, mul(d, BOND - .3)) : add(cpos, mul(d, .3));
+      dipArrow(c, proj(from), proj(to), "#7b4fc4", 2.2, 11, true); });
+    let net = V(0, 0, 0);
+    if (m.o3) net = mul(lpDirs.reduce((a, b) => add(a, b), V(0, 0, 0)), -1);
+    else { bondDirs.forEach(d => { net = add(net, mul(d, EL[m.L].en - EL[m.c].en)); }); lpDirs.forEach(d => { net = add(net, mul(d, .9)); }); }
+    if (m.polar) { if (len(net) < .05) net = lpDirs.length ? lpDirs[0] : V(0, 1, 0); const n = nrm(net); dipArrow(c, proj(add(cpos, mul(n, -.25))), proj(add(cpos, mul(n, 1.9))), "#c2185b", 5, 18, true);
+      const lp = proj(add(cpos, mul(n, 2.15))); c.font = "600 13px 'IBM Plex Sans','Noto Sans Sinhala','Noto Sans Tamil',sans-serif"; c.fillStyle = "#c2185b"; c.textAlign = "center"; c.fillText(t("lbNet"), lp.x, lp.y); }
+  }
+}
+function sphere(c, P, r, el, alpha) {
+  const E = EL[el], rr = r * P.k; c.save(); c.globalAlpha = alpha;
+  const g = c.createRadialGradient(P.x - rr * .35, P.y - rr * .4, rr * .1, P.x, P.y, rr);
+  g.addColorStop(0, shade(E.col, .6)); g.addColorStop(.45, E.col); g.addColorStop(1, shade(E.col, -.45));
+  c.fillStyle = g; c.beginPath(); c.arc(P.x, P.y, rr, 0, 7); c.fill(); c.strokeStyle = "rgba(0,0,0,.25)"; c.lineWidth = 1; c.stroke();
+  if (rr > 9) { c.fillStyle = E.ink; c.font = `700 ${Math.round(rr * .62)}px 'IBM Plex Sans', sans-serif`; c.textAlign = "center"; c.textBaseline = "middle"; c.fillText(el, P.x, P.y + 1); }
+  c.restore();
+}
+function stick(c, A, B, ea, eb, wd, order, S0) {
+  const dx = B.x - A.x, dy = B.y - A.y, L = Math.hypot(dx, dy) || 1, nx = -dy / L, ny = dx / L, w = wd * (A.k + B.k) / 2;
+  const offs = order === 1 ? [0] : order === 2 ? [-.9, .9] : [-1.6, 0, 1.6];
+  const ww = order === 1 ? w : w * .62;
+  offs.forEach(o => { const ox = nx * o * ww, oy = ny * o * ww, M = { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 };
+    [[A, M, ea], [M, B, eb]].forEach(([P, Q, el]) => { const g = c.createLinearGradient(P.x + ox - nx * ww / 2, P.y + oy - ny * ww / 2, P.x + ox + nx * ww / 2, P.y + oy + ny * ww / 2);
+      const col = EL[el].col; g.addColorStop(0, shade(col, -.45)); g.addColorStop(.4, shade(col, .35)); g.addColorStop(1, shade(col, -.5));
+      c.strokeStyle = g; c.lineWidth = ww; c.lineCap = "butt"; c.beginPath(); c.moveTo(P.x + ox, P.y + oy); c.lineTo(Q.x + ox, Q.y + oy); c.stroke(); }); });
+}
+function lobe(c, B, P, T, S0) {
+  const dx = T.x - B.x, dy = T.y - B.y, Lp = Math.hypot(dx, dy), ang = Math.atan2(dy, dx), minor = S0 * .3 * P.k, major = Math.max(minor * .9, Lp * .55);
+  const cxp = (B.x + T.x) / 2, cyp = (B.y + T.y) / 2;
+  c.save(); c.translate(cxp, cyp); c.rotate(ang);
+  const g = c.createRadialGradient(major * .35, 0, 2, 0, 0, Math.max(major, minor)); g.addColorStop(0, "rgba(176,140,236,.62)"); g.addColorStop(1, "rgba(123,79,196,.22)");
+  c.fillStyle = g; c.beginPath(); c.ellipse(0, 0, major, minor, 0, 0, 7); c.fill(); c.strokeStyle = "rgba(123,79,196,.65)"; c.setLineDash([4, 3]); c.lineWidth = 1.2; c.stroke(); c.setLineDash([]);
+  c.fillStyle = "#4b2a85"; c.beginPath(); c.arc(major * .38, -minor * .28, Math.max(2, minor * .14), 0, 7); c.arc(major * .38, minor * .28, Math.max(2, minor * .14), 0, 7); c.fill();
+  c.restore();
+}
+function dipArrow(c, A, B, col, w, head, cross) {
+  const dx = B.x - A.x, dy = B.y - A.y, L = Math.hypot(dx, dy); if (L < 6) return; const ux = dx / L, uy = dy / L, ox = -uy * 9, oy = ux * 9;
+  const a = { x: A.x + ox, y: A.y + oy }, b = { x: B.x + ox, y: B.y + oy };
+  c.strokeStyle = col; c.fillStyle = col; c.lineWidth = w; c.lineCap = "round";
+  c.beginPath(); c.moveTo(a.x, a.y); c.lineTo(b.x - ux * head * .6, b.y - uy * head * .6); c.stroke();
+  c.beginPath(); c.moveTo(b.x, b.y); c.lineTo(b.x - ux * head - uy * head * .5, b.y - uy * head + ux * head * .5); c.lineTo(b.x - ux * head + uy * head * .5, b.y - uy * head - ux * head * .5); c.closePath(); c.fill();
+  if (cross) { const cx = a.x + ux * 7, cy = a.y + uy * 7; c.beginPath(); c.moveTo(cx - uy * 6, cy + ux * 6); c.lineTo(cx + uy * 6, cy - ux * 6); c.stroke(); }
+}
+
+let time = 0, last = performance.now(), uiT = 0;
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt;
+  const r = rec(), m = mol();
+  if (autoRot && !dragRot) Rm = mm(rotY(dt * .35), Rm);
+  if (r.snapped && r.snapT >= 0 && r.snapT < 1.7) { r.snapT += dt; if (r.snapT >= 1.7) onSnapDone(); }
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, cw, ch);
+  drawModel(ctx, cw, ch, Rm, m, r, r.snapped ? r.snapT / 1.6 : 0, { dipoles: showDip, angles: showAng });
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  S.confetti.forEach(p => { p.vy += 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-3, -1.5, 6, 3); ctx.restore(); });
+  S.confetti = S.confetti.filter(p => p.y < ch + 20);
+  if (playing) { const v = Math.min(1000, +$("replay").value + dt / 3 * 1000); $("replay").value = v; if (v >= 1000) { playing = false; renderReplayCtl(); } }
+  uiT += dt; if (uiT > 0.05 && !$("pane-colours").hidden) { uiT = 0; drawMini(); }
+  requestAnimationFrame(frame);
+}
+
+// =====================================================================
+// BUILDER LOGIC
+// =====================================================================
+const STAGES = ["stA", "stB", "stC", "stD", "stE"];
+function pickBall(v) {
+  const m = mol(), r = rec(), ok = m.dia ? v === "dia" : v === m.sn;
+  if (ok) { r.ball = v; r.stage = 1; S.ev.ball = 1; renderAll(); return; }
+  r.aTries++;
+  if (v === "dia") toast("aDiaWrong", "warn", 4200, P(m));
+  else if (m.dia) toast("aWrongDia", "warn", 4200, P(m));
+  else toast(r.aTries >= 2 ? "aHint2" : "aHint1", "warn", 5000, P(m));
+}
+function P(m) { return { f: m.f, c: m.c, e: m.L, b: m.bo.length, lp: m.lp, sn: m.sn, n: m.bo.length, v: m.v, s: m.bo[0] }; }
+function checkCounts() {
+  const m = mol(), r = rec(), vals = [...$("stagePanel").querySelectorAll("select[data-f]")].map(s => s.value === "" ? null : +s.value);
+  const want = m.dia ? [m.bo[0], m.lpEach] : [m.sn, m.bo.length, m.lp];
+  const wrong = vals.map((v, i) => v !== want[i]);
+  if (!wrong.some(Boolean)) { r.counts = true; r.stage = 2; S.ev.count = 1; r.bWrong = null; renderAll(); return; }
+  r.bWrong = wrong; r.bVals = vals; renderStage();
+}
+function addPiece(kind, drop) {
+  const m = mol(), r = rec();
+  if (r.stage < 2) return toast("cOrder", "warn", 3800, { s: t(STAGES[r.stage]) });
+  if (r.stage > 2) return;
+  const nA = r.items.filter(i => i.kind === "atom").length, nL = r.items.filter(i => i.kind === "lp").length, Pm = P(m);
+  if (kind === "lp") {
+    if (m.dia) return toast("cDiaLP", "warn", 4200);
+    if (m.lp === 0) return toast("cNoLP", "warn", 4000, Pm);
+    if (nL >= m.lp) return toast("cTooManyLP", "warn", 4000, Pm);
+  } else {
+    if (kind !== m.L) return toast(m.dia ? "cDiaWrong" : "cWrongEl", "warn", 4000, { ...Pm, x: kind });
+    if (nA >= m.bo.length) return toast("cTooMany", "warn", 4000, Pm);
+  }
+  // loose direction: where it was dropped, facing the viewer
+  let dcam;
+  if (drop) { const S0 = Math.min(cw, ch) * (m.sn >= 5 ? .23 : .27); let x = (drop.x - cw / 2) / S0, y = -(drop.y - ch / 2) / S0; const l = Math.hypot(x, y); if (l > .95) { x *= .95 / l; y *= .95 / l; } dcam = nrm(V(x, y, Math.sqrt(Math.max(.15, 1 - x * x - y * y)))); }
+  else { const a = Math.random() * Math.PI * 2; dcam = nrm(V(Math.cos(a) * .6, Math.sin(a) * .6, .8)); }
+  if (m.dia) dcam = mv(Rm, V(1, 0, 0));
+  const from = mv(tr(Rm), dcam);
+  const to = kind === "lp" ? m.geo.lps[nL] : m.geo.bonds[nA];
+  r.items.push({ kind: kind === "lp" ? "lp" : "atom", el: kind === "lp" ? null : kind, from, to });
+  if (r.items.length === m.bo.length + (m.dia ? 0 : m.lp)) { r.snapped = true; r.snapT = 0; if (reduceMotion) r.snapT = 1.69; }
+  renderStage(); renderChips();
+}
+function undoPiece() { const r = rec(); if (r.stage !== 2 || r.snapped) return; r.items.pop(); renderStage(); renderChips(); }
+function onSnapDone() { const r = rec(); if (r.stage === 2) { r.stage = 3; toast("snapped", "", 3200); renderAll(); } $("replay").value = 1000; }
+function checkNames() {
+  const m = mol(), r = rec(), sel = [...$("stagePanel").querySelectorAll("select[data-n]")].map(s => s.value);
+  const want = [m.eg, m.sh, m.an], wrong = sel.map((v, i) => v !== want[i]);
+  if (!wrong.some(Boolean)) { r.named = true; r.stage = 4; S.ev.named = 1; r.dNote = null; showAng = true; renderAll(); return; }
+  r.dSel = sel; r.dWrong = wrong; r.dNote = wrong[0] ? "dHintEPG" : wrong[1] ? "dHintShape" : "dHintAngle"; renderStage();
+}
+function choosePol(v) {
+  const m = mol(), r = rec();
+  if (v === m.polar) { r.pol = v; r.stage = 5; r.done = true; S.ev.polar = 1; r.eNote = null; finishMol(m); return; }
+  r.eNote = m.dia ? ["eDiaBad"] : v ? ["eBadPolar"] : ["eBadNon", m.o3 ? "whyO3" : "whyLP"]; showDip = true; renderStage(); renderView();
+}
+function finishMol(m) {
+  log(m.dia ? ["logDia", { f: m.f, s: m.bo[0] }] : ["logRow", { f: m.f, sn: m.sn, b: m.bo.length, lp: m.lp }, m.id]);
+  saveProgress(); renderAll();
+  const n = HANDBOOK.filter(id => S.recs[id].done).length;
+  if (n === 20 && !S.celebrated) { S.celebrated = true; saveProgress(); celebrate(); }
+}
+function celebrate() {
+  toast("tDone", "party", 5200); $("quizTab").classList.add("ping");
+  if (!reduceMotion) { const cols = ["#E03A35", "#3058E8", "#F2C81F", "#9BE07A", "#b08cec"]; for (let i = 0; i < 90; i++) S.confetti.push({ x: cw / 2 + (Math.random() - .5) * 200, y: ch * .3, vx: (Math.random() - .5) * 340, vy: -150 - Math.random() * 220, rot: Math.random() * 6, vr: (Math.random() - .5) * 10, c: cols[i % cols.length] }); }
+}
+function goMol(id) { S.cur = id; $("molSel").value = id; showDip = false; renderAll(); $("replay").value = 1000; }
+function step(d) { const i = MOLS.findIndex(m => m.id === S.cur), j = (i + d + MOLS.length) % MOLS.length; goMol(MOLS[j].id); }
+
+// =====================================================================
+// UI
+// =====================================================================
+let toastT;
+function toast(k, kind = "", ms = 3600, p) { const el = $("toast"); el.textContent = t(k, p); el.className = "toast show " + kind; clearTimeout(toastT); toastT = setTimeout(() => el.className = "toast " + kind, ms); }
+function log(...parts) { S.logs.unshift({ time: new Date().toTimeString().slice(0, 8), parts }); renderLog(); }
+function logText(parts) {
+  const [k, p, id] = parts; if (k !== "logRow") return t(k, p); const m = MOLS.find(x => x.id === id);
+  return t(k, { ...p, g: gN(m.eg), s: gN(m.sh), a: aN(m.an), p: t(m.polar ? "polar" : "nonpolar").toLowerCase() });
+}
+function renderLog() { const box = $("log"); box.innerHTML = ""; S.logs.forEach(e => { const d = document.createElement("div"), s = document.createElement("span"), m = document.createElement("div"); s.textContent = e.time; m.textContent = logText(e.parts); d.append(s, m); box.append(d); }); }
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c])); }
+function ballSVG(n) { const pts = n ? Array.from({ length: n }, (_, i) => { const a = -Math.PI / 2 + i * 2 * Math.PI / n; return `<circle cx="${14 + Math.cos(a) * 8}" cy="${14 + Math.sin(a) * 8}" r="2.3" fill="#111"/>`; }).join("") : "";
+  return n ? `<svg width="28" height="28" aria-hidden="true"><circle cx="14" cy="14" r="12" fill="#9aa5ab" stroke="#55606a"/>${pts}</svg>` : `<svg width="40" height="28" aria-hidden="true"><circle cx="10" cy="14" r="8" fill="#9aa5ab" stroke="#55606a"/><rect x="17" y="12" width="8" height="4" fill="#666"/><circle cx="31" cy="14" r="8" fill="#9aa5ab" stroke="#55606a"/></svg>`; }
+function sel(attr, i, opts, labelFn, cur, cls) { return `<select ${attr}="${i}" class="${cls || ""}"><option value="">${t("choose")}</option>${opts.map(o => `<option value="${o}" ${String(cur) === String(o) ? "selected" : ""}>${esc(labelFn(o))}</option>`).join("")}</select>`; }
+function renderStage() {
+  const m = mol(), r = rec(), Pm = P(m), box = $("stagePanel"); let h = "";
+  if (r.stage === 0) {
+    h = `<p>${esc(t(m.dia ? "aQd" : "aQ", Pm))}</p><div class="balls">${[2, 3, 4, 5, 6].map(n => `<button class="btn" data-ball="${n}">${ballSVG(n)}${esc(t("holes", { n }))}</button>`).join("")}<button class="btn" data-ball="dia">${ballSVG(0)}${esc(t("diaBall"))}</button></div>`;
+  } else if (r.stage === 1) {
+    const labels = m.dia ? [t("fShared"), t("fLPeach")] : [t("fSN", Pm), t("fBP"), t("fLP", Pm)];
+    h = `<p>${esc(t(m.dia ? "bQd" : "bQ", Pm))}</p><div class="fields">${labels.map((l, i) => `<label>${esc(l)}${sel("data-f", i, [0, 1, 2, 3, 4, 5, 6, 7, 8], x => x, r.bVals ? r.bVals[i] ?? "" : "", r.bWrong ? (r.bWrong[i] ? "bad" : "ok") : "")}</label>`).join("")}</div>
+      <div class="row"><button class="btn primary" id="bCheck">${esc(t("check"))}</button>${r.bWrong ? `<button class="btn" id="bWork">${esc(t("working"))}</button>` : ""}</div>
+      ${r.bWrong ? `<div class="note bad">${esc(t("bBad"))}</div>` : ""}${r.showWork ? `<div class="note info">${esc(working(m))}</div>` : ""}`;
+  } else if (r.stage === 2) {
+    const k = r.items.length, n = m.bo.length + (m.dia ? 0 : m.lp);
+    h = `<p>${esc(t(m.dia ? "cQd" : "cQ", Pm))}</p><div class="palette">${PALETTE.map(e => `<button class="btn piece" data-piece="${e}">${e === "lp" ? `<i class="lp"></i>${esc(t("lonePair"))}` : `<i style="background:${EL[e].col};color:${EL[e].ink}">${e}</i>${e}`}</button>`).join("")}
+      <button class="btn" id="undoBtn" ${k && !r.snapped ? "" : "disabled"}>${esc(t("undo"))}</button></div><div class="small muted">${esc(t("added", { k, n }))}</div>`;
+  } else if (r.stage === 3) {
+    h = `<div class="fields"><label>${esc(t("fEPG"))}${sel("data-n", 0, EG_OPTS, gN, r.dSel ? r.dSel[0] : "", r.dWrong ? (r.dWrong[0] ? "bad" : "ok") : "")}</label><label>${esc(t("fShape"))}${sel("data-n", 1, SH_OPTS, gN, r.dSel ? r.dSel[1] : "", r.dWrong ? (r.dWrong[1] ? "bad" : "ok") : "")}</label><label>${esc(t("fAngle"))}${sel("data-n", 2, AN_OPTS, aN, r.dSel ? r.dSel[2] : "", r.dWrong ? (r.dWrong[2] ? "bad" : "ok") : "")}</label></div>
+      <div class="row"><button class="btn primary" id="dCheck">${esc(t("check"))}</button></div>${r.dNote ? `<div class="note bad">${esc(t(r.dNote, Pm))}</div>` : ""}`;
+  } else if (r.stage === 4) {
+    h = `<p>${esc(t("eQ", Pm))}</p><div class="row"><button class="btn" data-pol="1">${esc(t("polar"))}</button><button class="btn" data-pol="0">${esc(t("nonpolar"))}</button></div>
+      ${r.eNote ? `<div class="note bad">${esc(t(r.eNote[0], { ...Pm, why: r.eNote[1] ? t(r.eNote[1]) : "" }))}</div>` : ""}${m.ion ? `<div class="small muted">${esc(t("ionNote"))}</div>` : ""}`;
+  } else {
+    const row = m.dia ? `${gN("lin")} · ${t("nonpolar")}` : `${gN(m.eg)} → ${gN(m.sh)} · ${aN(m.an)} · ${t(m.polar ? "polar" : "nonpolar")}`;
+    h = `<div class="note ok">${esc(t("doneT", Pm))} ${esc(row)}</div>${m.ion && !m.dia ? `<div class="small muted">${esc(t("ionNote"))}</div>` : ""}<div class="row"><button class="btn primary" id="nextMolBtn">${esc(t("nextMol"))}</button></div>`;
+  }
+  box.innerHTML = h;
+  box.querySelectorAll("[data-ball]").forEach(b => b.onclick = () => pickBall(b.dataset.ball === "dia" ? "dia" : +b.dataset.ball));
+  if ($("bCheck")) $("bCheck").onclick = checkCounts;
+  if ($("bWork")) $("bWork").onclick = () => { rec().showWork = true; renderStage(); };
+  box.querySelectorAll("select[data-f]").forEach(s => s.onchange = () => { const r2 = rec(); r2.bVals = [...box.querySelectorAll("select[data-f]")].map(x => x.value === "" ? null : +x.value); });
+  box.querySelectorAll("select[data-n]").forEach(s => s.onchange = () => { rec().dSel = [...box.querySelectorAll("select[data-n]")].map(x => x.value); });
+  if ($("dCheck")) $("dCheck").onclick = checkNames;
+  box.querySelectorAll("[data-pol]").forEach(b => b.onclick = () => choosePol(b.dataset.pol === "1"));
+  box.querySelectorAll("[data-piece]").forEach(wirePiece);
+  if ($("undoBtn")) $("undoBtn").onclick = undoPiece;
+  if ($("nextMolBtn")) $("nextMolBtn").onclick = () => { const nx = MOLS.find(x => !S.recs[x.id].done && !x.extra) || MOLS.find(x => !S.recs[x.id].done); if (nx) goMol(nx.id); else step(1); };
+  $("tracker").innerHTML = STAGES.map((k, i) => `<span class="${i < r.stage ? "done" : i === r.stage ? "now" : ""}">${i < r.stage ? "✓ " : ""}${esc(t(k))}</span>`).join("");
+  renderPrompt();
+}
+function working(m) {
+  if (m.dia) return t("wkD", { e: m.c, v: m.v, s: m.bo[0], lp: m.lpEach });
+  const u = m.bo.reduce((a, b) => a + b, 0);
+  return t("wk", { c: m.c, v: m.v, u, bonds: m.bo.join(" + "), fc: m.fc ? t("wkFC", { c: m.c }) : "", fcm: m.fc ? " − 1" : "", lp: m.lp, b: m.bo.length, sn: m.sn });
+}
+function renderPrompt() {
+  const m = mol(), r = rec(), Pm = P(m);
+  const k = [m.dia ? "aQd" : "aQ", m.dia ? "bQd" : "bQ", m.dia ? "cQd" : "cQ", "fEPG", "eQ", "doneT"][r.stage];
+  $("prompt").textContent = r.stage === 3 ? `${m.f}: ${t("fEPG")} · ${t("fShape")} · ${t("fAngle")}` : t(k, Pm);
+}
+function renderChips() {
+  const m = mol(), r = rec(), c = [`<span class="chip big">${m.f}</span>`];
+  if (r.counts && !m.dia) c.push(`<span class="chip">${esc(t("chipPairs", { sn: m.sn, b: m.bo.length, lp: m.lp }))}</span>`);
+  if (r.named) c.push(`<span class="chip">${esc(m.dia ? gN("lin") : gN(m.eg) + " → " + gN(m.sh))}</span>`);
+  if (r.done && showDip) c.push(`<span class="chip">${esc(t(m.polar ? "chipNet" : "chipNet0"))}</span>`);
+  $("chips").innerHTML = c.join("");
+}
+function renderView() {
+  $("rotBtn").setAttribute("aria-pressed", String(autoRot)); $("angBtn").setAttribute("aria-pressed", String(showAng)); $("dipBtn").setAttribute("aria-pressed", String(showDip));
+  const r = rec(); $("dipBtn").disabled = !r.snapped; $("angBtn").disabled = !r.snapped; renderChips();
+}
+function renderMolSel() { $("molSel").innerHTML = MOLS.map(m => `<option value="${m.id}">${S.recs[m.id].done ? "✓ " : ""}${m.f}${m.extra ? " (" + t("extra") + ")" : ""}</option>`).join(""); $("molSel").value = S.cur; }
+function renderGuide() {
+  const n = HANDBOOK.filter(id => S.recs[id].done).length, done = [!!S.ev.ball, !!S.ev.count, n === 20, !!S.ev.named, !!S.ev.polar];
+  const cur = done.indexOf(false), steps = t("steps");
+  $("steps").innerHTML = steps.map((s, i) => `<li class="${done[i] ? "done" : i === cur ? "now" : ""}"><span class="tick">${done[i] ? "✓" : i + 1}</span><span>${esc(i === 2 ? s.replace("{n}", n) : s)}${i === 2 ? `<div class="prog"><i style="width:${n / 20 * 100}%"></i></div>` : ""}</span></li>`).join("");
+  const k = done.filter(Boolean).length; $("ringTxt").textContent = `${k}/5`; $("ringArc").style.strokeDashoffset = String(113.1 * (1 - k / 5));
+}
+function renderTable() {
+  $("tbody").innerHTML = MOLS.filter(m => !m.extra || S.recs[m.id].done).map(m => { const r = S.recs[m.id];
+    if (!r.done) return `<tr><td>${m.f}</td><td class="pend" colspan="5">${esc(t("pend"))}</td></tr>`;
+    return `<tr><td>${m.f}</td><td>${m.dia ? m.bo[0] + " / " + m.lpEach : m.bo.length + " / " + m.lp}</td><td>${esc(gN(m.eg))}</td><td>${esc(gN(m.sh))}</td><td>${esc(aN(m.an))}</td><td>${esc(t(m.polar ? "polar" : "nonpolar"))}</td></tr>`; }).join("");
+}
+function renderKey() {
+  $("key").innerHTML = ["H", "Be", "B", "C", "N", "O", "F", "Cl", "P", "S", "Xe", "I"].map(e => `<div><i style="background:${EL[e].col};color:${EL[e].ink}">${e}</i><span>${esc(elN(e)[0])} · ${esc(elN(e)[1])}</span></div>`).join("")
+    + `<div><i style="background:rgba(176,140,236,.55);border:1px dashed #7b4fc4"></i><span>${esc(elN("lp")[0])} · ${esc(elN("lp")[1])}</span></div>`;
+}
+// replay (mini canvas in Colours tab)
+const mini = $("mini"), mctx = mini.getContext("2d"); let playing = false;
+function drawMini() {
+  const m = mol(), r = rec(), w = mini.width, h = mini.height; mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.clearRect(0, 0, w, h);
+  const ok = r.snapped && r.snapT >= 1.6;
+  const p = ok ? +$("replay").value / 1000 : 0;
+  drawModel(mctx, w, h, Rm, m, ok ? r : { ...r, items: [], snapped: false }, p, { mini: true, angles: ok && p >= 1, dipoles: false });
+  $("rname").textContent = ok ? t("snapP", { p: Math.round(ease(p) * 100) }) : t("snapNone");
+}
+function renderReplayCtl() { const r = rec(), ok = r.snapped && r.snapT >= 1.6; $("replay").disabled = !ok; $("playBtn").disabled = !ok; $("playBtn").textContent = t(playing ? "pause" : "play"); }
+// quiz
+function readScores() { try { return JSON.parse(localStorage.getItem("svl-scores") || "{}") || {}; } catch (e) { return {}; } }
+function saveScore(pct) { try { const s = readScores(); if (!(s[SIM_ID] >= pct)) { s[SIM_ID] = pct; localStorage.setItem("svl-scores", JSON.stringify(s)); } } catch (e) {} }
+function renderQuiz() {
+  const Q = t("quiz"), L = ["A", "B", "C", "D"];
+  $("quiz").innerHTML = Q.map((q, i) => `<div class="q" id="q${i}"><p>${i + 1}. ${esc(q.q)}</p>${q.o.map((o, j) => `<button data-q="${i}" data-o="${j}">${L[j]}) ${esc(o)}</button>`).join("")}<div class="exp"></div></div>`).join("");
+  Object.entries(S.answered).forEach(([i, j]) => markAnswer(+i, j)); score();
+}
+function markAnswer(i, j) {
+  const ok = j === QUIZ_ANS[i];
+  $("q" + i).querySelectorAll("button").forEach((x, k) => { x.disabled = true; if (k === QUIZ_ANS[i]) x.classList.add("right"); else if (k === j) x.classList.add("wrong"); });
+  const d = document.createElement("div"); d.className = "note " + (ok ? "ok" : "bad"); d.textContent = t(ok ? "correct" : "notQuite") + t("quiz")[i].e;
+  const ex = $("q" + i).querySelector(".exp"); ex.innerHTML = ""; ex.append(d);
+}
+$("quiz").onclick = e => { const b = e.target.closest("button[data-q]"); if (!b) return; const i = +b.dataset.q, j = +b.dataset.o; if (i in S.answered) return; S.answered[i] = j; markAnswer(i, j); score(); };
+function score() {
+  const n = Object.keys(S.answered).length, s = Object.entries(S.answered).filter(([i, j]) => j === QUIZ_ANS[+i]).length, N = QUIZ_ANS.length;
+  if (n === N) saveScore(Math.round(s / N * 100));
+  const best = readScores()[SIM_ID];
+  $("score").textContent = `${s} / ${N}` + (n < N ? " · " + t("scoreLeft", { n: N - n }) : "") + (best !== undefined ? " · " + t("best", { p: best }) : "");
+}
+$("retryBtn").onclick = () => { S.answered = {}; renderQuiz(); };
+function applyStatic() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("#langSeg button").forEach(b => { b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)); b.style.border = "0"; b.style.padding = "7px 12px"; b.style.minHeight = "36px"; b.style.background = b.dataset.lang === LANG ? "var(--accent)" : "transparent"; b.style.color = b.dataset.lang === LANG ? "var(--on-accent)" : "inherit"; });
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  $("appList").innerHTML = t("app").map(a => `<span>${esc(a)}</span>`).join("");
+  $("safeList").innerHTML = t("safe").map(a => `<li>${esc(a)}</li>`).join("");
+  try { const st = JSON.parse(localStorage.getItem("svl-student") || "null"); if (st && st.name) { $("student").hidden = false; $("student").textContent = t("student", { name: st.name, cls: st.cls ? " · " + st.cls : "" }); } } catch (e) {}
+}
+function renderAll() { applyStatic(); renderMolSel(); renderStage(); renderView(); renderGuide(); renderTable(); renderLog(); renderKey(); renderReplayCtl(); renderQuiz(); }
+
+// drag-and-drop pieces
+function wirePiece(btn) {
+  let st = null, ghost = null;
+  btn.addEventListener("pointerdown", e => { st = { x: e.clientX, y: e.clientY, id: e.pointerId }; try { btn.setPointerCapture(e.pointerId); } catch (_) {} });
+  btn.addEventListener("pointermove", e => { if (!st) return; if (!ghost && Math.hypot(e.clientX - st.x, e.clientY - st.y) > 6) { ghost = document.createElement("div"); ghost.className = "ghost"; ghost.textContent = btn.dataset.piece === "lp" ? t("lonePair") : btn.dataset.piece; document.body.append(ghost); }
+    if (ghost) { ghost.style.left = e.clientX + "px"; ghost.style.top = e.clientY + "px"; } });
+  btn.addEventListener("pointerup", e => { if (!st) return; const moved = !!ghost; if (ghost) ghost.remove(); ghost = null; st = null;
+    if (!moved) return; const r = cv.getBoundingClientRect(); if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) addPiece(btn.dataset.piece, { x: e.clientX - r.left, y: e.clientY - r.top }); btn.dataset.dragged = "1"; });
+  btn.addEventListener("pointercancel", () => { if (ghost) ghost.remove(); ghost = null; st = null; });
+  btn.addEventListener("click", () => { if (btn.dataset.dragged) { delete btn.dataset.dragged; return; } addPiece(btn.dataset.piece, null); });
+}
+// rotate by drag
+cv.addEventListener("pointerdown", e => { dragRot = { x: e.clientX, y: e.clientY }; cv.setPointerCapture(e.pointerId); cv.classList.add("dragging"); });
+cv.addEventListener("pointermove", e => { if (!dragRot) return; const dx = e.clientX - dragRot.x, dy = e.clientY - dragRot.y; dragRot = { x: e.clientX, y: e.clientY }; Rm = mm(rotX(dy * .01), mm(rotY(dx * .01), Rm)); });
+["pointerup", "pointercancel"].forEach(ev => cv.addEventListener(ev, () => { dragRot = null; cv.classList.remove("dragging"); }));
+cv.addEventListener("keydown", e => { const k = { ArrowLeft: [0, -.15], ArrowRight: [0, .15], ArrowUp: [-.15, 0], ArrowDown: [.15, 0] }[e.key]; if (!k) return; e.preventDefault(); Rm = mm(rotX(k[0]), mm(rotY(k[1]), Rm)); });
+
+// controls
+$("molSel").onchange = e => goMol(e.target.value);
+$("prevBtn").onclick = () => step(-1); $("nextBtn").onclick = () => step(1);
+$("rotBtn").onclick = () => { autoRot = !autoRot; renderView(); };
+$("viewBtn").onclick = () => { Rm = defaultR(); };
+$("dipBtn").onclick = () => { showDip = !showDip; renderView(); };
+$("angBtn").onclick = () => { showAng = !showAng; renderView(); };
+$("resetBtn").onclick = () => { const ans = S.answered; S = freshState(); S.answered = ans; try { localStorage.removeItem(PROG_KEY); } catch (e) {} $("quizTab").classList.remove("ping"); renderAll(); };
+$("replay").oninput = () => { playing = false; renderReplayCtl(); };
+$("playBtn").onclick = () => { playing = !playing; if (playing && +$("replay").value >= 1000) $("replay").value = 0; renderReplayCtl(); };
+function applyLang(l) { LANG = l; try { localStorage.setItem("svl-lang", l); } catch (e) {} renderAll(); }
+document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  ["guide", "obs", "colours", "quiz"].forEach(id => $("pane-" + id).hidden = id !== b.dataset.tab);
+  if (b.dataset.tab === "quiz") b.classList.remove("ping");
+  if (b.dataset.tab === "colours") { renderReplayCtl(); drawMini(); }
+});
+
+S = freshState(); loadProgress(); resize(); renderAll();
+requestAnimationFrame(frame);
+})();
+</script>

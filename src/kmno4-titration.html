@@ -1,0 +1,1175 @@
+<title>KMnO₄ Standardisation</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: lab bench viewport on the left, a working notebook (bench / results / colours / questions) on the right. */
+:root{
+  --bg:#e7eceb; --surface:#f8faf9; --surface-2:#eef2f1; --ink:#162127; --muted:#56666c; --line:#cbd5d4;
+  --accent:#8b1d6f; --accent-soft:#f3dcea; --on-accent:#ffffff;
+  --ok:#2c7a4d; --ok-soft:#dcefe3; --warn:#9a520a; --warn-soft:#f8e8d5; --bad:#a3302b; --bad-soft:#f6dedc;
+  --wall-top:#dde5e4; --wall-bot:#c5d0cf; --bench:#2a3236; --bench-edge:#1b2124; --steel:#5b6a72; --glass:rgba(40,60,70,.42); --scale-ink:#1c2a31;
+  --f-display:"Bricolage Grotesque", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", "Noto Sans Sinhala", "Noto Sans Tamil", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --steel:#8a9aa2; --glass:rgba(200,225,235,.45); --scale-ink:#1c2a31;
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --steel:#8a9aa2; --glass:rgba(200,225,235,.45); --scale-ink:#1c2a31;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 28px}
+:lang(si) body,:lang(ta) body{line-height:1.65}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1440px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+
+/* Header */
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.top > div:first-child{min-width:0}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+:lang(si) .eyebrow,:lang(ta) .eyebrow{letter-spacing:.02em;font-size:12.5px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 6px;text-wrap:balance;letter-spacing:-.01em}
+:lang(si) h1,:lang(ta) h1{letter-spacing:0;font-size:clamp(22px,2.6vw,32px);line-height:1.3}
+h1 sub,h1 sup{font-size:.55em}
+.eqn{font-family:var(--f-mono);font-size:13.5px;color:var(--muted)}
+.eqn b{color:var(--accent);font-weight:500}
+.top-actions{display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap}
+
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 14px;font-weight:500;font-size:14px;transition:background .15s,border-color .15s,transform .05s;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.next{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+
+/* Main grid */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:16px;align-items:start}
+@media (max-width:1000px){.layout{grid-template-columns:minmax(0,1fr)}}
+
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.prompt{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.prompt .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);flex:none;box-shadow:0 0 0 4px var(--accent-soft)}
+.prompt p{margin:0;font-weight:500;min-width:0}
+.viewport{position:relative;height:clamp(460px,calc(100vh - 300px),820px);background:var(--wall-bot)}
+@media (max-width:1000px){.viewport{height:clamp(440px,72vh,760px)}}
+canvas{display:block;width:100%;height:100%}
+.chips{position:absolute;left:12px;top:12px;display:flex;flex-direction:column;gap:6px;pointer-events:none;align-items:flex-start}
+.chip{font-family:var(--f-mono);font-size:12.5px;background:color-mix(in srgb,var(--surface) 88%,transparent);border:1px solid var(--line);padding:4px 9px;border-radius:999px;font-variant-numeric:tabular-nums}
+.chip.pink{border-color:var(--accent);color:var(--accent)}
+.toast{position:absolute;left:50%;bottom:16px;transform:translate(-50%,10px);opacity:0;transition:opacity .25s,transform .25s;background:var(--ink);color:var(--bg);padding:9px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 32px);width:max-content;pointer-events:none;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+.dock{display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.row .label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-right:4px}
+:lang(si) .row .label,:lang(ta) .row .label{letter-spacing:0;font-size:12.5px}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface-2)}
+.seg button{border:0;background:transparent;padding:8px 12px;font-size:14px;font-weight:500;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.seg button:disabled{opacity:.45;cursor:not-allowed}
+.lang button{padding:7px 12px;font-size:14px}
+.lang button[lang="si"]{font-family:"Noto Sans Sinhala",var(--f-body)}
+.lang button[lang="ta"]{font-family:"Noto Sans Tamil",var(--f-body)}
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;user-select:none}
+.toggle input{width:16px;height:16px;accent-color:var(--accent);flex:none}
+.spacer{flex:1}
+.kbd{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+
+/* Side panel */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.tabs button{flex:1;min-width:0;border:0;background:transparent;padding:12px 4px;font-weight:600;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;line-height:1.3}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.pane{padding:16px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:1000px){.pane{max-height:none}}
+h2{font-family:var(--f-display);font-size:18px;font-weight:700;margin:0;letter-spacing:-.005em}
+:lang(si) h2,:lang(ta) h2{letter-spacing:0}
+h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+:lang(si) h3,:lang(ta) h3{letter-spacing:0;font-size:13px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2)}
+
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid transparent}
+.steps li .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-family:var(--f-mono);color:var(--muted);margin-top:2px}
+.steps li.done{color:var(--muted)}
+.steps li.done .tick{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.steps li.now{background:var(--surface);border-color:var(--accent)}
+.steps li.now .tick{border-color:var(--accent);color:var(--accent)}
+
+.reader{display:flex;gap:8px;align-items:stretch;flex-wrap:wrap}
+.reader input{flex:1;min-width:110px;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;font-family:var(--f-mono);font-size:16px;font-variant-numeric:tabular-nums}
+.note{font-size:13px;padding:8px 10px;border-radius:8px;margin-top:8px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.note.warn{background:var(--warn-soft);color:var(--warn)}
+.log{font-size:13px;display:flex;flex-direction:column;gap:4px;max-height:180px;overflow:auto}
+.log > div{display:grid;grid-template-columns:58px 1fr;gap:6px}
+.log span{font-family:var(--f-mono);color:var(--muted);font-size:11.5px;padding-top:2px}
+
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:right;padding:8px 10px;background:var(--surface-2);font-weight:600}
+:lang(si) th,:lang(ta) th{letter-spacing:0;font-size:12px}
+th:first-child,td:first-child{text-align:left}
+td{padding:8px 10px;border-top:1px solid var(--line);text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+td.conc{color:var(--ok);font-weight:500}
+tr.rough td{color:var(--muted)}
+.calc{font-size:14px;display:flex;flex-direction:column;gap:6px}
+.calc .line{font-family:var(--f-mono);font-size:13px}
+.big{font-family:var(--f-mono);font-size:22px;font-variant-numeric:tabular-nums}
+
+.swatches{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.sw{display:flex;gap:10px;align-items:center;min-width:0}
+.sw i{width:42px;height:42px;border-radius:50%;flex:none;border:1px solid var(--line);box-shadow:inset 0 -6px 10px rgba(0,0,0,.08)}
+.sw div{min-width:0;font-size:13px;line-height:1.35}
+.sw b{display:block;font-size:13.5px}
+.scrub{display:flex;gap:14px;align-items:center}
+.scrub .beaker{width:74px;height:74px;border-radius:50%;flex:none;border:1px solid var(--line);box-shadow:inset 0 -10px 18px rgba(0,0,0,.1)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+
+.q{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}
+.q p{margin:0 0 4px;font-weight:600}
+.q button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:8px 10px;font-size:14px}
+.q button:hover:not(:disabled){border-color:var(--accent)}
+.q button.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.q button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.q button:disabled{cursor:default}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--accent);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1 data-i18n-html="title"></h1>
+      <div class="eqn"><b>MnO₄⁻</b> + 5Fe²⁺ + 8H⁺ → Mn²⁺ + 5Fe³⁺ + 4H₂O</div>
+    </div>
+    <div class="top-actions">
+      <div class="seg lang" role="group" aria-label="Language / භාෂාව / மொழி" id="langSeg">
+        <button data-lang="si" lang="si" aria-pressed="false">සිංහල</button>
+        <button data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button data-lang="ta" lang="ta" aria-pressed="false">தமிழ்</button>
+      </div>
+      <label class="toggle small"><input type="checkbox" id="digital"> <span data-i18n="digital"></span></label>
+      <button class="btn" id="resetBtn" data-i18n="reset"></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="prompt"><span class="dot"></span><p id="prompt" aria-live="polite"></p></div>
+      <div class="viewport" id="viewport">
+        <canvas id="cv" role="img" data-i18n-aria="canvasAria"></canvas>
+        <div class="chips" id="chips"></div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+      <div class="dock">
+        <div class="row">
+          <span class="label" data-i18n="setup"></span>
+          <button class="btn" id="fillBtn"></button>
+          <button class="btn" id="feBtn" data-i18n="fe"></button>
+          <button class="btn" id="acidBtn" data-i18n="acid"></button>
+          <button class="btn" id="nextBtn" data-i18n="next"></button>
+        </div>
+        <div class="row">
+          <span class="label" data-i18n="tap"></span>
+          <div class="seg" role="group" id="tapSeg" data-i18n-aria="tap">
+            <button data-flow="0" aria-pressed="true" data-i18n="closed"></button>
+            <button data-flow="1" aria-pressed="false" data-i18n="dropwise"></button>
+            <button data-flow="2" aria-pressed="false" data-i18n="slow"></button>
+            <button data-flow="3" aria-pressed="false" data-i18n="fast"></button>
+          </div>
+          <button class="btn" id="dropBtn" data-i18n="drop"></button>
+          <label class="toggle"><input type="checkbox" id="swirl" checked> <span data-i18n="swirl"></span></label>
+          <span class="spacer"></span>
+          <span class="kbd" data-i18n="keys"></span>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="bench" data-i18n="tabBench"></button>
+        <button role="tab" aria-selected="false" data-tab="results" data-i18n="tabResults"></button>
+        <button role="tab" aria-selected="false" data-tab="colours" data-i18n="tabColours"></button>
+        <button role="tab" aria-selected="false" data-tab="quiz" data-i18n="tabQuiz"></button>
+      </div>
+
+      <div class="pane" id="pane-bench">
+        <div>
+          <h3 data-i18n="procedure"></h3>
+          <ul class="steps" id="steps"></ul>
+        </div>
+        <div class="box">
+          <h3 data-i18n="reading"></h3>
+          <p class="small muted" style="margin:0 0 8px" data-i18n-html="readingHelp"></p>
+          <div class="reader">
+            <input id="readingIn" type="number" inputmode="decimal" step="0.05" min="0" max="50" data-i18n-ph="readingPh" data-i18n-aria="reading">
+            <button class="btn primary" id="recordBtn"></button>
+          </div>
+          <div id="readNote"></div>
+        </div>
+        <div>
+          <h3 data-i18n="notebook"></h3>
+          <div class="log" id="log"></div>
+        </div>
+      </div>
+
+      <div class="pane" id="pane-results" hidden>
+        <div>
+          <h2 data-i18n="resultsH"></h2>
+          <p class="small muted" style="margin:4px 0 10px" data-i18n="resultsIntro"></p>
+          <div class="tablewrap">
+            <table>
+              <thead><tr><th data-i18n="thRun"></th><th data-i18n="thInitial"></th><th data-i18n="thFinal"></th><th data-i18n="thTitre"></th></tr></thead>
+              <tbody id="tbody"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="box calc">
+          <h3 data-i18n="calcH"></h3>
+          <div id="calcBody" class="muted small"></div>
+        </div>
+      </div>
+
+      <div class="pane" id="pane-colours" hidden>
+        <div>
+          <h2 data-i18n="coloursH"></h2>
+          <p class="small muted" style="margin:4px 0 0" data-i18n="coloursIntro"></p>
+        </div>
+        <div class="swatches" id="swatches"></div>
+        <div class="box">
+          <h3 data-i18n="scrubH"></h3>
+          <div class="scrub">
+            <div class="beaker" id="scrubSwatch"></div>
+            <div style="flex:1;min-width:0">
+              <input type="range" id="scrub" min="0" max="120" value="100" data-i18n-aria="scrubAria">
+              <div class="small" id="scrubLabel"></div>
+            </div>
+          </div>
+          <label class="toggle small" style="margin-top:8px"><input type="checkbox" id="scrubNoAcid"> <span data-i18n="scrubNoAcid"></span></label>
+        </div>
+      </div>
+
+      <div class="pane" id="pane-quiz" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <h2 data-i18n="quizH"></h2><span class="score" id="score"></span>
+        </div>
+        <div id="quiz" style="display:flex;flex-direction:column;gap:12px"></div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+
+// =====================================================================
+// LANGUAGES: English · සිංහල · தமிழ்
+// =====================================================================
+const I18N = {
+en: {
+  eyebrow: "A/L Chemistry · Unit 03 · Redox titration",
+  title: "Standardising KMnO<sub>4</sub> with Fe<sup>2+</sup>",
+  digital: "Digital readout", reset: "Reset bench",
+  setup: "Set up", fill: "Fill burette", refill: "Refill burette", fe: "Pipette 25.00 cm³ Fe²⁺", acid: "Add 20 cm³ dil. H₂SO₄", next: "Wash flask · next run",
+  tap: "Tap", closed: "Closed", dropwise: "Dropwise", slow: "Slow", fast: "Fast", drop: "Add one drop", swirl: "Swirl flask",
+  keys: "Keys: 0–3 tap · D drop · S swirl",
+  tabBench: "Bench", tabResults: "Results", tabColours: "Colours", tabQuiz: "Questions",
+  procedure: "Procedure", reading: "Burette reading",
+  readingHelp: "KMnO₄ is too dark to see the bottom of the meniscus. Use the lens and read the <b>top edge</b> to the nearest 0.05 cm³.",
+  readingPh: "e.g. 0.65", recInitial: "Record initial", recFinal: "Record final", notebook: "Lab notebook",
+  resultsH: "Titration results",
+  resultsIntro: "25.00 cm³ of 0.1000 mol dm⁻³ Fe²⁺ titrated with KMnO₄. The first run is a rough titre. Concordant titres agree within 0.10 cm³.",
+  thRun: "Run", thInitial: "Initial", thFinal: "Final", thTitre: "Titre / cm³", noRuns: "No runs yet.", rough: "Rough", noAcidTag: "no acid",
+  calcH: "Calculation", calcEmpty: "Get two concordant titres to calculate the concentration.", calcRepeat: "Repeat until two titres agree within 0.10 cm³.",
+  meanTitre: "Mean concordant titre", fromRuns: "From runs: {runs}.", yourConc: "Your concentration of KMnO₄ (mol dm⁻³, 3 s.f.)",
+  check: "Check", showWork: "Show working",
+  workNote: "Bottle label after the class standardised it: {c} mol dm⁻³. The small gap comes from pipette and reading tolerance.",
+  cEnter: "Enter a value such as 0.0201.", cOk: "Correct: {v} mol dm⁻³ from your mean titre.",
+  cX5: "You multiplied by 5. One MnO₄⁻ reacts with five Fe²⁺, so divide n(Fe²⁺) by 5.",
+  cD5: "Check the 1 : 5 ratio. n(MnO₄⁻) is n(Fe²⁺) ÷ 5, applied once.",
+  cBad: "Not quite. Check the cm³ to dm³ conversion and the 1 : 5 ratio.",
+  coloursH: "Colour atlas",
+  coloursIntro: "Every colour on the bench is computed from concentrations using the Beer–Lambert law, so these swatches match the flask.",
+  scrubH: "Scrub through a titration", scrubNoAcid: "Without sulfuric acid", scrubAria: "Percentage of the equivalence volume added",
+  scrubNoAcidTxt: "{p}% of the equivalence volume, no acid: brown MnO₂ appears from the first drops.",
+  scrubBefore: "{p}% of the equivalence volume: Fe²⁺ still in excess, colour fades from green to yellow.",
+  scrubEq: "Equivalence: the next drop gives the first permanent pale pink.",
+  scrubAfter: "{p}% of the equivalence volume: excess MnO₄⁻ turns the flask deeper pink.",
+  yourFlask: "Your flask now", empty: "Empty.", inFlask: "{v} cm³ in the flask.",
+  quizH: "Knowledge check", scoreLeft: "{n} left", correct: "Correct. ", notQuite: "Not quite. ",
+  canvasAria: "Titration apparatus: burette, conical flask on a white tile, and a magnifier showing the burette scale",
+  lensCap: "×12 lens · read top of meniscus",
+  chipBurette: "Burette {v} cm³", chipFlask: "Flask {v} cm³", chipInitial: "Initial {v} cm³", chipPink: "Pink held {s} s",
+  steps: ["Rinse and fill the burette with KMnO₄", "Pipette 25.00 cm³ of Fe²⁺ into the flask", "Add about 20 cm³ of dilute H₂SO₄", "Record the initial burette reading", "Titrate, swirling, until the first permanent pale pink", "Record the final reading", "Wash the flask and repeat for concordant titres"],
+  p0: "Fill the burette with KMnO₄ solution through a funnel, then remove the funnel.",
+  p1: "Pipette 25.00 cm³ of 0.1000 mol dm⁻³ Fe²⁺ into the conical flask.",
+  p2: "Add about 20 cm³ of dilute H₂SO₄ to the flask. Without it, brown MnO₂ forms.",
+  p3: "Read the burette at the top of the meniscus and record the initial reading.",
+  p4open: "Open the tap and swirl. Each drop's purple should vanish at once.",
+  p4fast: "The purple disappears instantly. You can run faster for now.",
+  p4slow: "The pink is fading more slowly. Slow down to dropwise.",
+  p4drop: "Very close. Add one drop at a time and swirl after each.",
+  p5wait: "Pale pink has held for {s} s. Close the tap and check it lasts 30 s.",
+  p5ok: "The pale pink is permanent. Record the final reading.",
+  p6more: "Run recorded. Repeat until two titres agree within 0.10 cm³.",
+  p6first: "Run recorded. Wash the flask and do an accurate run.",
+  tBrown: "A brown cloudiness is forming. Without acid, MnO₄⁻ is only reduced to MnO₂.",
+  tFull: "The burette has reached 50.00 cm³. Refill before the next run.",
+  tFinishFirst: "Finish this titration before refilling.",
+  tHasFe: "The flask already contains the Fe²⁺ aliquot.",
+  tHasAcid: "Acid has already been added.",
+  tTooLate: "Too late: the acid must go in before titrating.",
+  tFillFirst: "Fill the burette first.",
+  tFeFirst: "Pipette the Fe²⁺ solution into the flask first.",
+  tInitialFirst: "Record the initial burette reading before you open the tap.",
+  tRunDone: "This run is finished. Wash the flask to start the next run.",
+  tEmpty: "The burette is empty. Refill it.",
+  tNoAcid: "No acid in the flask. Titrating anyway: watch carefully.",
+  tCloseTap: "Close the tap or switch to dropwise first.",
+  lBrown: "Brown MnO₂ forming: no acid in the flask.",
+  lFilled: "Burette rinsed with KMnO₄, filled, funnel removed, air bubble cleared from the tip.",
+  lFe: "Pipetted 25.00 cm³ of 0.1000 mol dm⁻³ Fe²⁺ (pale green) into the conical flask.",
+  lAcid: "Added about 20 cm³ of dilute H₂SO₄ with a measuring cylinder.",
+  lWash: "Flask washed with distilled water. Ready for the next run.",
+  lNew: "New bench. The KMnO₄ in the bottle has an unknown concentration close to 0.02 mol dm⁻³.",
+  lInitial: "Initial reading {v} cm³.",
+  rClose: "Close the tap before taking a reading.", rWait: "Wait for the last drop to fall.",
+  rType: "Type the reading in cm³, for example 0.65.",
+  rTitrateFirst: "Open the tap and titrate before taking the final reading.",
+  rNoPink: "No permanent pink yet. Keep adding KMnO₄ dropwise.",
+  rHigh: "That is {d} cm³ too high. Line your eye up with the top edge of the meniscus and count the 0.1 marks from the nearest whole number.",
+  rLow: "That is {d} cm³ too low. Line your eye up with the top edge of the meniscus and count the 0.1 marks from the nearest whole number.",
+  rInitialOk: "Initial reading recorded: {v} cm³.",
+  rFinal: "Final reading {f} cm³. Titre {t} cm³.",
+  rNoAcid: "This run had no acid, so the titre is not valid.",
+  rOver: "The deep pink shows you overshot by about {n} drops.",
+  rTip: "Tip: let the pale pink hold for about 30 s while swirling before you read.",
+  species: [["Fe²⁺(aq)", "Pale green. The starting solution."], ["Fe³⁺(aq)", "Pale yellow. Builds up as Fe²⁺ is oxidised."], ["MnO₄⁻ in burette", "Intense purple. Too dark to see the bottom of the meniscus."], ["Mn²⁺(aq)", "Practically colourless at this dilution."], ["End point", "One drop in excess gives a permanent pale pink."], ["Overshoot", "About 1 cm³ in excess turns the flask deep magenta."], ["MnO₂(s)", "Brown cloudiness when there is too little acid."]],
+  quiz: [
+    { q: "Why is no separate indicator needed in this titration?", o: ["Fe²⁺ changes colour sharply at the end point", "MnO₄⁻ is intensely coloured, so the first excess drop shows pink", "Sulfuric acid acts as the indicator", "Mn²⁺ is purple"], e: "Permanganate acts as its own indicator. While Fe²⁺ remains, each drop is reduced to nearly colourless Mn²⁺. The first excess drop leaves a pale pink." },
+    { q: "Why is dilute H₂SO₄ used, and not dilute HCl?", o: ["HCl is too weak an acid", "MnO₄⁻ oxidises Cl⁻ to Cl₂, using up extra permanganate", "HCl forms a precipitate with Fe²⁺", "H₂SO₄ is the only acid that dissolves KMnO₄"], e: "Acidified MnO₄⁻ is strong enough to oxidise chloride ions. Some permanganate would be wasted and the titre would be too large." },
+    { q: "What forms if too little acid is added?", o: ["A brown precipitate of MnO₂", "A green precipitate of Fe(OH)₂", "A colourless gas", "Nothing changes"], e: "In neutral or weakly acidic solution, MnO₄⁻ is reduced only to MnO₂, a brown solid. The mole ratio changes and the end point is masked." },
+    { q: "How should the burette be read in this titration?", o: ["At the bottom of the meniscus", "At the top of the meniscus", "At the centre of the liquid", "It does not matter"], e: "The KMnO₄ solution is so dark that the bottom of the meniscus cannot be seen, so the top edge is read consistently for both readings." },
+    { q: "What is the mole ratio MnO₄⁻ : Fe²⁺?", o: ["1 : 1", "1 : 2", "1 : 5", "5 : 1"], e: "Mn goes from +7 to +2, gaining 5 electrons. Each Fe²⁺ loses 1 electron, so one MnO₄⁻ oxidises five Fe²⁺." },
+    { q: "Halfway through, the flask is pale yellow. Why?", o: ["Unreacted MnO₄⁻", "Fe³⁺ ions formed by oxidation", "MnO₂ formation", "Excess sulfuric acid"], e: "Fe³⁺(aq) is pale yellow. Its colour grows as Fe²⁺ (pale green) is oxidised." },
+    { q: "Why is the burette rinsed with KMnO₄ solution and not with water before filling?", o: ["Water reacts with KMnO₄", "Remaining water would dilute the KMnO₄ and increase the titre", "Rinsing with KMnO₄ removes grease", "It makes the meniscus easier to see"], e: "Any water left inside dilutes the titrant, so more volume is needed and the calculated concentration comes out too low." },
+  ],
+},
+si: {
+  eyebrow: "උ.පෙ. රසායන විද්‍යාව · ඒකකය 03 · රෙඩොක්ස් අනුමාපනය",
+  title: "Fe<sup>2+</sup> භාවිතයෙන් KMnO<sub>4</sub> සම්මත කිරීම",
+  digital: "ඩිජිටල් කියවීම", reset: "නැවත අරඹන්න",
+  setup: "සූදානම", fill: "බියුරෙට්ටුව පුරවන්න", refill: "බියුරෙට්ටුව නැවත පුරවන්න", fe: "Fe²⁺ 25.00 cm³ පිපෙට්ටු කරන්න", acid: "තනුක H₂SO₄ 20 cm³ එක් කරන්න", next: "ප්ලාස්කුව සෝදන්න · ඊළඟ වාරය",
+  tap: "කරාමය", closed: "වසා ඇත", dropwise: "බිංදුවෙන් බිංදුව", slow: "සෙමින්", fast: "වේගයෙන්", drop: "එක් බිංදුවක් එක් කරන්න", swirl: "ප්ලාස්කුව කරකවන්න",
+  keys: "යතුරු: 0–3 කරාමය · D බිංදුව · S කරකැවීම",
+  tabBench: "පරීක්ෂණය", tabResults: "ප්‍රතිඵල", tabColours: "වර්ණ", tabQuiz: "ප්‍රශ්න",
+  procedure: "ක්‍රියා පිළිවෙළ", reading: "බියුරෙට්ටු පාඨාංකය",
+  readingHelp: "KMnO₄ ඉතා තද පැහැති නිසා මෙනිස්කසයේ පහළ කෙළවර නොපෙනේ. කාචය භාවිත කර <b>ඉහළ කෙළවර</b> ආසන්නතම 0.05 cm³ ට කියවන්න.",
+  readingPh: "උදා. 0.65", recInitial: "ආරම්භක අගය සටහන් කරන්න", recFinal: "අවසාන අගය සටහන් කරන්න", notebook: "විද්‍යාගාර සටහන් පොත",
+  resultsH: "අනුමාපන ප්‍රතිඵල",
+  resultsIntro: "0.1000 mol dm⁻³ Fe²⁺ 25.00 cm³ ක් KMnO₄ සමඟ අනුමාපනය කරන ලදී. පළමු වාරය දළ අනුමාපනයකි. සමපාත අනුමාපන අගයන් 0.10 cm³ ඇතුළත එකඟ විය යුතුය.",
+  thRun: "වාරය", thInitial: "ආරම්භක", thFinal: "අවසාන", thTitre: "අනුමාපන අගය / cm³", noRuns: "තවම වාර නැත.", rough: "දළ", noAcidTag: "අම්ලය නැත",
+  calcH: "ගණනය", calcEmpty: "සාන්ද්‍රණය ගණනය කිරීමට සමපාත අනුමාපන අගයන් දෙකක් ලබා ගන්න.", calcRepeat: "අනුමාපන අගයන් දෙකක් 0.10 cm³ ඇතුළත එකඟ වන තුරු නැවත කරන්න.",
+  meanTitre: "සමපාත අනුමාපන අගයන්හි මධ්‍යන්‍යය", fromRuns: "වාර: {runs}.", yourConc: "ඔබ ගණනය කළ KMnO₄ සාන්ද්‍රණය (mol dm⁻³, වෙසෙසි ඉලක්කම් 3)",
+  check: "පරීක්ෂා කරන්න", showWork: "විසඳුම පෙන්වන්න",
+  workNote: "පන්තිය සම්මත කළ පසු බෝතලයේ ලේබලය: {c} mol dm⁻³. කුඩා වෙනසට හේතුව පිපෙට්ටුවේ සහ පාඨාංකයේ දෝෂ සීමාවයි.",
+  cEnter: "0.0201 වැනි අගයක් ඇතුළත් කරන්න.", cOk: "නිවැරදියි: ඔබේ මධ්‍යන්‍ය අනුමාපන අගයෙන් {v} mol dm⁻³.",
+  cX5: "ඔබ 5 න් ගුණ කර ඇත. MnO₄⁻ එකක් Fe²⁺ පහක් සමඟ ප්‍රතික්‍රියා කරයි, එබැවින් n(Fe²⁺) 5 න් බෙදන්න.",
+  cD5: "1 : 5 අනුපාතය පරීක්ෂා කරන්න. n(MnO₄⁻) = n(Fe²⁺) ÷ 5, එක් වරක් පමණි.",
+  cBad: "තවම නිවැරදි නැත. cm³ සිට dm³ පරිවර්තනය සහ 1 : 5 අනුපාතය පරීක්ෂා කරන්න.",
+  coloursH: "වර්ණ සටහන",
+  coloursIntro: "මේසයේ සියලු වර්ණ බියර්–ලැම්බට් නියමය භාවිතයෙන් සාන්ද්‍රණ අනුව ගණනය කෙරේ. එබැවින් මෙම වර්ණ ප්ලාස්කුවේ වර්ණවලට ගැළපේ.",
+  scrubH: "අනුමාපනය පියවරෙන් පියවර බලන්න", scrubNoAcid: "සල්ෆියුරික් අම්ලය නොමැතිව", scrubAria: "එක් කළ තුල්‍යතා පරිමාවේ ප්‍රතිශතය",
+  scrubNoAcidTxt: "තුල්‍යතා පරිමාවෙන් {p}%, අම්ලය නැත: පළමු බිංදුවලින්ම දුඹුරු MnO₂ ඇති වේ.",
+  scrubBefore: "තුල්‍යතා පරිමාවෙන් {p}%: Fe²⁺ තවම වැඩිපුර ඇත, වර්ණය කොළ පැහැයේ සිට කහ පැහැයට මැකී යයි.",
+  scrubEq: "තුල්‍යතා ලක්ෂ්‍යය: ඊළඟ බිංදුවෙන් පළමු ස්ථිර ළා රෝස පැහැය ලැබේ.",
+  scrubAfter: "තුල්‍යතා පරිමාවෙන් {p}%: වැඩිපුර MnO₄⁻ නිසා ප්ලාස්කුව තද රෝස පැහැ වේ.",
+  yourFlask: "ඔබේ ප්ලාස්කුව දැන්", empty: "හිස්ය.", inFlask: "ප්ලාස්කුවේ {v} cm³.",
+  quizH: "දැනුම පරීක්ෂාව", scoreLeft: "ඉතිරි {n}", correct: "නිවැරදියි. ", notQuite: "තවම නිවැරදි නැත. ",
+  canvasAria: "අනුමාපන උපකරණ: බියුරෙට්ටුව, සුදු ටයිලයක් මත කේතු ප්ලාස්කුව, සහ බියුරෙට්ටු පරිමාණය පෙන්වන විශාලන කාචය",
+  lensCap: "×12 කාචය · මෙනිස්කසයේ ඉහළ කෙළවර කියවන්න",
+  chipBurette: "බියුරෙට්ටුව {v} cm³", chipFlask: "ප්ලාස්කුව {v} cm³", chipInitial: "ආරම්භක {v} cm³", chipPink: "රෝස පැහැය තත්පර {s}",
+  steps: ["බියුරෙට්ටුව KMnO₄ වලින් සෝදා පුරවන්න", "Fe²⁺ 25.00 cm³ ප්ලාස්කුවට පිපෙට්ටු කරන්න", "තනුක H₂SO₄ 20 cm³ පමණ එක් කරන්න", "ආරම්භක බියුරෙට්ටු පාඨාංකය සටහන් කරන්න", "පළමු ස්ථිර ළා රෝස පැහැය ලැබෙන තුරු කරකවමින් අනුමාපනය කරන්න", "අවසාන පාඨාංකය සටහන් කරන්න", "ප්ලාස්කුව සෝදා සමපාත අගයන් ලැබෙන තුරු නැවත කරන්න"],
+  p0: "පුනීලයක් ආධාරයෙන් බියුරෙට්ටුව KMnO₄ ද්‍රාවණයෙන් පුරවා, පසුව පුනීලය ඉවත් කරන්න.",
+  p1: "0.1000 mol dm⁻³ Fe²⁺ 25.00 cm³ කේතු ප්ලාස්කුවට පිපෙට්ටු කරන්න.",
+  p2: "තනුක H₂SO₄ 20 cm³ පමණ ප්ලාස්කුවට එක් කරන්න. එය නොමැතිව දුඹුරු MnO₂ ඇති වේ.",
+  p3: "මෙනිස්කසයේ ඉහළ කෙළවරින් බියුරෙට්ටුව කියවා ආරම්භක පාඨාංකය සටහන් කරන්න.",
+  p4open: "කරාමය විවෘත කර කරකවන්න. සෑම බිංදුවකම දම් පැහැය වහාම අතුරුදහන් විය යුතුය.",
+  p4fast: "දම් පැහැය වහාම අතුරුදහන් වේ. දැනට වේගයෙන් එක් කළ හැක.",
+  p4slow: "රෝස පැහැය මැකී යාම සෙමින් සිදු වේ. බිංදුවෙන් බිංදුවට අඩු කරන්න.",
+  p4drop: "ඉතා ආසන්නයි. වරකට එක් බිංදුවක් එක් කර සෑම වරම කරකවන්න.",
+  p5wait: "ළා රෝස පැහැය තත්පර {s} ක් පවතී. කරාමය වසා එය තත්පර 30 ක් පවතින්නේදැයි බලන්න.",
+  p5ok: "ළා රෝස පැහැය ස්ථිරයි. අවසාන පාඨාංකය සටහන් කරන්න.",
+  p6more: "වාරය සටහන් විය. අනුමාපන අගයන් දෙකක් 0.10 cm³ ඇතුළත එකඟ වන තුරු නැවත කරන්න.",
+  p6first: "වාරය සටහන් විය. ප්ලාස්කුව සෝදා නිවැරදි වාරයක් කරන්න.",
+  tBrown: "දුඹුරු ආවිලතාවක් ඇති වේ. අම්ලය නොමැතිව MnO₄⁻ ඔක්සිහරණය වන්නේ MnO₂ දක්වා පමණි.",
+  tFull: "බියුරෙට්ටුව 50.00 cm³ ට ළඟා විය. ඊළඟ වාරයට පෙර නැවත පුරවන්න.",
+  tFinishFirst: "නැවත පිරවීමට පෙර මෙම අනුමාපනය අවසන් කරන්න.",
+  tHasFe: "ප්ලාස්කුවේ දැනටමත් Fe²⁺ කොටස ඇත.",
+  tHasAcid: "අම්ලය දැනටමත් එක් කර ඇත.",
+  tTooLate: "ප්‍රමාද වැඩියි: අනුමාපනයට පෙර අම්ලය එක් කළ යුතුය.",
+  tFillFirst: "පළමුව බියුරෙට්ටුව පුරවන්න.",
+  tFeFirst: "පළමුව Fe²⁺ ද්‍රාවණය ප්ලාස්කුවට පිපෙට්ටු කරන්න.",
+  tInitialFirst: "කරාමය විවෘත කිරීමට පෙර ආරම්භක පාඨාංකය සටහන් කරන්න.",
+  tRunDone: "මෙම වාරය අවසන්. ඊළඟ වාරය ඇරඹීමට ප්ලාස්කුව සෝදන්න.",
+  tEmpty: "බියුරෙට්ටුව හිස්ය. නැවත පුරවන්න.",
+  tNoAcid: "ප්ලාස්කුවේ අම්ලය නැත. කෙසේ වෙතත් අනුමාපනය කෙරේ: හොඳින් නිරීක්ෂණය කරන්න.",
+  tCloseTap: "පළමුව කරාමය වසන්න හෝ බිංදුවෙන් බිංදුවට මාරු කරන්න.",
+  lBrown: "දුඹුරු MnO₂ සෑදේ: ප්ලාස්කුවේ අම්ලය නැත.",
+  lFilled: "බියුරෙට්ටුව KMnO₄ වලින් සෝදා, පුරවා, පුනීලය ඉවත් කර, තුඩේ වායු බුබුළ ඉවත් කරන ලදී.",
+  lFe: "0.1000 mol dm⁻³ Fe²⁺ (ළා කොළ) 25.00 cm³ කේතු ප්ලාස්කුවට පිපෙට්ටු කරන ලදී.",
+  lAcid: "මිනුම් සිලින්ඩරයක් භාවිතයෙන් තනුක H₂SO₄ 20 cm³ පමණ එක් කරන ලදී.",
+  lWash: "ප්ලාස්කුව ආසුත ජලයෙන් සෝදන ලදී. ඊළඟ වාරයට සූදානම්.",
+  lNew: "නව පරීක්ෂණයක්. බෝතලයේ ඇති KMnO₄ හි සාන්ද්‍රණය නොදනී, එය 0.02 mol dm⁻³ ට ආසන්නය.",
+  lInitial: "ආරම්භක පාඨාංකය {v} cm³.",
+  rClose: "පාඨාංකය ගැනීමට පෙර කරාමය වසන්න.", rWait: "අවසාන බිංදුව වැටෙන තුරු රැඳී සිටින්න.",
+  rType: "පාඨාංකය cm³ වලින් ටයිප් කරන්න, උදා. 0.65.",
+  rTitrateFirst: "අවසාන පාඨාංකය ගැනීමට පෙර කරාමය විවෘත කර අනුමාපනය කරන්න.",
+  rNoPink: "තවම ස්ථිර රෝස පැහැයක් නැත. බිංදුවෙන් බිංදුව KMnO₄ එක් කරන්න.",
+  rHigh: "එය {d} cm³ කින් වැඩියි. ඔබේ ඇස මෙනිස්කසයේ ඉහළ කෙළවරට සමතලව තබා, ආසන්නතම පූර්ණ සංඛ්‍යාවේ සිට 0.1 සලකුණු ගණන් කරන්න.",
+  rLow: "එය {d} cm³ කින් අඩුයි. ඔබේ ඇස මෙනිස්කසයේ ඉහළ කෙළවරට සමතලව තබා, ආසන්නතම පූර්ණ සංඛ්‍යාවේ සිට 0.1 සලකුණු ගණන් කරන්න.",
+  rInitialOk: "ආරම්භක පාඨාංකය සටහන් විය: {v} cm³.",
+  rFinal: "අවසාන පාඨාංකය {f} cm³. අනුමාපන අගය {t} cm³.",
+  rNoAcid: "මෙම වාරයේ අම්ලය නොතිබූ නිසා අනුමාපන අගය වලංගු නොවේ.",
+  rOver: "තද රෝස පැහැයෙන් පෙනෙන්නේ ඔබ බිංදු {n} ක් පමණ ඉක්මවා ගිය බවයි.",
+  rTip: "ඉඟිය: කියවීමට පෙර කරකවමින් ළා රෝස පැහැය තත්පර 30 ක් පමණ පවතින්නට ඉඩ දෙන්න.",
+  species: [["Fe²⁺(aq)", "ළා කොළ. ආරම්භක ද්‍රාවණය."], ["Fe³⁺(aq)", "ළා කහ. Fe²⁺ ඔක්සිකරණය වන විට වැඩි වේ."], ["බියුරෙට්ටුවේ MnO₄⁻", "තද දම්. මෙනිස්කසයේ පහළ කෙළවර නොපෙනෙන තරම් තදයි."], ["Mn²⁺(aq)", "මෙම තනුකතාවේදී ප්‍රායෝගිකව අවර්ණයි."], ["අන්ත ලක්ෂ්‍යය", "වැඩිපුර එක් බිංදුවකින් ස්ථිර ළා රෝස පැහැයක් ලැබේ."], ["ඉක්මවා යාම", "1 cm³ පමණ වැඩිපුර එක් කළ විට ප්ලාස්කුව තද මැජෙන්ටා පැහැ වේ."], ["MnO₂(s)", "අම්ලය අඩු විට දුඹුරු ආවිලතාවක්."]],
+  quiz: [
+    { q: "මෙම අනුමාපනයට වෙනම දර්ශකයක් අවශ්‍ය නොවන්නේ ඇයි?", o: ["අන්ත ලක්ෂ්‍යයේදී Fe²⁺ හි වර්ණය තියුණු ලෙස වෙනස් වේ", "MnO₄⁻ තද වර්ණවත් නිසා පළමු වැඩිපුර බිංදුව රෝස පැහැයක් පෙන්වයි", "සල්ෆියුරික් අම්ලය දර්ශකය ලෙස ක්‍රියා කරයි", "Mn²⁺ දම් පැහැතියි"], e: "පර්මැංගනේට් ස්වයං දර්ශකයක් ලෙස ක්‍රියා කරයි. Fe²⁺ ඉතිරිව ඇති තාක් සෑම බිංදුවක්ම පාහේ අවර්ණ Mn²⁺ බවට ඔක්සිහරණය වේ. පළමු වැඩිපුර බිංදුව ළා රෝස පැහැයක් ඉතිරි කරයි." },
+    { q: "තනුක HCl වෙනුවට තනුක H₂SO₄ භාවිත කරන්නේ ඇයි?", o: ["HCl ඉතා දුර්වල අම්ලයකි", "MnO₄⁻ මගින් Cl⁻ අයන Cl₂ බවට ඔක්සිකරණය වී අමතර පර්මැංගනේට් වැය වේ", "HCl, Fe²⁺ සමඟ අවක්ෂේපයක් සාදයි", "KMnO₄ දිය කරන එකම අම්ලය H₂SO₄ වේ"], e: "ආම්ලික MnO₄⁻ ක්ලෝරයිඩ් අයන ඔක්සිකරණය කිරීමට තරම් ප්‍රබලයි. එවිට පර්මැංගනේට් කොටසක් නාස්ති වී අනුමාපන අගය වැඩි වේ." },
+    { q: "අම්ලය ප්‍රමාණවත් නොවේ නම් සෑදෙන්නේ කුමක්ද?", o: ["MnO₂ හි දුඹුරු අවක්ෂේපයක්", "Fe(OH)₂ හි කොළ අවක්ෂේපයක්", "අවර්ණ වායුවක්", "කිසිදු වෙනසක් නැත"], e: "උදාසීන හෝ දුර්වල ආම්ලික ද්‍රාවණයේදී MnO₄⁻ ඔක්සිහරණය වන්නේ දුඹුරු ඝන MnO₂ දක්වා පමණි. මවුල අනුපාතය වෙනස් වන අතර අන්ත ලක්ෂ්‍යය වැසී යයි." },
+    { q: "මෙම අනුමාපනයේදී බියුරෙට්ටුව කියවිය යුත්තේ කෙසේද?", o: ["මෙනිස්කසයේ පහළ කෙළවරින්", "මෙනිස්කසයේ ඉහළ කෙළවරින්", "ද්‍රවයේ මැදින්", "වැදගත් නොවේ"], e: "KMnO₄ ද්‍රාවණය ඉතා තද නිසා මෙනිස්කසයේ පහළ කෙළවර නොපෙනේ. එබැවින් පාඨාංක දෙකටම ඉහළ කෙළවර එක ලෙස කියවනු ලැබේ." },
+    { q: "MnO₄⁻ : Fe²⁺ මවුල අනුපාතය කුමක්ද?", o: ["1 : 1", "1 : 2", "1 : 5", "5 : 1"], e: "Mn හි ඔක්සිකරණ අංකය +7 සිට +2 දක්වා අඩු වී ඉලෙක්ට්‍රෝන 5 ක් ලබා ගනී. සෑම Fe²⁺ එකක්ම ඉලෙක්ට්‍රෝනයක් අහිමි කරයි, එබැවින් MnO₄⁻ එකක් Fe²⁺ පහක් ඔක්සිකරණය කරයි." },
+    { q: "අනුමාපනය අඩක් පමණ ගිය විට ප්ලාස්කුව ළා කහ පැහැයි. ඇයි?", o: ["ප්‍රතික්‍රියා නොකළ MnO₄⁻", "ඔක්සිකරණයෙන් සෑදුණු Fe³⁺ අයන", "MnO₂ සෑදීම", "වැඩිපුර සල්ෆියුරික් අම්ලය"], e: "Fe³⁺(aq) ළා කහ පැහැතියි. Fe²⁺ (ළා කොළ) ඔක්සිකරණය වන විට එහි වර්ණය වැඩි වේ." },
+    { q: "පිරවීමට පෙර බියුරෙට්ටුව ජලයෙන් නොව KMnO₄ ද්‍රාවණයෙන් සෝදන්නේ ඇයි?", o: ["ජලය KMnO₄ සමඟ ප්‍රතික්‍රියා කරයි", "ඉතිරි වූ ජලය KMnO₄ තනුක කර අනුමාපන අගය වැඩි කරයි", "KMnO₄ මගින් ග්‍රීස් ඉවත් කරයි", "මෙනිස්කසය දැකීම පහසු කරයි"], e: "ඇතුළත ඉතිරි වන ජලය අනුමාපකය තනුක කරයි. එවිට වැඩි පරිමාවක් අවශ්‍ය වන අතර ගණනය කළ සාන්ද්‍රණය අඩු අගයක් ලෙස ලැබේ." },
+  ],
+},
+ta: {
+  eyebrow: "க.பொ.த (உ/த) இரசாயனவியல் · அலகு 03 · ஒட்சியேற்றத்தாழ்த்தல் நியமிப்பு",
+  title: "Fe<sup>2+</sup> மூலம் KMnO<sub>4</sub> ஐ நியமமாக்கல்",
+  digital: "இலக்க வாசிப்பு", reset: "மீண்டும் தொடங்கு",
+  setup: "தயார்படுத்தல்", fill: "அளவியை நிரப்பு", refill: "அளவியை மீள நிரப்பு", fe: "25.00 cm³ Fe²⁺ ஐக் குழாயியால் இடு", acid: "20 cm³ ஐதான H₂SO₄ சேர்", next: "குடுவையைக் கழுவு · அடுத்த சுற்று",
+  tap: "அடைப்பான்", closed: "மூடியது", dropwise: "துளி துளியாக", slow: "மெதுவாக", fast: "வேகமாக", drop: "ஒரு துளி சேர்", swirl: "குடுவையைச் சுழற்று",
+  keys: "விசைகள்: 0–3 அடைப்பான் · D துளி · S சுழற்றல்",
+  tabBench: "பரிசோதனை", tabResults: "முடிவுகள்", tabColours: "நிறங்கள்", tabQuiz: "வினாக்கள்",
+  procedure: "செய்முறை", reading: "அளவி வாசிப்பு",
+  readingHelp: "KMnO₄ மிகக் கருமையாக இருப்பதால் பிறை மேற்பரப்பின் அடிப்பகுதி தெரியாது. உருப்பெருக்கியைப் பயன்படுத்தி <b>மேல் விளிம்பை</b> அண்மித்த 0.05 cm³ இற்கு வாசிக்கவும்.",
+  readingPh: "உ-ம் 0.65", recInitial: "ஆரம்ப வாசிப்பைப் பதி", recFinal: "இறுதி வாசிப்பைப் பதி", notebook: "ஆய்வுகூடக் குறிப்பேடு",
+  resultsH: "நியமிப்பு முடிவுகள்",
+  resultsIntro: "0.1000 mol dm⁻³ Fe²⁺ இன் 25.00 cm³ ஆனது KMnO₄ உடன் நியமிக்கப்பட்டது. முதல் சுற்று தோராயமானது. ஒத்திசைவான பெறுமானங்கள் 0.10 cm³ இற்குள் உடன்பட வேண்டும்.",
+  thRun: "சுற்று", thInitial: "ஆரம்பம்", thFinal: "இறுதி", thTitre: "நியமிப்புப் பெறுமானம் / cm³", noRuns: "இதுவரை சுற்றுகள் இல்லை.", rough: "தோராயம்", noAcidTag: "அமிலம் இல்லை",
+  calcH: "கணிப்பு", calcEmpty: "செறிவைக் கணிக்க ஒத்திசைவான இரண்டு பெறுமானங்களைப் பெறுக.", calcRepeat: "இரண்டு பெறுமானங்கள் 0.10 cm³ இற்குள் உடன்படும் வரை மீண்டும் செய்க.",
+  meanTitre: "ஒத்திசைவான பெறுமானங்களின் சராசரி", fromRuns: "சுற்றுகள்: {runs}.", yourConc: "நீங்கள் கணித்த KMnO₄ செறிவு (mol dm⁻³, 3 பொருளுடை இலக்கங்கள்)",
+  check: "சரிபார்", showWork: "தீர்வைக் காட்டு",
+  workNote: "வகுப்பு நியமமாக்கிய பின் போத்தலின் சீட்டு: {c} mol dm⁻³. சிறிய வேறுபாட்டுக்குக் காரணம் குழாயி மற்றும் வாசிப்பின் வழு எல்லையாகும்.",
+  cEnter: "0.0201 போன்ற ஒரு பெறுமானத்தை உள்ளிடுக.", cOk: "சரி: உங்கள் சராசரிப் பெறுமானத்திலிருந்து {v} mol dm⁻³.",
+  cX5: "நீங்கள் 5 ஆல் பெருக்கியுள்ளீர்கள். ஒரு MnO₄⁻ ஐந்து Fe²⁺ உடன் தாக்கமுறுகிறது, எனவே n(Fe²⁺) ஐ 5 ஆல் வகுக்கவும்.",
+  cD5: "1 : 5 விகிதத்தைச் சரிபார்க்கவும். n(MnO₄⁻) = n(Fe²⁺) ÷ 5, ஒரு முறை மட்டும்.",
+  cBad: "சரியில்லை. cm³ இலிருந்து dm³ மாற்றலையும் 1 : 5 விகிதத்தையும் சரிபார்க்கவும்.",
+  coloursH: "நிற அட்டவணை",
+  coloursIntro: "மேசையிலுள்ள ஒவ்வொரு நிறமும் பியர்–லாம்பேட் விதியைப் பயன்படுத்திச் செறிவுகளிலிருந்து கணிக்கப்படுகிறது. எனவே இந்த நிறங்கள் குடுவையுடன் பொருந்துகின்றன.",
+  scrubH: "நியமிப்பைப் படிப்படியாகப் பாருங்கள்", scrubNoAcid: "சல்பூரிக் அமிலம் இல்லாமல்", scrubAria: "சேர்க்கப்பட்ட சமவலுக் கனவளவின் சதவீதம்",
+  scrubNoAcidTxt: "சமவலுக் கனவளவின் {p}%, அமிலம் இல்லை: முதல் துளிகளிலேயே கபில MnO₂ தோன்றுகிறது.",
+  scrubBefore: "சமவலுக் கனவளவின் {p}%: Fe²⁺ இன்னும் மிகையாக உள்ளது, நிறம் பச்சையிலிருந்து மஞ்சளாக மங்குகிறது.",
+  scrubEq: "சமவலுப் புள்ளி: அடுத்த துளி முதல் நிலையான வெளிர் இளஞ்சிவப்பைத் தருகிறது.",
+  scrubAfter: "சமவலுக் கனவளவின் {p}%: மிகை MnO₄⁻ குடுவையை அடர் இளஞ்சிவப்பாக்குகிறது.",
+  yourFlask: "உங்கள் குடுவை இப்போது", empty: "வெறுமை.", inFlask: "குடுவையில் {v} cm³.",
+  quizH: "அறிவுச் சோதனை", scoreLeft: "{n} மீதம்", correct: "சரி. ", notQuite: "சரியில்லை. ",
+  canvasAria: "நியமிப்பு உபகரணம்: அளவி, வெள்ளை ஓட்டின் மீது கூம்புக் குடுவை, அளவியின் அளவுகோலைக் காட்டும் உருப்பெருக்கி",
+  lensCap: "×12 உருப்பெருக்கி · பிறையின் மேல் விளிம்பை வாசி",
+  chipBurette: "அளவி {v} cm³", chipFlask: "குடுவை {v} cm³", chipInitial: "ஆரம்பம் {v} cm³", chipPink: "இளஞ்சிவப்பு {s} செக்.",
+  steps: ["அளவியை KMnO₄ ஆல் கழுவி நிரப்புக", "25.00 cm³ Fe²⁺ ஐக் குடுவைக்குள் குழாயியால் இடுக", "சுமார் 20 cm³ ஐதான H₂SO₄ சேர்க்க", "ஆரம்ப அளவி வாசிப்பைப் பதிக", "முதல் நிலையான வெளிர் இளஞ்சிவப்பு வரை சுழற்றியபடி நியமிக்க", "இறுதி வாசிப்பைப் பதிக", "குடுவையைக் கழுவி ஒத்திசைவான பெறுமானங்களுக்காக மீண்டும் செய்க"],
+  p0: "புனல் மூலம் அளவியை KMnO₄ கரைசலால் நிரப்பி, பின் புனலை அகற்றுக.",
+  p1: "0.1000 mol dm⁻³ Fe²⁺ இன் 25.00 cm³ ஐக் கூம்புக் குடுவைக்குள் குழாயியால் இடுக.",
+  p2: "சுமார் 20 cm³ ஐதான H₂SO₄ ஐக் குடுவையில் சேர்க்க. அது இல்லாவிடின் கபில MnO₂ உருவாகும்.",
+  p3: "பிறையின் மேல் விளிம்பில் அளவியை வாசித்து ஆரம்ப வாசிப்பைப் பதிக.",
+  p4open: "அடைப்பானைத் திறந்து சுழற்றுக. ஒவ்வொரு துளியின் ஊதா நிறமும் உடனே மறைய வேண்டும்.",
+  p4fast: "ஊதா நிறம் உடனே மறைகிறது. இப்போதைக்கு வேகமாகச் சேர்க்கலாம்.",
+  p4slow: "இளஞ்சிவப்பு மெதுவாக மங்குகிறது. துளி துளியாகக் குறைக்க.",
+  p4drop: "மிக அண்மையில். ஒரு நேரத்தில் ஒரு துளி சேர்த்து ஒவ்வொரு முறையும் சுழற்றுக.",
+  p5wait: "வெளிர் இளஞ்சிவப்பு {s} செக்கன்கள் நிலைத்துள்ளது. அடைப்பானை மூடி 30 செக்கன்கள் நிலைக்கிறதா எனப் பார்க்க.",
+  p5ok: "வெளிர் இளஞ்சிவப்பு நிலையானது. இறுதி வாசிப்பைப் பதிக.",
+  p6more: "சுற்று பதியப்பட்டது. இரண்டு பெறுமானங்கள் 0.10 cm³ இற்குள் உடன்படும் வரை மீண்டும் செய்க.",
+  p6first: "சுற்று பதியப்பட்டது. குடுவையைக் கழுவி ஒரு துல்லியமான சுற்றைச் செய்க.",
+  tBrown: "கபில நிறக் கலங்கல் உருவாகிறது. அமிலம் இல்லாவிடின் MnO₄⁻ ஆனது MnO₂ வரை மட்டுமே தாழ்த்தப்படும்.",
+  tFull: "அளவி 50.00 cm³ ஐ அடைந்துவிட்டது. அடுத்த சுற்றுக்கு முன் மீள நிரப்புக.",
+  tFinishFirst: "மீள நிரப்பும் முன் இந்த நியமிப்பை முடிக்க.",
+  tHasFe: "குடுவையில் ஏற்கனவே Fe²⁺ கரைசல் உள்ளது.",
+  tHasAcid: "அமிலம் ஏற்கனவே சேர்க்கப்பட்டுள்ளது.",
+  tTooLate: "தாமதமாகிவிட்டது: நியமிப்புக்கு முன்பே அமிலம் சேர்க்கப்பட வேண்டும்.",
+  tFillFirst: "முதலில் அளவியை நிரப்புக.",
+  tFeFirst: "முதலில் Fe²⁺ கரைசலைக் குடுவைக்குள் குழாயியால் இடுக.",
+  tInitialFirst: "அடைப்பானைத் திறக்கும் முன் ஆரம்ப வாசிப்பைப் பதிக.",
+  tRunDone: "இந்தச் சுற்று முடிந்தது. அடுத்த சுற்றுக்குக் குடுவையைக் கழுவுக.",
+  tEmpty: "அளவி வெறுமையாக உள்ளது. மீள நிரப்புக.",
+  tNoAcid: "குடுவையில் அமிலம் இல்லை. இருப்பினும் நியமிக்கப்படுகிறது: கவனமாக அவதானிக்க.",
+  tCloseTap: "முதலில் அடைப்பானை மூடுக அல்லது துளி துளியாக மாற்றுக.",
+  lBrown: "கபில MnO₂ உருவாகிறது: குடுவையில் அமிலம் இல்லை.",
+  lFilled: "அளவி KMnO₄ ஆல் கழுவப்பட்டு, நிரப்பப்பட்டு, புனல் அகற்றப்பட்டு, நுனியிலுள்ள காற்றுக்குமிழி அகற்றப்பட்டது.",
+  lFe: "0.1000 mol dm⁻³ Fe²⁺ (வெளிர் பச்சை) இன் 25.00 cm³ கூம்புக் குடுவைக்குள் இடப்பட்டது.",
+  lAcid: "அளவிடும் உருளை மூலம் சுமார் 20 cm³ ஐதான H₂SO₄ சேர்க்கப்பட்டது.",
+  lWash: "குடுவை காய்ச்சி வடித்த நீரால் கழுவப்பட்டது. அடுத்த சுற்றுக்குத் தயார்.",
+  lNew: "புதிய பரிசோதனை. போத்தலிலுள்ள KMnO₄ இன் செறிவு தெரியாது, அது 0.02 mol dm⁻³ இற்கு அண்மையானது.",
+  lInitial: "ஆரம்ப வாசிப்பு {v} cm³.",
+  rClose: "வாசிப்பதற்கு முன் அடைப்பானை மூடுக.", rWait: "கடைசித் துளி விழும் வரை காத்திருக்க.",
+  rType: "வாசிப்பை cm³ இல் உள்ளிடுக, உ-ம் 0.65.",
+  rTitrateFirst: "இறுதி வாசிப்புக்கு முன் அடைப்பானைத் திறந்து நியமிக்க.",
+  rNoPink: "இன்னும் நிலையான இளஞ்சிவப்பு இல்லை. KMnO₄ ஐத் துளி துளியாகச் சேர்க்க.",
+  rHigh: "அது {d} cm³ அதிகம். கண்ணைப் பிறையின் மேல் விளிம்புக்கு நேராக வைத்து, அண்மித்த முழு எண்ணிலிருந்து 0.1 குறிகளை எண்ணுக.",
+  rLow: "அது {d} cm³ குறைவு. கண்ணைப் பிறையின் மேல் விளிம்புக்கு நேராக வைத்து, அண்மித்த முழு எண்ணிலிருந்து 0.1 குறிகளை எண்ணுக.",
+  rInitialOk: "ஆரம்ப வாசிப்பு பதியப்பட்டது: {v} cm³.",
+  rFinal: "இறுதி வாசிப்பு {f} cm³. நியமிப்புப் பெறுமானம் {t} cm³.",
+  rNoAcid: "இந்தச் சுற்றில் அமிலம் இல்லாததால் பெறுமானம் செல்லுபடியற்றது.",
+  rOver: "அடர் இளஞ்சிவப்பு நீங்கள் சுமார் {n} துளிகள் மிகையாகச் சேர்த்ததைக் காட்டுகிறது.",
+  rTip: "குறிப்பு: வாசிப்பதற்கு முன் சுழற்றியபடி வெளிர் இளஞ்சிவப்பு சுமார் 30 செக்கன்கள் நிலைக்க விடுக.",
+  species: [["Fe²⁺(aq)", "வெளிர் பச்சை. ஆரம்பக் கரைசல்."], ["Fe³⁺(aq)", "வெளிர் மஞ்சள். Fe²⁺ ஒட்சியேற்றப்படும்போது அதிகரிக்கிறது."], ["அளவியிலுள்ள MnO₄⁻", "செறிந்த ஊதா. பிறையின் அடிப்பகுதி தெரியாத அளவு கருமையானது."], ["Mn²⁺(aq)", "இந்த ஐதாக்கலில் ஏறத்தாழ நிறமற்றது."], ["முடிவுப்புள்ளி", "ஒரு மிகைத் துளி நிலையான வெளிர் இளஞ்சிவப்பைத் தருகிறது."], ["மிகைச் சேர்க்கை", "சுமார் 1 cm³ மிகையாகச் சேர்த்தால் குடுவை அடர் மஜெந்தா நிறமாகும்."], ["MnO₂(s)", "அமிலம் குறைவாக இருக்கும்போது கபில நிறக் கலங்கல்."]],
+  quiz: [
+    { q: "இந்த நியமிப்புக்குத் தனியான காட்டி ஏன் தேவையில்லை?", o: ["முடிவுப்புள்ளியில் Fe²⁺ இன் நிறம் கூர்மையாக மாறுகிறது", "MnO₄⁻ செறிந்த நிறமுடையதால் முதல் மிகைத் துளி இளஞ்சிவப்பைக் காட்டுகிறது", "சல்பூரிக் அமிலம் காட்டியாகச் செயற்படுகிறது", "Mn²⁺ ஊதா நிறமானது"], e: "பரமங்கனேற்று தானே காட்டியாகச் செயற்படுகிறது. Fe²⁺ எஞ்சியிருக்கும் வரை ஒவ்வொரு துளியும் ஏறத்தாழ நிறமற்ற Mn²⁺ ஆகத் தாழ்த்தப்படுகிறது. முதல் மிகைத் துளி வெளிர் இளஞ்சிவப்பை விட்டுச் செல்கிறது." },
+    { q: "ஐதான HCl க்குப் பதிலாக ஐதான H₂SO₄ ஏன் பயன்படுத்தப்படுகிறது?", o: ["HCl மிகவும் மென்மையான அமிலம்", "MnO₄⁻ ஆனது Cl⁻ ஐ Cl₂ ஆக ஒட்சியேற்றி மேலதிக பரமங்கனேற்றைச் செலவழிக்கிறது", "HCl, Fe²⁺ உடன் வீழ்படிவைத் தருகிறது", "KMnO₄ ஐக் கரைக்கும் ஒரே அமிலம் H₂SO₄"], e: "அமிலமாக்கிய MnO₄⁻ குளோரைட்டு அயன்களை ஒட்சியேற்றும் அளவு வலிமையானது. சில பரமங்கனேற்று வீணாகி, பெறுமானம் அதிகமாகும்." },
+    { q: "அமிலம் போதாவிடின் என்ன உருவாகும்?", o: ["MnO₂ இன் கபில வீழ்படிவு", "Fe(OH)₂ இன் பச்சை வீழ்படிவு", "நிறமற்ற வாயு", "எந்த மாற்றமும் இல்லை"], e: "நடுநிலை அல்லது மென் அமிலக் கரைசலில் MnO₄⁻ ஆனது கபில நிறத் திண்மமான MnO₂ வரை மட்டுமே தாழ்த்தப்படுகிறது. மூல் விகிதம் மாறுவதுடன் முடிவுப்புள்ளியும் மறைக்கப்படுகிறது." },
+    { q: "இந்த நியமிப்பில் அளவியை எவ்வாறு வாசிக்க வேண்டும்?", o: ["பிறையின் அடிப்பகுதியில்", "பிறையின் மேல் விளிம்பில்", "திரவத்தின் நடுவில்", "அது முக்கியமல்ல"], e: "KMnO₄ கரைசல் மிகக் கருமையாக இருப்பதால் பிறையின் அடிப்பகுதி தெரியாது. எனவே இரு வாசிப்புகளுக்கும் மேல் விளிம்பு ஒரே மாதிரியாக வாசிக்கப்படுகிறது." },
+    { q: "MnO₄⁻ : Fe²⁺ மூல் விகிதம் என்ன?", o: ["1 : 1", "1 : 2", "1 : 5", "5 : 1"], e: "Mn இன் ஒட்சியேற்ற எண் +7 இலிருந்து +2 ஆகக் குறைந்து 5 இலத்திரன்களைப் பெறுகிறது. ஒவ்வொரு Fe²⁺ உம் 1 இலத்திரனை இழக்கிறது, எனவே ஒரு MnO₄⁻ ஐந்து Fe²⁺ ஐ ஒட்சியேற்றுகிறது." },
+    { q: "நியமிப்பின் அரைவாசியில் குடுவை வெளிர் மஞ்சளாக உள்ளது. ஏன்?", o: ["தாக்கமுறாத MnO₄⁻", "ஒட்சியேற்றத்தால் உருவான Fe³⁺ அயன்கள்", "MnO₂ உருவாதல்", "மிகை சல்பூரிக் அமிலம்"], e: "Fe³⁺(aq) வெளிர் மஞ்சள் நிறமானது. Fe²⁺ (வெளிர் பச்சை) ஒட்சியேற்றப்படும்போது அதன் நிறம் அதிகரிக்கிறது." },
+    { q: "நிரப்பும் முன் அளவியை நீரால் அல்லாமல் KMnO₄ கரைசலால் ஏன் கழுவ வேண்டும்?", o: ["நீர் KMnO₄ உடன் தாக்கமுறுகிறது", "எஞ்சிய நீர் KMnO₄ ஐ ஐதாக்கிப் பெறுமானத்தை அதிகரிக்கும்", "KMnO₄ கிறீஸை அகற்றுகிறது", "பிறையைக் காண்பது இலகுவாகும்"], e: "உள்ளே எஞ்சும் நீர் நியமிப்புக் கரைசலை ஐதாக்கும். அதனால் அதிக கனவளவு தேவைப்பட்டு, கணிக்கப்படும் செறிவு குறைவாக வரும்." },
+  ],
+},
+};
+const QUIZ_ANS = [1, 1, 0, 1, 2, 1, 1];
+let LANG = "en";
+try { const s = localStorage.getItem("kmno4-lang"); if (s && I18N[s]) LANG = s; else { const n = (navigator.language || "").slice(0, 2); if (I18N[n]) LANG = n; } } catch (e) {}
+function t(key, p) {
+  let s = I18N[LANG][key]; if (s === undefined) s = I18N.en[key]; if (s === undefined) return key;
+  if (p && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (_, k) => p[k] ?? "");
+  return s;
+}
+const tp = parts => parts.map(([k, p]) => t(k, p)).join(" ");
+
+// =====================================================================
+// SIMULATION
+// =====================================================================
+const W = 600, H = 800;
+const B = { x: 330, top: 30, zero: 70, px: 8, w: 18, end: 500, stop: 507, tip: 548 };
+const F = { cx: 330, neckTop: 525, neckBot: 567, base: 727, neckR: 21, baseR: 108 };
+const LENS = { x: 482, y: 200, r: 80, zoom: 12 };
+const FE_CONC = 0.1000, PIPETTE = 25.00, DROP = 0.05;
+const RATES = [0, 0.11, 0.38, 1.5]; // cm3 per second
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+let S;
+function freshState() {
+  return {
+    cKM: +(0.0186 + Math.random() * 0.0028).toFixed(5),
+    filled: false, reading: 50, tipFull: false,
+    flow: 0, swirl: $("swirl").checked, digital: $("digital").checked,
+    flask: emptyFlask(),
+    run: { initial: null, final: null, opened: false },
+    runs: [], pendant: 0, falling: [], plumes: [], flecks: [],
+    anim: null, pinkTime: 0, streamAcc: 0, warnedAcid: false,
+    logs: [], note: null, calcNote: null, answered: {}
+  };
+}
+function emptyFlask() { return { V: 0, fe2: 0, fe3: 0, mno4: 0, mn2: 0, mno2: 0, acid: 0, fe0: 0, hasFe: false, delivered: 0 }; }
+
+// chemistry
+function addMnO4(vol) {
+  const f = S.flask, n = S.cKM * vol / 1000;
+  f.V += vol; f.delivered += vol;
+  if (f.acid > 0) {
+    const x = Math.min(n, f.fe2 / 5);
+    f.fe2 -= 5 * x; f.fe3 += 5 * x; f.mn2 += x; f.mno4 += n - x;
+  } else {
+    const x = Math.min(n, f.fe2 / 3);
+    f.fe2 -= 3 * x; f.fe3 += 3 * x; f.mno2 += x; f.mno4 += n - x;
+    if (f.mno2 > 2e-6 && !S.warnedAcid) { S.warnedAcid = true; toast("tBrown"); log(["lBrown"]); }
+  }
+  if (f.mno4 > 0 && f.fe2 > 0) { const y = Math.min(f.mno4, f.fe2 / 5); f.mno4 -= y; f.fe2 -= 5 * y; f.fe3 += 5 * y; f.mn2 += y; }
+}
+function conc(f) { const L = Math.max(f.V, 1e-6) / 1000; return { mno4: f.mno4 / L, fe2: f.fe2 / L, fe3: f.fe3 / L, mno2: f.mno2 / L }; }
+
+// Beer–Lambert colour through ~4 cm of solution against a white tile
+function solRGB(c, L = 4, bg = [251, 251, 248]) {
+  const AR = L * (500 * c.mno4 + 0.30 * c.fe2 + 0.05 * c.fe3);
+  const AG = L * (2300 * c.mno4 + 0.05 * c.fe2 + 0.30 * c.fe3);
+  const AB = L * (380 * c.mno4 + 0.25 * c.fe2 + 0.85 * c.fe3);
+  let rgb = [bg[0] * 10 ** -AR, bg[1] * 10 ** -AG, bg[2] * 10 ** -AB];
+  const tt = 1 - Math.exp(-(c.mno2 || 0) * L * 900);
+  const brown = [128, 78, 34];
+  rgb = rgb.map((v, i) => v * (1 - tt) + brown[i] * tt);
+  return rgb.map(v => Math.round(Math.max(0, Math.min(255, v))));
+}
+const css = (rgb, a = 1) => `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${a})`;
+
+// canvas
+const cv = $("cv"), ctx = cv.getContext("2d"), vp = $("viewport");
+let dpr = 1, cw = 0, ch = 0, sc = 1, ox = 0, oy = 0, T = {};
+function resize() {
+  const r = vp.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr);
+  sc = Math.min(cw / W, ch / H); ox = (cw - W * sc) / 2; oy = (ch - H * sc) / 2;
+}
+function readTokens() {
+  const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim();
+  T = { wallTop: g("--wall-top"), wallBot: g("--wall-bot"), bench: g("--bench"), benchEdge: g("--bench-edge"), steel: g("--steel"), glass: g("--glass"), ink: g("--ink"), muted: g("--muted"), accent: g("--accent"), surface: g("--surface"), scale: g("--scale-ink") };
+}
+new ResizeObserver(resize).observe(vp);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTokens);
+new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+function flaskR(y) {
+  if (y <= F.neckBot) return F.neckR;
+  const tt = (y - F.neckBot) / (F.base - F.neckBot);
+  const s = tt < 0.08 ? tt * tt / 0.16 : tt - 0.04;
+  let r = F.neckR + (F.baseR - F.neckR) * s;
+  const k = F.base - y; if (k < 8) r -= (8 - k) * (8 - k) * 0.12;
+  return r;
+}
+const volTable = [];
+(() => { let sum = 0; const raw = [0]; for (let y = F.base - 1; y >= F.neckTop; y--) { sum += Math.PI * flaskR(y + 0.5) ** 2; raw.push(sum); }
+  const bodyPx = raw[F.base - F.neckBot]; raw.forEach(v => volTable.push(v * 250 / bodyPx)); })();
+function levelY(V) { for (let i = 0; i < volTable.length; i++) if (volTable[i] >= V) return F.base - i; return F.neckTop; }
+function flaskPath(dx = 0) {
+  ctx.beginPath(); ctx.moveTo(F.cx - F.neckR - 3 + dx, F.neckTop - 2);
+  for (let y = F.neckTop; y <= F.base; y += 2) ctx.lineTo(F.cx - flaskR(y) + dx, y);
+  for (let y = F.base; y >= F.neckTop; y -= 2) ctx.lineTo(F.cx + flaskR(y) + dx, y);
+  ctx.lineTo(F.cx + F.neckR + 3 + dx, F.neckTop - 2); ctx.closePath();
+}
+
+let time = 0, last = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now; time += dt;
+  step(dt); draw(); requestAnimationFrame(frame);
+}
+
+let uiTimer = 0;
+function swirlX() { return S.swirl && !reduceMotion ? Math.sin(time * 5.2) * 3 : 0; }
+function step(dt) {
+  const f = S.flask;
+  if (S.anim) {
+    const a = S.anim; a.t += dt; const p = Math.min(1, a.t / a.dur), dp = p - a.p; a.p = p;
+    if (a.kind === "fill") S.reading = 50 - (50 - a.target) * easeOut(p);
+    if (a.kind === "fe") { const v = dp * a.vol; f.V += v; f.fe2 += FE_CONC * v / 1000; }
+    if (a.kind === "acid") { f.V += dp * 20; f.acid += dp * 20; }
+    if (p >= 1) { const done = a.done; S.anim = null; done && done(); render(); }
+  }
+  const rate = RATES[S.flow];
+  if (rate > 0) {
+    let dv = rate * dt;
+    if (S.reading + S.pendant + dv >= 50) { dv = Math.max(0, 50 - S.reading - S.pendant); setFlow(0); toast("tFull"); }
+    if (S.flow === 1) {
+      S.pendant += dv;
+      if (S.pendant >= DROP) { S.falling.push({ x: B.x, y: B.tip + 4, vy: 0, vol: S.pendant }); S.reading += S.pendant; S.pendant = 0; }
+    } else if (S.flow > 1) {
+      S.reading += dv; S.streamAcc += dv; addMnO4(dv);
+      if (S.streamAcc > 0.06) { spawnPlume(S.streamAcc); S.streamAcc = 0; }
+    }
+  }
+  const ly = levelY(f.V);
+  for (let i = S.falling.length - 1; i >= 0; i--) {
+    const d = S.falling[i]; d.vy += 1400 * dt; d.y += d.vy * dt;
+    if (d.y >= ly) { addMnO4(d.vol); spawnPlume(d.vol); S.falling.splice(i, 1); }
+  }
+  const frac = f.fe0 > 0 ? f.fe2 / f.fe0 : 0;
+  const k = (S.swirl ? 1 : 0.4) * (0.55 + 9 * Math.pow(frac, 0.8));
+  for (let i = S.plumes.length - 1; i >= 0; i--) {
+    const p = S.plumes[i]; p.age += dt;
+    p.r += (S.swirl ? 46 : 12) * dt / (1 + p.age);
+    p.y += (S.swirl ? 30 : 16) * dt / (1 + p.age * 0.6);
+    if (S.swirl && !reduceMotion) p.x += Math.sin(time * 5.2 + p.ph) * 34 * dt;
+    p.s *= Math.exp(-k * dt);
+    if (p.s < 0.02) S.plumes.splice(i, 1);
+  }
+  if (f.mno2 > 0 && S.flecks.length < Math.min(140, f.mno2 * 3e5)) S.flecks.push({ x: (Math.random() - 0.5) * 2, y: Math.random(), s: 0.6 + Math.random() * 1.4, ph: Math.random() * 6 });
+  const c = conc(f);
+  if (f.V > 0 && c.mno4 > 4e-6) S.pinkTime += dt; else S.pinkTime = 0;
+  uiTimer += dt; if (uiTimer > 0.12) { uiTimer = 0; renderLive(); }
+}
+function spawnPlume(vol) {
+  const ly = levelY(S.flask.V);
+  S.plumes.push({ x: F.cx + (Math.random() - 0.5) * 4, y: ly + 3, r: 4, s: Math.min(1.4, 0.5 + vol * 8), age: 0, ph: Math.random() * 6 });
+  if (S.plumes.length > 60) S.plumes.shift();
+}
+const easeOut = x => 1 - (1 - x) ** 3;
+
+// drawing
+function draw() {
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const g = ctx.createLinearGradient(0, 0, 0, ch); g.addColorStop(0, T.wallTop); g.addColorStop(1, T.wallBot);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, cw, ch);
+  ctx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, dpr * oy);
+  const L = -ox / sc, R = (cw - ox) / sc, BOT = (ch - oy) / sc;
+  ctx.fillStyle = T.bench; ctx.fillRect(L, 747, R - L, BOT - 747);
+  ctx.fillStyle = T.benchEdge; ctx.fillRect(L, 747, R - L, 4);
+  const sh = ctx.createRadialGradient(330, 748, 10, 330, 748, 220); sh.addColorStop(0, "rgba(0,0,0,.35)"); sh.addColorStop(1, "rgba(0,0,0,0)");
+  ctx.fillStyle = sh; ctx.fillRect(100, 740, 460, 30);
+  drawStand(); drawBurette(); drawFlask(); drawPourAnims(); drawLens();
+}
+function metal(x0, x1) { const g = ctx.createLinearGradient(x0, 0, x1, 0); g.addColorStop(0, "#5e6a72"); g.addColorStop(0.45, "#e8eef1"); g.addColorStop(0.6, "#b9c4ca"); g.addColorStop(1, "#4c5960"); return g; }
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); }
+function drawStand() {
+  ctx.fillStyle = "#2f3a40"; rr(118, 735, 330, 13, 3); ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,.12)"; ctx.fillRect(120, 736, 326, 2);
+  ctx.fillStyle = metal(162, 173); ctx.fillRect(162, 18, 11, 718);
+  ctx.fillStyle = "#3a464d"; rr(160, 14, 15, 6, 2); ctx.fill();
+  const tg = ctx.createLinearGradient(0, 727, 0, 737); tg.addColorStop(0, "#ffffff"); tg.addColorStop(1, "#dfe4e3");
+  ctx.fillStyle = tg; rr(206, 727, 248, 9, 2); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,.15)"; ctx.lineWidth = 0.8; ctx.stroke();
+  ctx.fillStyle = "#2b353b"; rr(155, 246, 26, 26, 3); ctx.fill();
+  ctx.fillStyle = "#c9a227"; ctx.beginPath(); ctx.arc(150, 259, 5, 0, 7); ctx.fill();
+  const ag = ctx.createLinearGradient(0, 254, 0, 264); ag.addColorStop(0, "#d7dee2"); ag.addColorStop(1, "#59666d");
+  ctx.fillStyle = ag; ctx.fillRect(181, 254, 130, 9);
+  ctx.fillStyle = "#2b353b"; rr(308, 246, 6, 26, 2); ctx.fill(); rr(346, 246, 6, 26, 2); ctx.fill();
+  ctx.fillStyle = "#8a4f2a"; ctx.fillRect(314, 248, 3, 22); ctx.fillRect(343, 248, 3, 22);
+  ctx.strokeStyle = "#2b353b"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(311, 246); ctx.quadraticCurveTo(330, 236, 349, 246); ctx.stroke();
+}
+function burY(v) { return B.zero + v * B.px; }
+function drawBurette() {
+  const x0 = B.x - B.w / 2, x1 = B.x + B.w / 2;
+  const levelV = S.filled || S.anim?.kind === "fill" ? S.reading + (S.flow === 1 ? S.pendant : 0) : 50.6;
+  if (levelV < 50.6) {
+    const y = burY(levelV);
+    const lg = ctx.createLinearGradient(x0, 0, x1, 0); lg.addColorStop(0, "#2a0730"); lg.addColorStop(0.35, "#5c1464"); lg.addColorStop(0.6, "#4a0f52"); lg.addColorStop(1, "#22052a");
+    ctx.fillStyle = lg;
+    ctx.beginPath(); ctx.moveTo(x0 + 1, y); ctx.quadraticCurveTo(B.x, y + 5, x1 - 1, y); ctx.lineTo(x1 - 1, B.end + 4); ctx.lineTo(x0 + 1, B.end + 4); ctx.closePath(); ctx.fill();
+  }
+  if (S.tipFull) { ctx.fillStyle = "#4a0f52"; ctx.beginPath(); ctx.moveTo(B.x - 3, B.stop + 8); ctx.lineTo(B.x - 1.2, B.tip); ctx.lineTo(B.x + 1.2, B.tip); ctx.lineTo(B.x + 3, B.stop + 8); ctx.fill(); }
+  const gg = ctx.createLinearGradient(x0, 0, x1, 0);
+  gg.addColorStop(0, "rgba(255,255,255,.10)"); gg.addColorStop(0.2, "rgba(255,255,255,.55)"); gg.addColorStop(0.32, "rgba(255,255,255,.08)"); gg.addColorStop(0.85, "rgba(255,255,255,.05)"); gg.addColorStop(1, "rgba(255,255,255,.25)");
+  ctx.fillStyle = gg; ctx.fillRect(x0, B.top, B.w, B.end - B.top + 4);
+  ctx.strokeStyle = T.glass; ctx.lineWidth = 1.4;
+  ctx.beginPath(); ctx.moveTo(x0, B.top); ctx.lineTo(x0, B.end + 4); ctx.moveTo(x1, B.top); ctx.lineTo(x1, B.end + 4); ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(B.x, B.top, B.w / 2 + 1.5, 2.5, 0, 0, 7); ctx.stroke();
+  ctx.lineWidth = 0.7; ctx.font = "500 8.5px 'IBM Plex Mono', monospace"; ctx.textAlign = "right"; ctx.textBaseline = "middle";
+  for (let i = 0; i <= 50; i++) {
+    const y = burY(i), len = i % 5 === 0 ? 10 : 5;
+    ctx.strokeStyle = i >= levelV ? "rgba(255,255,255,.75)" : T.scale;
+    ctx.beginPath(); ctx.moveTo(x0 + 1, y); ctx.lineTo(x0 + 1 + len, y); ctx.stroke();
+    if (i % 5 === 0) { ctx.fillStyle = T.ink; ctx.fillText(String(i), x0 - 4, y); }
+  }
+  ctx.textAlign = "left"; ctx.fillStyle = T.muted; ctx.font = "500 7px 'IBM Plex Mono', monospace";
+  ctx.fillText("cm³ · 20 °C", x1 + 4, B.zero - 14);
+  ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(x0, B.end + 4); ctx.lineTo(B.x - 4, B.stop - 2); ctx.lineTo(B.x + 4, B.stop - 2); ctx.lineTo(x1, B.end + 4); ctx.fill(); ctx.stroke();
+  rr(B.x - 13, B.stop - 4, 26, 11, 4); ctx.fillStyle = "rgba(235,242,245,.85)"; ctx.fill(); ctx.stroke();
+  ctx.save(); ctx.translate(B.x, B.stop + 1.5);
+  ctx.rotate([0, 0.35, 0.8, 1.5707][S.flow]);
+  ctx.fillStyle = "#e9eef0"; ctx.strokeStyle = "#7b8a91"; rr(-24, -3.5, 48, 7, 3); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#3b4a52"; rr(18, -5, 10, 10, 2); ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = "rgba(255,255,255,.3)"; ctx.strokeStyle = T.glass;
+  ctx.beginPath(); ctx.moveTo(B.x - 4, B.stop + 7); ctx.lineTo(B.x - 2, B.tip); ctx.lineTo(B.x + 2, B.tip); ctx.lineTo(B.x + 4, B.stop + 7); ctx.fill(); ctx.stroke();
+  if (S.flow === 1 && S.pendant > 0.003) {
+    const r = 1.6 + 2.6 * Math.cbrt(S.pendant / DROP);
+    ctx.fillStyle = "#6a1872"; ctx.beginPath(); ctx.moveTo(B.x - 1.5, B.tip); ctx.quadraticCurveTo(B.x - r, B.tip + r * 0.8, B.x, B.tip + r * 2); ctx.quadraticCurveTo(B.x + r, B.tip + r * 0.8, B.x + 1.5, B.tip); ctx.fill();
+  }
+  const ly = levelY(S.flask.V);
+  if (S.flow >= 2) {
+    ctx.strokeStyle = "rgba(92,20,100,.92)"; ctx.lineWidth = S.flow === 3 ? 2.4 : 1.3; ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(B.x, B.tip); ctx.lineTo(B.x + Math.sin(time * 40) * 0.3, ly); ctx.stroke();
+  }
+  ctx.fillStyle = "#6a1872";
+  S.falling.forEach(d => { ctx.beginPath(); ctx.arc(d.x, d.y, 2.6, 0, Math.PI); ctx.lineTo(d.x, d.y - 6); ctx.closePath(); ctx.fill(); });
+  if (S.anim?.kind === "fill") {
+    ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 1.3;
+    ctx.beginPath(); ctx.moveTo(B.x - 26, B.top - 26); ctx.lineTo(B.x + 26, B.top - 26); ctx.lineTo(B.x + 4, B.top - 2); ctx.lineTo(B.x + 4, B.top + 14); ctx.lineTo(B.x - 4, B.top + 14); ctx.lineTo(B.x - 4, B.top - 2); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = "#5c1464"; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(B.x, B.top - 22); ctx.lineTo(B.x, burY(S.reading)); ctx.stroke();
+  }
+}
+function drawFlask() {
+  const f = S.flask, dx = swirlX();
+  const fade = S.anim?.kind === "wash" ? 1 - S.anim.p : 1;
+  ctx.save();
+  flaskPath(dx); ctx.save(); ctx.clip();
+  if (f.V > 0.01) {
+    const ly = levelY(f.V), c = conc(f), rgb = solRGB(c);
+    ctx.globalAlpha = fade;
+    const lg = ctx.createLinearGradient(0, ly, 0, F.base);
+    lg.addColorStop(0, css(rgb, 0.9)); lg.addColorStop(1, css(solRGB(c, 5.5), 0.97));
+    ctx.fillStyle = lg; ctx.fillRect(F.cx - 130 + dx, ly, 260, F.base - ly + 2);
+    S.flecks.forEach(p => { const yy = ly + 6 + p.y * (F.base - ly - 8); const r2 = flaskR(yy) - 4;
+      ctx.fillStyle = "rgba(92,52,20,.55)"; ctx.beginPath(); ctx.arc(F.cx + dx + p.x * r2 + Math.sin(time * 2 + p.ph) * 2, yy, p.s, 0, 7); ctx.fill(); });
+    S.plumes.forEach(p => {
+      const pc = solRGB({ mno4: p.s * 7e-4 + c.mno4, fe2: c.fe2, fe3: c.fe3, mno2: c.mno2 });
+      const g = ctx.createRadialGradient(p.x + dx, p.y, 0, p.x + dx, p.y, p.r);
+      const a = Math.min(0.92, p.s * 0.9);
+      g.addColorStop(0, css(pc, a)); g.addColorStop(0.6, css(pc, a * 0.45)); g.addColorStop(1, css(pc, 0));
+      ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(p.x + dx, p.y, p.r * 1.25, p.r, 0, 0, 7); ctx.fill();
+    });
+    const tilt = S.swirl && !reduceMotion ? Math.cos(time * 5.2) * 0.05 : 0, rw = flaskR(ly);
+    ctx.fillStyle = css(rgb.map(v => Math.min(255, v + 18)), 0.95);
+    ctx.beginPath(); ctx.ellipse(F.cx + dx, ly, rw, 3.2, tilt, 0, 7); ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,.55)"; ctx.lineWidth = 0.8; ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+  flaskPath(dx); ctx.fillStyle = "rgba(235,245,250,.12)"; ctx.fill();
+  ctx.strokeStyle = T.glass; ctx.lineWidth = 1.8; ctx.stroke();
+  ctx.beginPath(); ctx.ellipse(F.cx + dx, F.neckTop - 2, F.neckR + 3, 2.4, 0, 0, 7); ctx.stroke();
+  ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = 3; ctx.lineCap = "round";
+  ctx.beginPath(); ctx.moveTo(F.cx - F.neckR + 5 + dx, F.neckTop + 6); ctx.lineTo(F.cx - F.neckR + 5 + dx, F.neckBot - 2); ctx.stroke();
+  ctx.beginPath(); for (let y = F.neckBot + 18; y < F.base - 14; y += 3) { const x = F.cx - flaskR(y) + 9 + dx; y === F.neckBot + 18 ? ctx.moveTo(x, y) : ctx.lineTo(x, y); } ctx.stroke();
+  ctx.strokeStyle = "rgba(255,255,255,.75)"; ctx.fillStyle = "rgba(255,255,255,.85)"; ctx.lineWidth = 1; ctx.font = "500 7px 'IBM Plex Mono', monospace"; ctx.textAlign = "left"; ctx.textBaseline = "middle";
+  [50, 100, 150, 200].forEach(v => { const y = levelY(v), x = F.cx + flaskR(y) * 0.45 + dx; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 12, y); ctx.stroke(); ctx.fillText(String(v), x + 15, y); });
+  ctx.fillText("250 mL", F.cx - 18 + dx, F.base - 22);
+  ctx.restore();
+}
+function drawPourAnims() {
+  const a = S.anim; if (!a) return;
+  if (a.kind === "fe") {
+    ctx.save(); ctx.translate(F.cx + 10, F.neckTop + 30); ctx.rotate(0.2);
+    const fe = solRGB({ mno4: 0, fe2: 0.1, fe3: 0, mno2: 0 }, 1.6);
+    ctx.strokeStyle = T.glass; ctx.lineWidth = 1.3; ctx.fillStyle = "rgba(255,255,255,.35)";
+    ctx.beginPath(); ctx.moveTo(-1, 0); ctx.lineTo(-3, -120); ctx.lineTo(-11, -140); ctx.lineTo(-11, -200); ctx.lineTo(-3, -220); ctx.lineTo(-3, -330); ctx.lineTo(3, -330); ctx.lineTo(3, -220); ctx.lineTo(11, -200); ctx.lineTo(11, -140); ctx.lineTo(3, -120); ctx.lineTo(1, 0); ctx.closePath(); ctx.fill(); ctx.stroke();
+    const top = -290 + a.p * 290;
+    ctx.save(); ctx.clip(); ctx.fillStyle = css(fe, 0.9); ctx.fillRect(-12, top, 24, -top + 2); ctx.restore();
+    ctx.strokeStyle = T.ink; ctx.lineWidth = 0.8; ctx.beginPath(); ctx.moveTo(-4, -290); ctx.lineTo(4, -290); ctx.stroke();
+    ctx.fillStyle = T.muted; ctx.font = "600 7px 'IBM Plex Mono', monospace"; ctx.fillText("25 mL", -9, -170);
+    ctx.restore();
+  }
+  if (a.kind === "acid") {
+    ctx.save(); ctx.translate(F.cx + 30, F.neckTop - 40); ctx.rotate(-1.1 + 0.15 * Math.sin(a.p * 3));
+    ctx.strokeStyle = T.glass; ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 1.3;
+    rr(-12, -110, 24, 110, 3); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "rgba(225,235,240,.8)"; ctx.fillRect(-11, -110 * (1 - a.p) * 0.6, 22, 110 * (1 - a.p) * 0.6);
+    ctx.restore();
+    ctx.strokeStyle = "rgba(210,225,232,.9)"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(F.cx + 8, F.neckTop - 30); ctx.quadraticCurveTo(F.cx + 6, F.neckTop, F.cx + 4, levelY(S.flask.V)); ctx.stroke();
+  }
+}
+function drawLens() {
+  if (!S.filled && S.anim?.kind !== "fill") return;
+  const v = S.reading + (S.flow === 1 ? S.pendant : 0), y0 = burY(v);
+  const { x: cx, y: lensY, r, zoom } = LENS, ppc = B.px * zoom;
+  ctx.strokeStyle = T.muted; ctx.setLineDash([3, 3]); ctx.lineWidth = 0.9;
+  ctx.beginPath(); ctx.moveTo(B.x + B.w / 2 + 3, y0); ctx.lineTo(cx - r * 0.92, lensY + (y0 > lensY ? r * 0.35 : -r * 0.35)); ctx.stroke(); ctx.setLineDash([]);
+  ctx.save();
+  ctx.beginPath(); ctx.arc(cx, lensY, r, 0, 7); ctx.clip();
+  ctx.fillStyle = "#eef3f4"; ctx.fillRect(cx - r, lensY - r, 2 * r, 2 * r);
+  const tx0 = cx - 46, tx1 = cx + 46;
+  ctx.fillStyle = "rgba(200,215,220,.55)"; ctx.fillRect(tx0, lensY - r, tx1 - tx0, 2 * r);
+  const lg = ctx.createLinearGradient(tx0, 0, tx1, 0); lg.addColorStop(0, "#2a0730"); lg.addColorStop(0.3, "#611668"); lg.addColorStop(0.55, "#4a0f52"); lg.addColorStop(1, "#22052a");
+  ctx.fillStyle = lg; ctx.beginPath(); ctx.moveTo(tx0, lensY); ctx.bezierCurveTo(tx0 + 16, lensY + 15, tx1 - 16, lensY + 15, tx1, lensY); ctx.lineTo(tx1, lensY + r); ctx.lineTo(tx0, lensY + r); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 1; ctx.stroke();
+  const vmin = Math.floor((v - r / ppc) * 10) / 10, vmax = v + r / ppc;
+  ctx.font = "500 12px 'IBM Plex Mono', monospace"; ctx.textBaseline = "middle"; ctx.textAlign = "left";
+  for (let tk = vmin; tk <= vmax + 1e-9; tk = Math.round((tk + 0.1) * 10) / 10) {
+    if (tk < 0 || tk > 50) continue;
+    const y = lensY + (tk - v) * ppc, whole = Math.abs(tk - Math.round(tk)) < 1e-6, half = Math.abs(tk * 2 - Math.round(tk * 2)) < 1e-6;
+    const len = whole ? 46 : half ? 30 : 18;
+    ctx.strokeStyle = y > lensY + 2 ? "rgba(255,255,255,.85)" : T.scale; ctx.lineWidth = whole ? 1.6 : 1.1;
+    ctx.beginPath(); ctx.moveTo(tx0, y); ctx.lineTo(tx0 + len, y); ctx.stroke();
+    if (whole) { ctx.fillStyle = y > lensY + 2 ? "#ffffff" : T.scale; ctx.fillText(String(Math.round(tk)), tx0 + 52, y); }
+  }
+  ctx.fillStyle = "rgba(255,255,255,.18)"; ctx.fillRect(tx0 + 8, lensY - r, 6, 2 * r);
+  ctx.restore();
+  ctx.lineWidth = 6; ctx.strokeStyle = "#39454c"; ctx.beginPath(); ctx.arc(cx, lensY, r + 3, 0, 7); ctx.stroke();
+  ctx.lineWidth = 1.5; ctx.strokeStyle = "rgba(255,255,255,.4)"; ctx.beginPath(); ctx.arc(cx, lensY, r + 0.5, 3.6, 5.2); ctx.stroke();
+  // caption, wrapped to fit beside the burette
+  ctx.fillStyle = T.muted; ctx.textAlign = "center";
+  ctx.font = "500 10px 'IBM Plex Mono', 'Noto Sans Sinhala', 'Noto Sans Tamil', monospace";
+  const lines = wrapText(t("lensCap"), 170);
+  lines.forEach((ln, i) => ctx.fillText(ln, cx, lensY + r + 20 + i * 14));
+  if (S.digital) { ctx.fillStyle = T.accent; ctx.font = "600 13px 'IBM Plex Mono', monospace"; ctx.fillText(v.toFixed(2) + " cm³", cx, lensY + r + 24 + lines.length * 14); }
+}
+function wrapText(s, maxW) {
+  const words = s.split(" "), out = []; let line = "";
+  words.forEach(w => { const tryL = line ? line + " " + w : w; if (ctx.measureText(tryL).width > maxW && line) { out.push(line); line = w; } else line = tryL; });
+  if (line) out.push(line); return out;
+}
+
+// =====================================================================
+// ACTIONS
+// =====================================================================
+function busy() { return !!S.anim; }
+function fillBurette() {
+  if (busy() || S.flow) return;
+  if (S.run.opened && S.run.final === null) return toast("tFinishFirst");
+  const target = +(0.1 + Math.random() * 1.3).toFixed(3);
+  S.anim = { kind: "fill", t: 0, p: 0, dur: 2.2, target, done: () => { S.filled = true; S.tipFull = true; S.reading = target; S.run.initial = null; log(["lFilled"]); } };
+  render();
+}
+function pipetteFe() {
+  if (busy()) return; if (S.flask.hasFe) return toast("tHasFe");
+  const vol = PIPETTE + (Math.random() - 0.5) * 0.04;
+  S.anim = { kind: "fe", t: 0, p: 0, dur: 2.6, vol, done: () => { S.flask.hasFe = true; S.flask.fe0 = S.flask.fe2; log(["lFe"]); } };
+  render();
+}
+function addAcid() {
+  if (busy()) return; if (S.flask.acid > 0) return toast("tHasAcid");
+  if (S.flask.delivered > 0) return toast("tTooLate");
+  S.anim = { kind: "acid", t: 0, p: 0, dur: 1.6, done: () => log(["lAcid"]) };
+  render();
+}
+function nextRun() {
+  if (busy() || S.flow) return;
+  S.anim = { kind: "wash", t: 0, p: 0, dur: 0.8, done: () => { S.flask = emptyFlask(); S.plumes = []; S.flecks = []; S.falling = []; S.run = { initial: null, final: null, opened: false }; S.warnedAcid = false; S.note = null; renderNote(); log(["lWash"]); } };
+  render();
+}
+function canTitrate(quiet) {
+  const fail = k => { if (!quiet) toast(k); return false; };
+  if (busy()) return false;
+  if (!S.filled) return fail("tFillFirst");
+  if (!S.flask.hasFe) return fail("tFeFirst");
+  if (S.run.initial === null) return fail("tInitialFirst");
+  if (S.run.final !== null) return fail("tRunDone");
+  if (S.reading >= 49.99) return fail("tEmpty");
+  return true;
+}
+function setFlow(n) {
+  if (n > 0 && !canTitrate()) return;
+  if (n > 0 && S.flask.acid === 0 && !S.run.opened) toast("tNoAcid");
+  if (n > 0) S.run.opened = true;
+  if (n === 0 && S.flow === 1 && S.pendant > 0.02) { S.falling.push({ x: B.x, y: B.tip + 4, vy: 0, vol: S.pendant }); S.reading += S.pendant; S.pendant = 0; }
+  else if (n === 0 && S.flow === 1) { S.reading += S.pendant; addMnO4(S.pendant); S.pendant = 0; }
+  S.flow = n; renderFlow(); render();
+}
+function addDrop() {
+  if (!canTitrate()) return;
+  if (S.flow > 1) return toast("tCloseTap");
+  if (S.flask.acid === 0 && !S.run.opened) toast("tNoAcid");
+  S.run.opened = true;
+  const vol = Math.max(0, DROP - S.pendant); S.falling.push({ x: B.x, y: B.tip + 4, vy: 0, vol: S.pendant + vol }); S.reading += S.pendant + vol; S.pendant = 0;
+  render();
+}
+function setNote(cls, parts) { S.note = { cls, parts }; renderNote(); }
+function renderNote() { $("readNote").innerHTML = ""; if (!S.note) return; const d = document.createElement("div"); d.className = "note " + S.note.cls; d.textContent = tp(S.note.parts); $("readNote").append(d); }
+function recordReading() {
+  const raw = $("readingIn").value.trim();
+  if (!S.filled) return setNote("warn", [["tFillFirst"]]);
+  if (S.flow) return setNote("warn", [["rClose"]]);
+  if (S.falling.length) return setNote("warn", [["rWait"]]);
+  const val = parseFloat(raw); if (!isFinite(val)) return setNote("warn", [["rType"]]);
+  const truth = S.reading, diff = val - truth;
+  const which = S.run.initial === null ? "initial" : (S.run.opened && S.run.final === null ? "final" : null);
+  if (!which) return setNote("warn", [[S.run.final !== null ? "tRunDone" : "rTitrateFirst"]]);
+  if (which === "final" && conc(S.flask).mno4 < 4e-6) return setNote("warn", [["rNoPink"]]);
+  if (Math.abs(diff) > 0.051) return setNote("bad", [[diff > 0 ? "rHigh" : "rLow", { d: Math.abs(diff).toFixed(2) }]]);
+  const rec = Math.round(val * 100) / 100;
+  if (which === "initial") { S.run.initial = rec; S.run.initialTrue = truth; log(["lInitial", { v: rec.toFixed(2) }]); setNote("ok", [["rInitialOk", { v: rec.toFixed(2) }]]); }
+  else {
+    S.run.final = rec; const titre = +(rec - S.run.initial).toFixed(2);
+    const eq = S.flask.fe0 / 5 / S.cKM * 1000, delivered = truth - S.run.initialTrue, over = delivered - eq;
+    S.runs.push({ initial: S.run.initial, final: rec, titre, over, acid: S.flask.acid > 0 });
+    const parts = [["rFinal", { f: rec.toFixed(2), t: titre.toFixed(2) }]]; let cls = "ok";
+    if (!S.flask.acid) { parts.push(["rNoAcid"]); cls = "warn"; }
+    else if (over > 0.16) { parts.push(["rOver", { n: Math.round(over / DROP) }]); cls = "warn"; }
+    else if (S.pinkTime < 20) parts.push(["rTip"]);
+    log(...parts); setNote(cls, parts); renderTable();
+  }
+  $("readingIn").value = ""; render();
+}
+function reset() { S = freshState(); renderNote(); log(["lNew"]); renderFlow(); renderTable(); renderQuiz(); render(); }
+
+// =====================================================================
+// UI
+// =====================================================================
+let toastT;
+function toast(k, p) { const el = $("toast"); el.textContent = t(k, p); el.classList.add("show"); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("show"), 3400); }
+function log(...parts) { S.logs.unshift({ time: new Date().toTimeString().slice(0, 8), parts }); renderLog(); }
+function renderLog() {
+  const box = $("log"); box.innerHTML = "";
+  S.logs.forEach(e => { const d = document.createElement("div"), s = document.createElement("span"), m = document.createElement("div"); s.textContent = e.time; m.textContent = tp(e.parts); d.append(s, m); box.append(d); });
+}
+function phase() {
+  if (!S.filled) return 0;
+  if (!S.flask.hasFe) return 1;
+  if (!S.flask.acid && !S.run.opened) return 2;
+  if (S.run.initial === null) return 3;
+  if (!S.run.opened || conc(S.flask).mno4 < 4e-6) return 4;
+  if (S.run.final === null) return 5;
+  return 6;
+}
+function promptText(p) {
+  const f = S.flask, frac = f.fe0 ? f.fe2 / f.fe0 : 1;
+  switch (p) {
+    case 0: return t("p0"); case 1: return t("p1"); case 2: return t("p2"); case 3: return t("p3");
+    case 4: return !S.run.opened ? t("p4open") : frac > 0.12 ? t("p4fast") : frac > 0.02 ? t("p4slow") : t("p4drop");
+    case 5: return S.pinkTime < 30 ? t("p5wait", { s: Math.floor(S.pinkTime) }) : t("p5ok");
+    case 6: return S.runs.length >= 2 ? t("p6more") : t("p6first");
+  }
+}
+function render() {
+  const p = phase();
+  $("prompt").textContent = promptText(p);
+  $("steps").innerHTML = t("steps").map((s, i) => `<li class="${i < p ? "done" : i === p ? "now" : ""}"><span class="tick">${i < p ? "✓" : i + 1}</span><span>${s}</span></li>`).join("");
+  const b = busy(), flowing = S.flow > 0;
+  $("fillBtn").textContent = t(S.filled ? "refill" : "fill");
+  $("fillBtn").disabled = b || flowing || (S.run.opened && S.run.final === null);
+  $("feBtn").disabled = b || S.flask.hasFe;
+  $("acidBtn").disabled = b || S.flask.acid > 0 || S.flask.delivered > 0;
+  $("nextBtn").disabled = b || flowing || S.flask.V === 0;
+  const tapOk = canTitrate(true);
+  document.querySelectorAll("#tapSeg button").forEach(x => x.disabled = +x.dataset.flow > 0 && !tapOk);
+  $("dropBtn").disabled = !tapOk || S.flow > 1;
+  ["fillBtn", "feBtn", "acidBtn", "nextBtn"].forEach(id => $(id).classList.remove("next"));
+  const hl = { 0: "fillBtn", 1: "feBtn", 2: "acidBtn", 6: "nextBtn" }[p]; if (hl && !$(hl).disabled) $(hl).classList.add("next");
+  $("recordBtn").textContent = t(S.run.initial === null ? "recInitial" : "recFinal");
+  renderLive();
+}
+function renderLive() {
+  const f = S.flask, chips = [];
+  if (S.filled && S.digital) chips.push(`<span class="chip">${t("chipBurette", { v: (S.reading + (S.flow === 1 ? S.pendant : 0)).toFixed(2) })}</span>`);
+  if (f.V > 0) chips.push(`<span class="chip">${t("chipFlask", { v: f.V.toFixed(1) })}</span>`);
+  if (S.run.initial !== null) chips.push(`<span class="chip">${t("chipInitial", { v: S.run.initial.toFixed(2) })}</span>`);
+  if (S.pinkTime > 0.3) chips.push(`<span class="chip pink">${t("chipPink", { s: Math.floor(S.pinkTime) })}</span>`);
+  const html = chips.join(""); if ($("chips").innerHTML !== html) $("chips").innerHTML = html;
+  const p = phase(); if (p === 4 || p === 5) { const tx = promptText(p); if ($("prompt").textContent !== tx) render(); }
+  liveSwatch();
+}
+function renderFlow() { document.querySelectorAll("#tapSeg button").forEach(b => b.setAttribute("aria-pressed", String(+b.dataset.flow === S.flow))); }
+function concordantSet() {
+  const pool = S.runs.map((r, i) => ({ ...r, i })).filter(r => r.acid).filter((r, _, a) => a.length >= 3 ? r.i !== 0 : true).sort((a, b) => a.titre - b.titre);
+  let best = [];
+  for (let i = 0; i < pool.length; i++) { let j = i; while (j + 1 < pool.length && pool[j + 1].titre - pool[i].titre <= 0.1001) j++; if (j - i + 1 > best.length) best = pool.slice(i, j + 1); }
+  return best.length >= 2 ? best : [];
+}
+const runLabel = i => i === 0 ? t("rough") : String(i);
+function renderTable() {
+  const tb = $("tbody");
+  if (!S.runs.length) { tb.innerHTML = `<tr><td colspan="4" style="text-align:center;font-family:var(--f-body)" class="muted">${t("noRuns")}</td></tr>`; renderCalc([]); return; }
+  const set = concordantSet(), idx = new Set(set.map(r => r.i));
+  tb.innerHTML = S.runs.map((r, i) => `<tr class="${i === 0 ? "rough" : ""}"><td style="font-family:var(--f-body)">${runLabel(i)}${r.acid ? "" : " · " + t("noAcidTag")}</td><td>${r.initial.toFixed(2)}</td><td>${r.final.toFixed(2)}</td><td class="${idx.has(i) ? "conc" : ""}">${r.titre.toFixed(2)}${idx.has(i) ? " ✓" : ""}</td></tr>`).join("");
+  renderCalc(set);
+}
+let calcExpect = 0;
+function renderCalc(set) {
+  const box = $("calcBody");
+  if (!set.length) { box.className = "muted small"; box.textContent = t(S.runs.length ? "calcRepeat" : "calcEmpty"); return; }
+  const mean = set.reduce((a, r) => a + r.titre, 0) / set.length;
+  calcExpect = (FE_CONC * PIPETTE / 1000 / 5) / (mean / 1000);
+  const keepVal = $("cIn") ? $("cIn").value : "", workOpen = $("work") && !$("work").hidden;
+  box.className = "";
+  box.innerHTML = `
+    <div>${t("meanTitre")}</div><div class="big">${mean.toFixed(2)} cm³</div>
+    <div class="small muted">${t("fromRuns", { runs: set.map(r => runLabel(r.i)).join(", ") })}</div>
+    <label class="small" for="cIn" style="margin-top:6px">${t("yourConc")}</label>
+    <div class="reader"><input id="cIn" type="number" step="0.0001" placeholder="0.0___"><button class="btn primary" id="cBtn">${t("check")}</button></div>
+    <div id="cNote"></div>
+    <button class="btn" id="workBtn" style="align-self:flex-start;margin-top:4px">${t("showWork")}</button>
+    <div id="work" ${workOpen ? "" : "hidden"} class="calc">
+      <div class="line">n(Fe²⁺) = 0.1000 × 25.00/1000 = 2.500 × 10⁻³ mol</div>
+      <div class="line">n(MnO₄⁻) = n(Fe²⁺) ÷ 5 = 5.000 × 10⁻⁴ mol</div>
+      <div class="line">c(KMnO₄) = 5.000 × 10⁻⁴ ÷ (${mean.toFixed(2)}/1000)</div>
+      <div class="line">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;= ${calcExpect.toFixed(5)} mol dm⁻³</div>
+      <div class="small muted">${t("workNote", { c: S.cKM.toFixed(4) })}</div>
+    </div>`;
+  $("cIn").value = keepVal;
+  renderCalcNote();
+  $("cBtn").onclick = () => {
+    const v = parseFloat($("cIn").value), e = calcExpect;
+    if (!isFinite(v)) S.calcNote = ["warn", "cEnter"];
+    else if (Math.abs(v - e) / e <= 0.006) S.calcNote = ["ok", "cOk", { v: e.toFixed(4) }];
+    else if (Math.abs(v - e * 5) / (e * 5) < 0.01) S.calcNote = ["bad", "cX5"];
+    else if (Math.abs(v - e / 5) / (e / 5) < 0.01) S.calcNote = ["bad", "cD5"];
+    else S.calcNote = ["bad", "cBad"];
+    renderCalcNote();
+  };
+  $("workBtn").onclick = () => { $("work").hidden = !$("work").hidden; };
+}
+function renderCalcNote() { const n = $("cNote"); if (!n) return; n.innerHTML = ""; if (!S.calcNote) return; const [cls, k, p] = S.calcNote; const d = document.createElement("div"); d.className = "note " + cls; d.textContent = t(k, p); n.append(d); }
+
+// colour atlas
+const SPECIES_C = [[{ fe2: 0.06 }], [{ fe3: 0.035 }], [{ mno4: 0.02 }, 1.8], [{}], [{ mno4: 1.4e-5, fe3: 0.035 }], [{ mno4: 2.8e-4, fe3: 0.035 }], [{ mno2: 6e-4, fe3: 0.02 }]];
+function renderSwatches() {
+  const names = t("species");
+  $("swatches").innerHTML = SPECIES_C.map(([c, L], i) => `<div class="sw"><i style="background:${css(solRGB({ mno4: 0, fe2: 0, fe3: 0, mno2: 0, ...c }, L || 4))}"></i><div><b>${names[i][0]}</b><span class="muted">${names[i][1]}</span></div></div>`).join("")
+    + `<div class="sw"><i id="liveSw"></i><div><b>${t("yourFlask")}</b><span class="muted" id="liveTxt"></span></div></div>`;
+  liveSwatch(); scrub();
+}
+function liveSwatch() {
+  const el = $("liveSw"); if (!el) return;
+  if (S.flask.V > 0) { el.style.background = css(solRGB(conc(S.flask))); $("liveTxt").textContent = t("inFlask", { v: S.flask.V.toFixed(1) }); }
+  else { el.style.background = "transparent"; $("liveTxt").textContent = t("empty"); }
+}
+function scrub() {
+  const x = +$("scrub").value / 100, noAcid = $("scrubNoAcid").checked;
+  const V = 45 + 25 * x, nFe = 0.0025, nMn = 0.0005 * x, L = V / 1000;
+  let c;
+  if (!noAcid) { const used = Math.min(nMn, nFe / 5); c = { fe2: (nFe - 5 * used) / L, fe3: 5 * used / L, mno4: (nMn - used) / L, mno2: 0 }; }
+  else { const used = Math.min(nMn, nFe / 3); c = { fe2: (nFe - 3 * used) / L, fe3: 3 * used / L, mno4: (nMn - used) / L, mno2: used / L }; }
+  $("scrubSwatch").style.background = css(solRGB(c));
+  const pct = Math.round(x * 100);
+  $("scrubLabel").textContent = noAcid ? t("scrubNoAcidTxt", { p: pct }) : pct < 100 ? t("scrubBefore", { p: pct }) : pct <= 101 ? t("scrubEq") : t("scrubAfter", { p: pct });
+}
+
+// quiz
+function renderQuiz() {
+  const Q = t("quiz");
+  $("quiz").innerHTML = Q.map((q, i) => `<div class="q" id="q${i}"><p>${i + 1}. ${q.q}</p>${q.o.map((o, j) => `<button data-q="${i}" data-o="${j}">${o}</button>`).join("")}<div class="exp"></div></div>`).join("");
+  Object.entries(S.answered).forEach(([i, j]) => markAnswer(+i, j));
+  score();
+}
+function markAnswer(i, j) {
+  const ok = j === QUIZ_ANS[i];
+  $("q" + i).querySelectorAll("button").forEach((x, k) => { x.disabled = true; if (k === QUIZ_ANS[i]) x.classList.add("right"); else if (k === j) x.classList.add("wrong"); });
+  const d = document.createElement("div"); d.className = "note " + (ok ? "ok" : "bad"); d.textContent = t(ok ? "correct" : "notQuite") + t("quiz")[i].e;
+  const ex = $("q" + i).querySelector(".exp"); ex.innerHTML = ""; ex.append(d);
+}
+$("quiz").onclick = e => {
+  const b = e.target.closest("button[data-q]"); if (!b) return;
+  const i = +b.dataset.q, j = +b.dataset.o; if (i in S.answered) return; S.answered[i] = j; markAnswer(i, j); score();
+};
+function score() {
+  const n = Object.keys(S.answered).length, s = Object.entries(S.answered).filter(([i, j]) => j === QUIZ_ANS[+i]).length;
+  $("score").textContent = `${s} / ${QUIZ_ANS.length}${n < QUIZ_ANS.length ? " · " + t("scoreLeft", { n: QUIZ_ANS.length - n }) : ""}`;
+}
+
+// language
+function applyLang(lang) {
+  LANG = lang; try { localStorage.setItem("kmno4-lang", lang); } catch (e) {}
+  document.documentElement.lang = lang;
+  document.querySelectorAll("#langSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-html]").forEach(el => el.innerHTML = t(el.dataset.i18nHtml));
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => el.placeholder = t(el.dataset.i18nPh));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  if (!S) return;
+  render(); renderLog(); renderNote(); renderTable(); renderSwatches(); renderQuiz();
+}
+document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+
+// tabs
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  ["bench", "results", "colours", "quiz"].forEach(id => $("pane-" + id).hidden = id !== b.dataset.tab);
+});
+
+// wiring
+$("fillBtn").onclick = fillBurette; $("feBtn").onclick = pipetteFe; $("acidBtn").onclick = addAcid; $("nextBtn").onclick = nextRun;
+$("dropBtn").onclick = addDrop; $("recordBtn").onclick = recordReading; $("resetBtn").onclick = reset;
+$("readingIn").addEventListener("keydown", e => { if (e.key === "Enter") recordReading(); });
+document.querySelectorAll("#tapSeg button").forEach(b => b.onclick = () => setFlow(+b.dataset.flow));
+$("swirl").onchange = e => { S.swirl = e.target.checked; };
+$("digital").onchange = e => { S.digital = e.target.checked; renderLive(); };
+$("scrub").oninput = scrub; $("scrubNoAcid").onchange = scrub;
+document.addEventListener("keydown", e => {
+  if (e.target.matches("input,textarea")) return;
+  if (/^[0-3]$/.test(e.key)) setFlow(+e.key);
+  else if (e.key === "d" || e.key === "D") addDrop();
+  else if (e.key === "s" || e.key === "S") { $("swirl").checked = !$("swirl").checked; S.swirl = $("swirl").checked; }
+});
+
+applyLang(LANG);
+readTokens(); resize(); reset(); renderSwatches();
+if (document.fonts) document.fonts.ready.then(() => {}).catch(() => {});
+requestAnimationFrame(frame);
+})();
+</script>

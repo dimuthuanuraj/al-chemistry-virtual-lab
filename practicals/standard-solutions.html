@@ -1,0 +1,1136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Prepare 250 cm³ of 1 mol dm⁻³ Na₂CO₃ solution accurately using a four-beam balance and a volumetric flask.">
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<style>
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+.svlnav{position:sticky;top:env(safe-area-inset-top,0px);z-index:40;background:#0E1A2B;background-image:linear-gradient(rgba(255,255,255,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.055) 1px,transparent 1px);background-size:28px 28px;color:#F4F1EA;font:500 14px/1.2 "IBM Plex Sans","Noto Sans Sinhala","Noto Sans Tamil",system-ui,sans-serif}
+.svlnav .in{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-block:8px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.svlnav a{color:#F4F1EA;text-decoration:none;display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:1.5px solid rgba(212,196,255,.45);border-radius:999px}
+.svlnav a:hover{background:rgba(212,196,255,.14)}
+.svlnav a:focus-visible{outline:3px solid #FFC857;outline-offset:2px}
+.svlnav .pos{color:#D4C4FF;font-family:"IBM Plex Mono",ui-monospace,monospace;font-size:12px;margin-left:auto}
+.svlnav .pn{display:flex;gap:8px}
+@media (max-width:560px){.svlnav .lbl{display:none}.svlnav .pos{margin-left:0}}
+</style>
+<title>Standard Solution Bench</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: bench stage (balance / volumetric flask / pipette views) with a step-by-step action dock, working notebook on the right. Same system as the KMnO₄ bench. */
+:root{
+  --bg:#e7eceb; --surface:#f8faf9; --surface-2:#eef2f1; --ink:#162127; --muted:#56666c; --line:#cbd5d4;
+  --accent:#8b1d6f; --accent-soft:#f3dcea; --on-accent:#ffffff; --current:#b7791f;
+  --ok:#2c7a4d; --ok-soft:#dcefe3; --warn:#9a520a; --warn-soft:#f8e8d5; --bad:#a3302b; --bad-soft:#f6dedc;
+  --wall-top:#dde5e4; --wall-bot:#c5d0cf; --bench:#2a3236; --bench-edge:#1b2124; --glass:rgba(40,60,70,.55);
+  --f-display:"Bricolage Grotesque", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-body:"IBM Plex Sans", "Noto Sans Sinhala", "Noto Sans Tamil", "Segoe UI", system-ui, sans-serif;
+  --f-mono:"IBM Plex Mono", "Noto Sans Sinhala", "Noto Sans Tamil", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#0e1417; --surface:#162026; --surface-2:#1c282f; --ink:#e2eae8; --muted:#94a5aa; --line:#2b3940;
+  --accent:#e070c2; --accent-soft:#3b1f33; --on-accent:#1a0b16; --current:#e6b35c;
+  --ok:#6fc893; --ok-soft:#173326; --warn:#e6a35c; --warn-soft:#3a2812; --bad:#ef8a83; --bad-soft:#3d1d1b;
+  --wall-top:#1a252b; --wall-bot:#10181c; --bench:#0a0f11; --bench-edge:#050809; --glass:rgba(200,225,235,.6);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{background:var(--bg);color:var(--ink)}
+body{font-family:var(--f-body);font-size:15px;line-height:1.5;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:18px 28px}
+:lang(si) body,:lang(ta) body{line-height:1.65}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,canvas:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px}
+.top > div:first-child{min-width:0}
+.eyebrow{font-size:12px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+:lang(si) .eyebrow,:lang(ta) .eyebrow{letter-spacing:.02em;font-size:12.5px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(26px,3.2vw,38px);line-height:1.1;margin:4px 0 6px;text-wrap:balance;letter-spacing:-.01em}
+:lang(si) h1,:lang(ta) h1{letter-spacing:0;font-size:clamp(22px,2.6vw,32px);line-height:1.3}
+.sub{font-family:var(--f-mono);font-size:13px;color:var(--muted)}
+.top-actions{display:flex;gap:10px 12px;align-items:center;flex-wrap:wrap}
+.student{font-size:13px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 14px;min-height:44px;font-weight:500;font-size:14px;transition:background .15s,border-color .15s,transform .05s;text-align:center}
+.btn:hover:not(:disabled){border-color:var(--accent)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.next{border-color:var(--current);box-shadow:0 0 0 3px color-mix(in srgb,var(--current) 30%,transparent)}
+.btn.sm{min-height:40px;padding:6px 10px}
+.btn[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.btn.hold{touch-action:none;user-select:none;-webkit-user-select:none}
+.btn.hold.active{background:var(--accent);color:var(--on-accent);border-color:var(--accent)}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface-2)}
+.seg button{border:0;background:transparent;padding:8px 12px;min-height:42px;font-size:14px;font-weight:500;border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--on-accent)}
+.lang button{min-height:36px}
+.lang button[lang="si"]{font-family:"Noto Sans Sinhala",var(--f-body)}
+.lang button[lang="ta"]{font-family:"Noto Sans Tamil",var(--f-body)}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 390px;gap:16px;align-items:start}
+@media (max-width:980px){.layout{grid-template-columns:minmax(0,1fr)}}
+.stage{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.modebar{display:flex;gap:8px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.prompt{display:flex;gap:10px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.prompt .dot{width:9px;height:9px;border-radius:50%;background:var(--current);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--current) 25%,transparent)}
+.prompt p{margin:0;font-weight:500;min-width:0}
+.viewport{position:relative;height:clamp(320px,calc(100vh - 470px),560px);background:var(--wall-bot);user-select:none;-webkit-user-select:none}
+@media (max-width:980px){.viewport{height:clamp(260px,62vw,520px)}}
+canvas#cv{display:block;width:100%;height:100%;touch-action:none}
+.chips{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;pointer-events:none;max-width:60%}
+.chip{font-family:var(--f-mono);font-size:12.5px;background:#0E1A2B;color:#D4C4FF;border:1px solid rgba(212,196,255,.25);padding:3px 10px;border-radius:999px}
+.chip.ok{color:#9fe6b8;border-color:#2c7a4d}
+.chip.bad{color:#ffb4ab;border-color:#a3302b}
+.toast{position:absolute;left:50%;bottom:14px;transform:translate(-50%,10px);opacity:0;transition:opacity .25s,transform .25s;background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;font-size:14px;max-width:calc(100% - 28px);width:max-content;pointer-events:none;text-align:center;z-index:5}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.toast.warn{background:var(--warn-soft);color:var(--warn);border:1px solid var(--warn)}
+.toast.good{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok)}
+.toast.party{background:var(--ok-soft);color:var(--ok);border:1px solid var(--ok);font-weight:600}
+.dock{display:flex;flex-direction:column;gap:10px;padding:12px 16px 14px;border-top:1px solid var(--line)}
+.panelbox{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:10px}
+.panelbox > p{margin:0;font-weight:500}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.label{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-right:2px}
+:lang(si) .label,:lang(ta) .label{letter-spacing:0;font-size:12.5px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.fields label{display:flex;flex-direction:column;gap:4px;font-size:13px;min-width:0}
+input[type=number]{border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:15px;font-family:var(--f-mono);max-width:100%}
+input.ok{border-color:var(--ok);background:var(--ok-soft)}
+input.bad{border-color:var(--bad);background:var(--bad-soft)}
+.slider{display:flex;align-items:center;gap:8px;flex:1 1 220px;min-width:0;max-width:420px}
+.slider input{flex:1;min-width:0}
+input[type=range]{accent-color:var(--accent);min-height:30px}
+.beamctl{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:640px){.beamctl{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.beamctl div{display:flex;align-items:center;gap:4px;border:1px solid var(--line);border-radius:9px;padding:4px;background:var(--surface);min-width:0}
+.beamctl span{flex:1;text-align:center;font-family:var(--f-mono);font-size:12.5px;min-width:0}
+.note{font-size:13.5px;padding:8px 10px;border-radius:8px}
+.note.ok{background:var(--ok-soft);color:var(--ok)}
+.note.bad{background:var(--bad-soft);color:var(--bad)}
+.note.info{background:var(--surface);border:1px solid var(--line)}
+.calcline{font-family:var(--f-mono);font-size:13px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;min-width:0}
+.tabs{display:flex;border-bottom:1px solid var(--line);background:var(--surface-2)}
+.tabs button{flex:1;min-width:0;border:0;background:transparent;padding:12px 4px;min-height:46px;font-weight:600;font-size:13.5px;color:var(--muted);border-bottom:2px solid transparent;line-height:1.3;position:relative}
+.tabs button[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+.tabs button.ping::after{content:"";position:absolute;top:8px;right:10px;width:8px;height:8px;border-radius:50%;background:var(--current)}
+.pane{padding:16px;display:flex;flex-direction:column;gap:16px;max-height:calc(100vh - 150px);overflow:auto}
+@media (max-width:980px){.pane{max-height:none}}
+h2{font-family:var(--f-display);font-size:18px;font-weight:700;margin:0}
+h3{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
+:lang(si) h3,:lang(ta) h3{letter-spacing:0;font-size:13px}
+p{margin:0}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.box{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2)}
+.box.safety{border-color:var(--warn);background:var(--warn-soft);color:var(--warn)}
+.box.safety h3{color:var(--warn)}
+.box.safety ul{margin:0;padding-left:18px;font-size:13.5px;display:flex;flex-direction:column;gap:4px}
+.headrow{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.ring{position:relative;width:46px;height:46px;flex:none}
+.ring svg{transform:rotate(-90deg)}
+.ring span{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-mono);font-size:12px;font-weight:500}
+.chiplist{display:flex;flex-wrap:wrap;gap:6px}
+.chiplist span{border:1px solid var(--line);border-radius:999px;padding:3px 10px;font-size:13px;background:var(--surface)}
+.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.steps li{display:grid;grid-template-columns:22px 1fr;gap:10px;align-items:start;font-size:14px;padding:6px 8px;border-radius:8px;border:1px solid transparent}
+.steps li .tick{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);display:grid;place-items:center;font-size:11px;font-family:var(--f-mono);color:var(--muted);margin-top:2px}
+.steps li.done{color:var(--muted)}
+.steps li.done .tick{background:var(--ok);border-color:var(--ok);color:var(--surface)}
+.steps li.now{background:var(--surface);border-color:var(--current)}
+.steps li.now .tick{border-color:var(--current);color:var(--current)}
+.log{font-size:13.5px;display:flex;flex-direction:column;gap:5px;max-height:240px;overflow:auto}
+.log > div{display:grid;grid-template-columns:58px 1fr;gap:6px}
+.log span{font-family:var(--f-mono);color:var(--muted);font-size:11.5px;padding-top:2px}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;padding:7px 8px;background:var(--surface-2);font-weight:600}
+:lang(si) th,:lang(ta) th{letter-spacing:0;font-size:12px}
+td{padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}
+td.num{font-family:var(--f-mono);white-space:nowrap;text-align:right}
+.cc{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:8px}
+.cc .ttl{display:flex;justify-content:flex-end}
+.cc .ttl em{font-style:normal;font-weight:500;font-size:12px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.cc .ttl em.ok{border-color:var(--ok);color:var(--ok);background:var(--ok-soft)}
+.cc .flow{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:start}
+.cc .st{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;font-size:13px;min-width:0}
+.cc .st small{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+:lang(si) .cc .st small,:lang(ta) .cc .st small{letter-spacing:0}
+.cc .arrow{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;color:var(--muted);padding-top:14px;max-width:110px;text-align:center}
+.cc .arrow b{font-size:20px;color:var(--ink);line-height:1}
+.cc svg{width:90px;height:60px;border-radius:8px;border:1px solid var(--line);background:#ffffff}
+.cc .via{font-size:12.5px;color:var(--muted);text-align:center}
+.replaycv{width:100%;max-width:100%;aspect-ratio:3/2;border-radius:10px;border:1px solid var(--line);display:block;background:#ffffff}
+.q{border:1px solid var(--line);border-radius:10px;padding:12px;background:var(--surface-2);display:flex;flex-direction:column;gap:6px}
+.q p{margin:0 0 4px;font-weight:600}
+.q button{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:9px 10px;min-height:44px;font-size:14px}
+.q button:hover:not(:disabled){border-color:var(--accent)}
+.q button.right{background:var(--ok-soft);border-color:var(--ok);color:var(--ok);font-weight:600}
+.q button.wrong{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.q button:disabled{cursor:default}
+.score{font-family:var(--f-mono);font-size:13px;color:var(--accent);white-space:nowrap}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<nav class="svlnav" aria-label="Practicals">
+<div class="in"><a href="../index.html#practicals">← <span data-svlnav="home">A/L labs</span></a>
+<span class="pos">Exp 4 · 4 / 22</span>
+<span class="pn"><a href="glassware-balance.html" rel="prev">‹ <span class="lbl" data-svlnav="prev">Previous</span></a><a href="molar-volume.html" rel="next"><span class="lbl" data-svlnav="next">Next</span> ›</a></span></div>
+</nav>
+<script>
+(function(){var L={en:{home:"All practicals",prev:"Previous",next:"Next"},si:{home:"සියලු ප්‍රායෝගික",prev:"පෙර",next:"ඊළඟ"},ta:{home:"எல்லாச் செய்முறைகளும்",prev:"முந்தையது",next:"அடுத்தது"}};
+function lang(){try{var l=localStorage.getItem("svl-lang");if(L[l])return l;}catch(e){}return "en";}
+function apply(){var l=lang();document.querySelectorAll("[data-svlnav]").forEach(function(e){e.textContent=L[l][e.getAttribute("data-svlnav")];});}
+apply();document.addEventListener("click",function(){setTimeout(apply,60);});})();
+</script>
+
+
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow" data-i18n="eyebrow"></div>
+      <h1 data-i18n="title"></h1>
+      <div class="sub">NIE Practical Handbook (2018) · al-exp-04 · Na₂CO₃ (M = 106 g mol⁻¹)</div>
+    </div>
+    <div class="top-actions">
+      <span class="student" id="student" hidden></span>
+      <div class="seg lang" role="group" aria-label="Language / භාෂාව / மொழி" id="langSeg">
+        <button data-lang="si" lang="si" aria-pressed="false">සිංහල</button>
+        <button data-lang="en" lang="en" aria-pressed="true">English</button>
+        <button data-lang="ta" lang="ta" aria-pressed="false">தமிழ்</button>
+      </div>
+      <button class="btn" id="resetBtn" data-i18n="reset"></button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="stage">
+      <div class="modebar">
+        <span class="label" data-i18n="taskL"></span>
+        <div class="seg" role="group" id="taskSeg" data-i18n-aria="taskL">
+          <button data-t="A" aria-pressed="true" data-i18n="tA"></button>
+          <button data-t="B" aria-pressed="false" data-i18n="tB"></button>
+        </div>
+        <span style="flex:1"></span>
+        <button class="btn" id="gogBtn" aria-pressed="false"></button>
+      </div>
+      <div class="prompt"><span class="dot"></span><p id="prompt" aria-live="polite"></p></div>
+      <div class="viewport" id="viewport">
+        <canvas id="cv" role="img" tabindex="0"></canvas>
+        <div class="chips" id="chips"></div>
+        <div class="toast" id="toast" role="status"></div>
+      </div>
+      <div class="dock"><div class="panelbox" id="panel" aria-live="polite"></div></div>
+    </section>
+
+    <aside class="panel">
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="guide" data-i18n="tabGuide"></button>
+        <button role="tab" aria-selected="false" data-tab="obs" data-i18n="tabObs"></button>
+        <button role="tab" aria-selected="false" data-tab="colours" data-i18n="tabColours"></button>
+        <button role="tab" aria-selected="false" data-tab="quiz" data-i18n="tabQuiz" id="quizTab"></button>
+      </div>
+      <div class="pane" id="pane-guide">
+        <div class="headrow">
+          <div><h3 data-i18n="aimH"></h3><p class="small" data-i18n="aim"></p></div>
+          <div class="ring" aria-hidden="true"><svg width="46" height="46"><circle cx="23" cy="23" r="18" fill="none" stroke="var(--line)" stroke-width="4"/><circle id="ringArc" cx="23" cy="23" r="18" fill="none" stroke="var(--ok)" stroke-width="4" stroke-linecap="round" stroke-dasharray="113.1" stroke-dashoffset="113.1"/></svg><span id="ringTxt">0/7</span></div>
+        </div>
+        <div><h3 data-i18n="appH"></h3><div class="chiplist" id="appList"></div></div>
+        <div><h3 data-i18n="procH"></h3><ul class="steps" id="steps"></ul></div>
+        <div class="box safety"><h3 data-i18n="safeH"></h3><ul id="safeList"></ul></div>
+      </div>
+      <div class="pane" id="pane-obs" hidden>
+        <div><h3 data-i18n="logH"></h3><div class="log" id="log"></div></div>
+        <div><h3 data-i18n="resA"></h3><div class="tablewrap"><table><tbody id="tbA"></tbody></table></div></div>
+        <div><h3 data-i18n="resB"></h3><div class="tablewrap"><table><tbody id="tbB"></tbody></table></div></div>
+      </div>
+      <div class="pane" id="pane-colours" hidden>
+        <div><h2 data-i18n="coloursH"></h2><p class="small muted" style="margin-top:4px" data-i18n="noColour"></p></div>
+        <div id="cards" style="display:flex;flex-direction:column;gap:10px"></div>
+        <div class="box" style="display:flex;flex-direction:column;gap:8px">
+          <h3 data-i18n="replayH" style="margin:0"></h3>
+          <canvas id="mini" class="replaycv" width="600" height="400" aria-hidden="true"></canvas>
+          <input type="range" id="replay" min="0" max="1000" value="1000" data-i18n-aria="replayH">
+          <div class="row"><button class="btn" id="playBtn"></button><span class="small" id="rname"></span></div>
+        </div>
+      </div>
+      <div class="pane" id="pane-quiz" hidden>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap">
+          <h2 data-i18n="quizH"></h2><span class="score" id="score"></span>
+        </div>
+        <div id="quiz" style="display:flex;flex-direction:column;gap:12px"></div>
+        <button class="btn" id="retryBtn" data-i18n="tryAgain" style="align-self:flex-start"></button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const $ = id => document.getElementById(id);
+const SIM_ID = "al-exp-04";
+
+// =====================================================================
+// LANGUAGES
+// =====================================================================
+const I18N = {
+en: {
+  eyebrow: "A/L Chemistry · Unit 03 · Chemical calculations · Experiment 4", title: "Preparation of standard solutions", student: "Student: {name}{cls}", reset: "Reset bench",
+  taskL: "Task", tA: "A · 250 cm³ of 1 mol dm⁻³", tB: "B · Dilute to 0.100 mol dm⁻³", gog: "Put on goggles", gogOn: "Goggles on",
+  lockB: "Finish task A first. Task B dilutes the solution you make in task A.", tGog: "Put on safety goggles first. Na₂CO₃ irritates the eyes.",
+  check: "Check", working: "Show working",
+  cQ: "Calculate the mass of Na₂CO₃ needed for 250 cm³ of 1 mol dm⁻³ solution. Molar mass of Na₂CO₃ = 106 g mol⁻¹.",
+  fN: "Amount needed, n (mol)", fM: "Mass needed, m (g)",
+  cOk: "Correct: n = 1 × 0.250 = 0.25 mol, and m = 0.25 × 106 = 26.5 g.", cBadN1000: "You used 250 directly. Change 250 cm³ to dm³ first: 250 ÷ 1000 = 0.250 dm³.", cBadN: "Use n = c × V, with V in dm³.",
+  cBadM106: "106 g is the mass of 1 mol. You need only {n} mol.", cBadM: "Mass = n × M = {n} × 106.",
+  cWork: "n = c × V = 1 mol dm⁻³ × 0.250 dm³ = 0.25 mol.  m = n × M = 0.25 mol × 106 g mol⁻¹ = 26.5 g.",
+  b0: "Zero the balance with the pan empty: turn the zero-adjust knob until the pointer rests on 0.", zeroL: "Zero adjust",
+  b1: "Place the clean, dry watch glass on the pan.", place: "Place watch glass on pan",
+  b2: "Move the riders from the largest beam to the smallest until the pointer is at 0. Then record the mass of the watch glass, w.",
+  fW: "Mass of watch glass, w (g)", recordW: "Record w",
+  b3: "Set the riders to (26.50 + w) g = {t} g. Leave the watch glass on the pan.", setDone: "Riders are set",
+  b4: "Add Na₂CO₃ with the spatula until the pointer comes back to 0.", spat5: "Spatula +0.5 g", spat1: "Spatula +0.1 g", spatBack: "Take off 0.1 g",
+  beamL: "{b} beam", left: "Move left", right: "Move right",
+  tZeroFirst: "Zero the balance first, with the pan empty. Otherwise every mass you read includes the zero error.", tZeroObj: "Zero only with the pan empty.",
+  tCoarse: "Start with the largest beam, then 10 g, 1 g and 0.01 g. Going coarse to fine is much quicker.", tRiderLock: "Leave the riders at {t} g. The pointer will show when you have added exactly 26.50 g.",
+  nSwing: "Wait for the pointer to stop swinging before you read.", nNotZero: "The pointer is not resting on 0 yet. Keep adjusting the riders.",
+  wBad: "Not quite. Read each beam where its rider sits and add them together.", wType: "Type the mass in grams, for example 28.47.",
+  setBad: "The riders read {r} g. They should read 26.50 + {w} = {t} g.", tSpatEarly: "Set the riders to (26.50 + w) g first. Then the pointer tells you when exactly 26.50 g has been added.",
+  tSolidOver: "Too much: the pointer has gone past 0 to the other side. Take a little off with the spatula and put it in the waste beaker, never back in the bottle.",
+  f0: "Put the funnel in the neck of the 250 cm³ volumetric flask.", funnelIn: "Put funnel in flask",
+  f1: "Tip the Na₂CO₃ from the watch glass into the funnel.", tip: "Tip solid into funnel",
+  f2: "A white coating of solid is still on the watch glass and the funnel. Rinse both into the flask with the wash bottle.", rinseWG: "Rinse watch glass", rinseF: "Rinse funnel",
+  f3: "Remove the funnel.", funnelOut: "Remove funnel",
+  f4: "Add distilled water until the bulb is about half full. Then stopper the flask and swirl until all the solid dissolves.",
+  wash: "Hold: wash bottle", swirl: "Hold: stopper and swirl",
+  f6: "Fill until the level is in the neck just below the mark, then add water drop by drop until the bottom of the meniscus sits on the mark at eye level.",
+  drop: "Add one drop", onMark: "It is on the mark", eyeL: "Eye position", eyeBelow: "below", eyeAbove: "above",
+  f8: "Stopper the flask and invert it several times to mix ({n} so far).", invert: "Invert flask",
+  doneA: "Task A done: {v} cm³ of {c} mol dm⁻³ Na₂CO₃. Now prepare the dilution in task B.", goB: "Go to task B",
+  tRinseFirst: "Rinse the watch glass and the funnel first. Any solid left on them is lost, and the solution would be weaker than 1 mol dm⁻³.",
+  tWaterFirst: "Add water first: about half the bulb, so the solid has room to dissolve.", tDissolveFirst: "Dissolve the solid before filling up to the neck. Once the flask is nearly full you cannot swirl it well, and the volume changes as the solid dissolves.",
+  tSwitchDropper: "You are close to the mark. Switch to the dropper now so you do not overshoot.", tNotYet: "Not yet. The bottom of the meniscus is still below the mark.",
+  tEyeNot: "Your eye is {p}. Move it level with the mark first. Then the ring mark looks like a straight line.", eyeIs: "Eye {p}", eyePosAbove: "above the mark", eyePosLevel: "level with the mark", eyePosBelow: "below the mark",
+  overA: "The meniscus is above the mark. The volume is now more than 250.0 cm³, so the concentration is lower than 1 mol dm⁻³. Water cannot be taken back out, so this solution must be made again.",
+  overB: "The meniscus is above the mark. The volume is now more than 100.0 cm³, so the concentration is lower than 0.100 mol dm⁻³. Make the dilution again.",
+  restart: "Make it again", tMarkOk: "Made up to the mark.", tInvertMore: "Keep inverting: streaks of uneven mixing are still visible.",
+  dQ: "Calculate the volume of 1.000 mol dm⁻³ stock solution needed to make 100.0 cm³ of 0.100 mol dm⁻³.", fV1: "Volume of stock, V₁ (cm³)",
+  dOk: "Correct: V₁ = c₂V₂ ÷ c₁ = 0.100 × 100.0 ÷ 1.000 = 10.00 cm³.", dBad: "Use c₁V₁ = c₂V₂, so V₁ = (0.100 × 100.0) ÷ 1.000.",
+  d1: "Rinse the 10.00 cm³ pipette with a little of the stock solution.", rinseP: "Rinse pipette with stock",
+  d2: "Use the pipette filler to draw stock solution up above the mark.", drawUp: "Draw up with filler", drawAgain: "Draw up again",
+  d3: "Let the solution run out slowly until the bottom of the meniscus is on the mark at eye level.", release: "Hold: release slowly",
+  d4: "Let the 10.00 cm³ run into the 100 cm³ volumetric flask. Touch the tip on the glass; do not blow out the last drop.", deliver: "Run into flask",
+  d5: "Make up to the mark with distilled water: wash bottle first, then the dropper near the mark.",
+  doneB: "Task B done: 100.0 cm³ of {c} mol dm⁻³ Na₂CO₃.", tRinsePFirst: "Rinse the pipette with the stock first. Water left inside would dilute the 10.00 cm³ you measure.",
+  tPipBelow: "The meniscus has gone below the mark. Draw the solution up again and release more slowly.", tPipNot: "Not yet. The bottom of the meniscus is still above the mark.",
+  tDone: "Practical complete! Now answer the questions in the Questions tab.",
+  chipPtr: "Pointer {s}", ptrSwing: "swinging", ptrZero: "at 0", ptrHigh: "above 0", ptrLow: "below 0", chipRiders: "Riders {t} g", chipFlask: "{v} cm³ volumetric flask", chipPip: "10.00 cm³ pipette",
+  cvColourless: "colourless", cvSolid: "white solid", cvMark: "mark", cvStreaks: "mixing streaks", cvCoat: "white coating", cvZoom: "neck at the mark · ×12", cvZoomP: "pipette mark · ×12", cvStock: "stock 1.000 mol dm⁻³", cvWaste: "waste",
+  lCalc: "Mass needed: n = 1 × 0.250 = 0.25 mol; m = 0.25 × 106 = 26.5 g.", lZero: "Balance zeroed with the pan empty.", lW: "Mass of watch glass, w = {w} g.", lSet: "Riders set to (26.50 + {w}) = {t} g.",
+  lSolid: "Na₂CO₃ added until the pointer returned to zero: 26.50 g weighed.", lTip: "Solid tipped into the funnel. A white solid coating stays on the watch glass and funnel.",
+  lRinse: "Watch glass and funnel rinsed into the flask: the white coating is washed away.", lDissolve: "On swirling, the white solid dissolves completely to give a colourless solution.",
+  lMarkA: "Made up to the mark: the bottom of the meniscus is on the mark at eye level. Volume = {v} cm³.", lInvert: "Flask inverted {n} times: the mixing streaks disappear and the solution is uniform.",
+  lOver: "Water added past the mark. The solution was discarded and made again.", lV1: "Volume of stock needed: V₁ = 0.100 × 100.0 ÷ 1.000 = 10.00 cm³.", lPip: "Pipette filled to the mark at eye level: 10.00 cm³ of stock.",
+  lDeliver: "10.00 cm³ of stock run into the 100 cm³ volumetric flask.", lMarkB: "Made up to the mark at eye level. Volume = {v} cm³.",
+  tabGuide: "Guide", tabObs: "Observations", tabColours: "Colours", tabQuiz: "Questions",
+  aimH: "Aim", aim: "Prepare 250 cm³ of 1 mol dm⁻³ Na₂CO₃ solution accurately using a four-beam balance and a volumetric flask.",
+  appH: "Apparatus and chemicals", app: ["250 cm³ volumetric flask", "100 cm³ volumetric flask", "Beakers", "Funnel", "Watch glass", "Four-beam balance", "Spatula", "Wash bottle", "Dropper", "10.00 cm³ pipette + filler", "Na₂CO₃(s)", "Distilled water"],
+  procH: "Procedure", steps: ["Calculate the mass: n = 1 × 0.250 = 0.25 mol; m = 0.25 × 106 = 26.5 g", "Weigh the watch glass (w g); set the riders to (26.5 + w) g", "Add Na₂CO₃ until the pointer returns to zero", "Transfer through a funnel into the flask; wash the watch glass and funnel into the flask", "Add water, stopper and swirl to dissolve; make up to the mark (bottom of meniscus at eye level)", "Stopper and invert several times", "Second task: prepare 100 cm³ of 0.100 mol dm⁻³ by dilution (pipette 10.00 cm³)"],
+  safeH: "Safety", safe: ["Wear safety goggles. Na₂CO₃ is an irritant, especially to the eyes.", "Handle the solid with a spatula, not your fingers.", "Never pipette by mouth. Always use a pipette filler.", "Put spilt or excess solid in the waste beaker, never back in the bottle."],
+  logH: "Observation log", resA: "Task A · 250 cm³ of 1 mol dm⁻³", resB: "Task B · 100 cm³ of 0.100 mol dm⁻³", none: "Nothing recorded yet.",
+  rW: "Mass of watch glass, w", rT: "Riders set to (26.50 + w)", rM: "Mass of Na₂CO₃", rN: "Amount of Na₂CO₃", rV: "Volume of solution", rC: "Concentration", rV1: "Volume of stock pipetted",
+  coloursH: "Colours and visible changes", noColour: "There is no colour change in this practical. Na₂CO₃ solution is colourless. These cards show the visible changes you must still see clearly.",
+  k1b: "white solid coating on watch glass and funnel", k1r: "rinse with wash bottle", k1a: "clean glass; all solid in the flask",
+  k2b: "white solid at the bottom", k2r: "stopper and swirl", k2a: "colourless solution", k2v: "Seen on the way: cloudy, shrinking grains",
+  k3b: "streaks of uneven mixing", k3r: "invert several times", k3a: "uniform colourless solution",
+  before: "Before", after: "After", seen: "Recorded", notYet: "Not done yet",
+  replayH: "Replay: the solid dissolving", play: "Play slowly", pause: "Pause", rNone: "Swirl the flask in task A to record the solid dissolving.", rAt: "Undissolved solid: {p}%",
+  quizH: "Knowledge check", tryAgain: "Try again", best: "best {p}%", scoreLeft: "{n} left", correct: "Correct. ", notQuite: "Not quite. ",
+  canvasAria: "Lab bench showing the current apparatus: the four-beam balance, the volumetric flask with a funnel and wash bottle, or the pipette. A zoomed view shows the meniscus against the mark.",
+  quiz: [
+    { q: "Mass of Na₂CO₃ (M = 106) for 250 cm³ of 1 mol dm⁻³?", o: ["106 g", "26.5 g", "53 g", "10.6 g"], e: "0.25 mol × 106." },
+    { q: "Why rinse the watch glass into the flask?", o: ["To clean it", "So no solute is lost", "To cool it", "To add water"], e: "All weighed solute must reach the flask." },
+    { q: "Volume of 1 mol dm⁻³ stock needed for 100 cm³ of 0.1 mol dm⁻³:", o: ["1 cm³", "10 cm³", "100 cm³", "0.1 cm³"], e: "c₁V₁ = c₂V₂." },
+    { q: "If water is added past the mark, the concentration is…", o: ["higher", "lower", "unchanged", "zero"], e: "Same moles in more volume." },
+  ],
+},
+si: {
+  eyebrow: "උ.පෙ. රසායන විද්‍යාව · ඒකකය 03 · රසායනික ගණනය කිරීම් · පරීක්ෂණය 4", title: "සම්මත ද්‍රාවණ පිළියෙළ කිරීම", student: "ශිෂ්‍යයා: {name}{cls}", reset: "නැවත අරඹන්න",
+  taskL: "කාර්යය", tA: "A · 1 mol dm⁻³ ද්‍රාවණ 250 cm³", tB: "B · 0.100 mol dm⁻³ දක්වා තනුක කිරීම", gog: "ආරක්ෂිත කණ්ණාඩි පළඳින්න", gogOn: "කණ්ණාඩි පැළඳ ඇත",
+  lockB: "පළමුව කාර්යය A අවසන් කරන්න. කාර්යය B හිදී තනුක කරන්නේ කාර්යය A හි ඔබ සාදන ද්‍රාවණයයි.", tGog: "පළමුව ආරක්ෂිත කණ්ණාඩි පළඳින්න. Na₂CO₃ ඇස්වලට කෝපකාරීයි.",
+  check: "පරීක්ෂා කරන්න", working: "විසඳුම පෙන්වන්න",
+  cQ: "1 mol dm⁻³ ද්‍රාවණ 250 cm³ ක් සඳහා අවශ්‍ය Na₂CO₃ ස්කන්ධය ගණනය කරන්න. Na₂CO₃ හි මවුලික ස්කන්ධය = 106 g mol⁻¹.",
+  fN: "අවශ්‍ය ප්‍රමාණය, n (mol)", fM: "අවශ්‍ය ස්කන්ධය, m (g)",
+  cOk: "නිවැරදියි: n = 1 × 0.250 = 0.25 mol, m = 0.25 × 106 = 26.5 g.", cBadN1000: "ඔබ 250 කෙලින්ම භාවිත කර ඇත. පළමුව 250 cm³ dm³ බවට හරවන්න: 250 ÷ 1000 = 0.250 dm³.", cBadN: "V dm³ වලින් ගෙන n = c × V භාවිත කරන්න.",
+  cBadM106: "106 g යනු මවුල 1 ක ස්කන්ධයයි. ඔබට අවශ්‍ය වන්නේ මවුල {n} ක් පමණි.", cBadM: "ස්කන්ධය = n × M = {n} × 106.",
+  cWork: "n = c × V = 1 mol dm⁻³ × 0.250 dm³ = 0.25 mol.  m = n × M = 0.25 mol × 106 g mol⁻¹ = 26.5 g.",
+  b0: "තැටිය හිස්ව තුලාව ශුන්‍ය කරන්න: දර්ශකය 0 මත නැවතෙන තුරු ශුන්‍ය සීරුමාරු ඇණය කරකවන්න.", zeroL: "ශුන්‍ය සීරුමාරුව",
+  b1: "පිරිසිදු, වියළි ඔරලෝසු වීදුරුව තැටිය මත තබන්න.", place: "ඔරලෝසු වීදුරුව තැටිය මත තබන්න",
+  b2: "දර්ශකය 0 ට එන තුරු විශාලතම දණ්ඩේ සිට කුඩාතම දණ්ඩ දක්වා සර්පණ බර ගෙන යන්න. ඉන්පසු ඔරලෝසු වීදුරුවේ ස්කන්ධය w සටහන් කරන්න.",
+  fW: "ඔරලෝසු වීදුරුවේ ස්කන්ධය, w (g)", recordW: "w සටහන් කරන්න",
+  b3: "සර්පණ බර (26.50 + w) g = {t} g ට සකසන්න. ඔරලෝසු වීදුරුව තැටිය මතම තබන්න.", setDone: "සර්පණ බර සකසා ඇත",
+  b4: "දර්ශකය නැවත 0 ට එන තුරු ස්පැචුලාවෙන් Na₂CO₃ එක් කරන්න.", spat5: "ස්පැචුලාව +0.5 g", spat1: "ස්පැචුලාව +0.1 g", spatBack: "0.1 g ඉවත් කරන්න",
+  beamL: "{b} දණ්ඩ", left: "වමට ගෙන යන්න", right: "දකුණට ගෙන යන්න",
+  tZeroFirst: "පළමුව තැටිය හිස්ව තුලාව ශුන්‍ය කරන්න. නැතහොත් ඔබ කියවන සෑම ස්කන්ධයකම ශුන්‍ය දෝෂය ඇතුළත් වේ.", tZeroObj: "ශුන්‍ය කරන්නේ තැටිය හිස්ව ඇති විට පමණි.",
+  tCoarse: "විශාලතම දණ්ඩෙන් පටන් ගෙන, ඉන්පසු 10 g, 1 g සහ 0.01 g. විශාලයේ සිට කුඩාට යාම වඩා ඉක්මන්ය.", tRiderLock: "සර්පණ බර {t} g හිම තබන්න. ඔබ හරියටම 26.50 g එක් කළ විට දර්ශකය එය පෙන්වයි.",
+  nSwing: "කියවීමට පෙර දර්ශකය පැද්දීම නවතින තුරු රැඳී සිටින්න.", nNotZero: "දර්ශකය තවම 0 මත නැවතී නැත. දිගටම සර්පණ බර සීරුමාරු කරන්න.",
+  wBad: "තවම නිවැරදි නැත. එක් එක් දණ්ඩේ සර්පණ බර ඇති ස්ථානය කියවා ඒවා එකතු කරන්න.", wType: "ස්කන්ධය ග්‍රෑම්වලින් ටයිප් කරන්න, උදා. 28.47.",
+  setBad: "සර්පණ බර {r} g පෙන්වයි. ඒවා 26.50 + {w} = {t} g පෙන්විය යුතුය.", tSpatEarly: "පළමුව සර්පණ බර (26.50 + w) g ට සකසන්න. එවිට හරියටම 26.50 g එක් කළ විට දර්ශකය එය පෙන්වයි.",
+  tSolidOver: "වැඩියි: දර්ශකය 0 පසුකර අනෙක් පැත්තට ගොස් ඇත. ස්පැචුලාවෙන් ස්වල්පයක් ඉවත් කර අපද්‍රව්‍ය බීකරයට දමන්න; කිසිවිටෙක නැවත බෝතලයට නොදමන්න.",
+  f0: "250 cm³ පරිමාමිතික ප්ලාස්කුවේ බෙල්ලට පුනීලය දමන්න.", funnelIn: "පුනීලය ප්ලාස්කුවට දමන්න",
+  f1: "ඔරලෝසු වීදුරුවේ ඇති Na₂CO₃ පුනීලයට හලන්න.", tip: "ඝනය පුනීලයට හලන්න",
+  f2: "ඔරලෝසු වීදුරුව සහ පුනීලය මත තවමත් සුදු ඝන ආලේපයක් ඇත. සේදුම් බෝතලයෙන් දෙකම ප්ලාස්කුවට සෝදා හරින්න.", rinseWG: "ඔරලෝසු වීදුරුව සෝදන්න", rinseF: "පුනීලය සෝදන්න",
+  f3: "පුනීලය ඉවත් කරන්න.", funnelOut: "පුනීලය ඉවත් කරන්න",
+  f4: "බල්බය අඩක් පමණ පිරෙන තෙක් ආසුත ජලය එක් කරන්න. ඉන්පසු ප්ලාස්කුව ඇබයෙන් වසා සියලු ඝනය දිය වන තුරු කරකවන්න.",
+  wash: "ඔබාගෙන සිටින්න: සේදුම් බෝතලය", swirl: "ඔබාගෙන සිටින්න: ඇබය වසා කරකවන්න",
+  f6: "ජල මට්ටම බෙල්ලේ සලකුණට මඳක් පහළට එන තුරු පුරවන්න, ඉන්පසු ඇස් මට්ටමේදී මෙනිස්කසයේ පහළ කෙළවර සලකුණ මත පිහිටන තුරු බිංදුවෙන් බිංදුව ජලය එක් කරන්න.",
+  drop: "එක් බිංදුවක් එක් කරන්න", onMark: "එය සලකුණ මත ඇත", eyeL: "ඇසේ පිහිටීම", eyeBelow: "පහළ", eyeAbove: "ඉහළ",
+  f8: "ප්ලාස්කුව ඇබයෙන් වසා මිශ්‍ර කිරීමට කිහිප වරක් යටිකුරු කරන්න (මෙතෙක් {n} වරක්).", invert: "ප්ලාස්කුව යටිකුරු කරන්න",
+  doneA: "කාර්යය A අවසන්: Na₂CO₃ {c} mol dm⁻³ ද්‍රාවණ {v} cm³. දැන් කාර්යය B හි තනුක කිරීම කරන්න.", goB: "කාර්යය B ට යන්න",
+  tRinseFirst: "පළමුව ඔරලෝසු වීදුරුව සහ පුනීලය සෝදන්න. ඒවා මත ඉතිරි වන ඕනෑම ඝනයක් අහිමි වන අතර ද්‍රාවණය 1 mol dm⁻³ ට වඩා දුර්වල වේ.",
+  tWaterFirst: "පළමුව ජලය එක් කරන්න: ඝනයට දිය වීමට ඉඩ ඇති වන සේ බල්බයෙන් අඩක් පමණ.", tDissolveFirst: "බෙල්ල දක්වා පිරවීමට පෙර ඝනය දිය කරන්න. ප්ලාස්කුව පිරෙන්නට ආසන්න වූ පසු හොඳින් කරකැවිය නොහැකි අතර ඝනය දිය වන විට පරිමාව වෙනස් වේ.",
+  tSwitchDropper: "ඔබ සලකුණට ළඟයි. සලකුණ ඉක්මවා නොයාමට දැන් බිංදු නළයට මාරු වන්න.", tNotYet: "තවම නැත. මෙනිස්කසයේ පහළ කෙළවර තවමත් සලකුණට පහළින් ඇත.",
+  tEyeNot: "ඔබේ ඇස {p} ඇත. පළමුව එය සලකුණට සමතලව ගෙන එන්න. එවිට වළලු සලකුණ සරල රේඛාවක් ලෙස පෙනේ.", eyeIs: "ඇස {p}", eyePosAbove: "සලකුණට ඉහළින්", eyePosLevel: "සලකුණට සමතලව", eyePosBelow: "සලකුණට පහළින්",
+  overA: "මෙනිස්කසය සලකුණට ඉහළින් ඇත. පරිමාව දැන් 250.0 cm³ ට වැඩි නිසා සාන්ද්‍රණය 1 mol dm⁻³ ට අඩුයි. ජලය නැවත ඉවත් කළ නොහැකි බැවින් මෙම ද්‍රාවණය නැවත සෑදිය යුතුය.",
+  overB: "මෙනිස්කසය සලකුණට ඉහළින් ඇත. පරිමාව දැන් 100.0 cm³ ට වැඩි නිසා සාන්ද්‍රණය 0.100 mol dm⁻³ ට අඩුයි. තනුක කිරීම නැවත කරන්න.",
+  restart: "නැවත සාදන්න", tMarkOk: "සලකුණ දක්වා පුරවා ඇත.", tInvertMore: "දිගටම යටිකුරු කරන්න: අසමාන මිශ්‍රණයේ ඉරි තවමත් පෙනේ.",
+  dQ: "0.100 mol dm⁻³ ද්‍රාවණ 100.0 cm³ ක් සෑදීමට අවශ්‍ය 1.000 mol dm⁻³ තොග ද්‍රාවණ පරිමාව ගණනය කරන්න.", fV1: "තොග ද්‍රාවණ පරිමාව, V₁ (cm³)",
+  dOk: "නිවැරදියි: V₁ = c₂V₂ ÷ c₁ = 0.100 × 100.0 ÷ 1.000 = 10.00 cm³.", dBad: "c₁V₁ = c₂V₂ භාවිත කරන්න, එබැවින් V₁ = (0.100 × 100.0) ÷ 1.000.",
+  d1: "10.00 cm³ පිපෙට්ටුව තොග ද්‍රාවණයෙන් ස්වල්පයකින් සෝදන්න.", rinseP: "පිපෙට්ටුව තොග ද්‍රාවණයෙන් සෝදන්න",
+  d2: "පිපෙට්ටු පූරකය භාවිතයෙන් තොග ද්‍රාවණය සලකුණට ඉහළට උරා ගන්න.", drawUp: "පූරකයෙන් උරා ගන්න", drawAgain: "නැවත උරා ගන්න",
+  d3: "ඇස් මට්ටමේදී මෙනිස්කසයේ පහළ කෙළවර සලකුණ මතට එන තුරු ද්‍රාවණය සෙමින් පිටවීමට ඉඩ දෙන්න.", release: "ඔබාගෙන සිටින්න: සෙමින් මුදා හරින්න",
+  d4: "10.00 cm³ 100 cm³ පරිමාමිතික ප්ලාස්කුවට ගලා යාමට ඉඩ දෙන්න. තුඩ වීදුරුවේ ස්පර්ශ කරන්න; අවසන් බිංදුව පිඹ නොහරින්න.", deliver: "ප්ලාස්කුවට ගලා යවන්න",
+  d5: "ආසුත ජලයෙන් සලකුණ දක්වා පුරවන්න: පළමුව සේදුම් බෝතලය, සලකුණ අසලදී බිංදු නළය.",
+  doneB: "කාර්යය B අවසන්: Na₂CO₃ {c} mol dm⁻³ ද්‍රාවණ 100.0 cm³.", tRinsePFirst: "පළමුව පිපෙට්ටුව තොග ද්‍රාවණයෙන් සෝදන්න. ඇතුළත ඉතිරි ජලය ඔබ මනින 10.00 cm³ තනුක කරයි.",
+  tPipBelow: "මෙනිස්කසය සලකුණට පහළට ගොස් ඇත. ද්‍රාවණය නැවත උරා ගෙන වඩා සෙමින් මුදා හරින්න.", tPipNot: "තවම නැත. මෙනිස්කසයේ පහළ කෙළවර තවමත් සලකුණට ඉහළින් ඇත.",
+  tDone: "ප්‍රායෝගිකය අවසන්! දැන් ප්‍රශ්න ටැබයේ ප්‍රශ්නවලට පිළිතුරු දෙන්න.",
+  chipPtr: "දර්ශකය {s}", ptrSwing: "පැද්දෙමින්", ptrZero: "0 හි", ptrHigh: "0 ට ඉහළින්", ptrLow: "0 ට පහළින්", chipRiders: "සර්පණ බර {t} g", chipFlask: "{v} cm³ පරිමාමිතික ප්ලාස්කුව", chipPip: "10.00 cm³ පිපෙට්ටුව",
+  cvColourless: "අවර්ණ", cvSolid: "සුදු ඝනය", cvMark: "සලකුණ", cvStreaks: "මිශ්‍රණ ඉරි", cvCoat: "සුදු ආලේපය", cvZoom: "සලකුණ අසල බෙල්ල · ×12", cvZoomP: "පිපෙට්ටු සලකුණ · ×12", cvStock: "තොග 1.000 mol dm⁻³", cvWaste: "අපද්‍රව්‍ය",
+  lCalc: "අවශ්‍ය ස්කන්ධය: n = 1 × 0.250 = 0.25 mol; m = 0.25 × 106 = 26.5 g.", lZero: "තැටිය හිස්ව තුලාව ශුන්‍ය කරන ලදී.", lW: "ඔරලෝසු වීදුරුවේ ස්කන්ධය, w = {w} g.", lSet: "සර්පණ බර (26.50 + {w}) = {t} g ට සකසන ලදී.",
+  lSolid: "දර්ශකය ශුන්‍යයට එන තුරු Na₂CO₃ එක් කරන ලදී: 26.50 g කිරන ලදී.", lTip: "ඝනය පුනීලයට හලන ලදී. ඔරලෝසු වීදුරුව සහ පුනීලය මත සුදු ඝන ආලේපයක් ඉතිරි වේ.",
+  lRinse: "ඔරලෝසු වීදුරුව සහ පුනීලය ප්ලාස්කුවට සෝදා හරින ලදී: සුදු ආලේපය සේදී යයි.", lDissolve: "කරකැවීමේදී සුදු ඝනය සම්පූර්ණයෙන් දිය වී අවර්ණ ද්‍රාවණයක් ලැබේ.",
+  lMarkA: "සලකුණ දක්වා පුරවන ලදී: ඇස් මට්ටමේදී මෙනිස්කසයේ පහළ කෙළවර සලකුණ මත ඇත. පරිමාව = {v} cm³.", lInvert: "ප්ලාස්කුව {n} වරක් යටිකුරු කරන ලදී: මිශ්‍රණ ඉරි අතුරුදහන් වී ද්‍රාවණය ඒකාකාර වේ.",
+  lOver: "සලකුණ ඉක්මවා ජලය එක් කරන ලදී. ද්‍රාවණය ඉවත ලා නැවත සාදන ලදී.", lV1: "අවශ්‍ය තොග පරිමාව: V₁ = 0.100 × 100.0 ÷ 1.000 = 10.00 cm³.", lPip: "ඇස් මට්ටමේදී පිපෙට්ටුව සලකුණ දක්වා පුරවන ලදී: තොග ද්‍රාවණ 10.00 cm³.",
+  lDeliver: "තොග ද්‍රාවණ 10.00 cm³ 100 cm³ පරිමාමිතික ප්ලාස්කුවට ගලා යවන ලදී.", lMarkB: "ඇස් මට්ටමේදී සලකුණ දක්වා පුරවන ලදී. පරිමාව = {v} cm³.",
+  tabGuide: "මාර්ගෝපදේශය", tabObs: "නිරීක්ෂණ", tabColours: "වර්ණ", tabQuiz: "ප්‍රශ්න",
+  aimH: "අරමුණ", aim: "දඬු හතරේ තුලාවක් සහ පරිමාමිතික ප්ලාස්කුවක් භාවිතයෙන් 1 mol dm⁻³ Na₂CO₃ ද්‍රාවණ 250 cm³ ක් නිවැරදිව පිළියෙළ කිරීම.",
+  appH: "උපකරණ සහ රසායන ද්‍රව්‍ය", app: ["250 cm³ පරිමාමිතික ප්ලාස්කුව", "100 cm³ පරිමාමිතික ප්ලාස්කුව", "බීකර", "පුනීලය", "ඔරලෝසු වීදුරුව", "දඬු හතරේ තුලාව", "ස්පැචුලාව", "සේදුම් බෝතලය", "බිංදු නළය", "10.00 cm³ පිපෙට්ටුව + පූරකය", "Na₂CO₃(s)", "ආසුත ජලය"],
+  procH: "ක්‍රියා පිළිවෙළ", steps: ["ස්කන්ධය ගණනය කරන්න: n = 1 × 0.250 = 0.25 mol; m = 0.25 × 106 = 26.5 g", "ඔරලෝසු වීදුරුව කිරන්න (w g); සර්පණ බර (26.5 + w) g ට සකසන්න", "දර්ශකය ශුන්‍යයට එන තුරු Na₂CO₃ එක් කරන්න", "පුනීලයක් හරහා ප්ලාස්කුවට මාරු කර, ඔරලෝසු වීදුරුව සහ පුනීලය ප්ලාස්කුවට සෝදා හරින්න", "ජලය එක් කර, ඇබයෙන් වසා දිය වන තුරු කරකවන්න; සලකුණ දක්වා පුරවන්න (ඇස් මට්ටමේදී මෙනිස්කසයේ පහළ කෙළවර)", "ඇබයෙන් වසා කිහිප වරක් යටිකුරු කරන්න", "දෙවන කාර්යය: තනුක කිරීමෙන් 0.100 mol dm⁻³ ද්‍රාවණ 100 cm³ පිළියෙළ කරන්න (10.00 cm³ පිපෙට්ටු කරන්න)"],
+  safeH: "ආරක්ෂාව", safe: ["ආරක්ෂිත කණ්ණාඩි පළඳින්න. Na₂CO₃ විශේෂයෙන් ඇස්වලට කෝපකාරීයි.", "ඝනය අතින් නොව ස්පැචුලාවකින් හසුරුවන්න.", "කිසිවිටෙක මුඛයෙන් පිපෙට්ටු නොකරන්න. සෑම විටම පිපෙට්ටු පූරකයක් භාවිත කරන්න.", "ඉසුණු හෝ වැඩිපුර ඝනය අපද්‍රව්‍ය බීකරයට දමන්න; කිසිවිටෙක නැවත බෝතලයට නොදමන්න."],
+  logH: "නිරීක්ෂණ සටහන", resA: "කාර්යය A · 1 mol dm⁻³ ද්‍රාවණ 250 cm³", resB: "කාර්යය B · 0.100 mol dm⁻³ ද්‍රාවණ 100 cm³", none: "තවම කිසිවක් සටහන් කර නැත.",
+  rW: "ඔරලෝසු වීදුරුවේ ස්කන්ධය, w", rT: "සර්පණ බර සැකසූ අගය (26.50 + w)", rM: "Na₂CO₃ ස්කන්ධය", rN: "Na₂CO₃ ප්‍රමාණය", rV: "ද්‍රාවණයේ පරිමාව", rC: "සාන්ද්‍රණය", rV1: "පිපෙට්ටු කළ තොග පරිමාව",
+  coloursH: "වර්ණ සහ දෘශ්‍යමාන වෙනස්කම්", noColour: "මෙම ප්‍රායෝගිකයේ වර්ණ වෙනසක් නැත. Na₂CO₃ ද්‍රාවණය අවර්ණයි. ඔබ පැහැදිලිව දැකිය යුතු දෘශ්‍යමාන වෙනස්කම් මෙම කාඩ්පත්වල ඇත.",
+  k1b: "ඔරලෝසු වීදුරුව සහ පුනීලය මත සුදු ඝන ආලේපය", k1r: "සේදුම් බෝතලයෙන් සෝදන්න", k1a: "පිරිසිදු වීදුරුව; සියලු ඝනය ප්ලාස්කුවේ",
+  k2b: "පතුලේ සුදු ඝනය", k2r: "ඇබය වසා කරකවන්න", k2a: "අවර්ණ ද්‍රාවණය", k2v: "අතරමැදදී දකින්නේ: බොඳ වූ, කුඩා වන කැට",
+  k3b: "අසමාන මිශ්‍රණයේ ඉරි", k3r: "කිහිප වරක් යටිකුරු කරන්න", k3a: "ඒකාකාර අවර්ණ ද්‍රාවණය",
+  before: "පෙර", after: "පසු", seen: "සටහන් විය", notYet: "තවම කර නැත",
+  replayH: "නැවත බැලීම: ඝනය දිය වීම", play: "සෙමින් ධාවනය", pause: "නවතන්න", rNone: "ඝනය දිය වීම සටහන් කිරීමට කාර්යය A හි ප්ලාස්කුව කරකවන්න.", rAt: "දිය නොවූ ඝනය: {p}%",
+  quizH: "දැනුම පරීක්ෂාව", tryAgain: "නැවත උත්සාහ කරන්න", best: "උපරිම {p}%", scoreLeft: "ඉතිරි {n}", correct: "නිවැරදියි. ", notQuite: "තවම නිවැරදි නැත. ",
+  canvasAria: "වත්මන් උපකරණ පෙන්වන විද්‍යාගාර මේසය: දඬු හතරේ තුලාව, පුනීලය සහ සේදුම් බෝතලය සහිත පරිමාමිතික ප්ලාස්කුව, හෝ පිපෙට්ටුව. විශාලිත දර්ශනයක සලකුණට සාපේක්ෂව මෙනිස්කසය දැක්වේ.",
+  quiz: [
+    { q: "1 mol dm⁻³ ද්‍රාවණ 250 cm³ සඳහා Na₂CO₃ (M = 106) ස්කන්ධය?", o: ["106 g", "26.5 g", "53 g", "10.6 g"], e: "0.25 mol × 106." },
+    { q: "ඔරලෝසු වීදුරුව ප්ලාස්කුවට සෝදා හරින්නේ ඇයි?", o: ["එය පිරිසිදු කිරීමට", "ද්‍රාව්‍යය අහිමි නොවීමට", "එය සිසිල් කිරීමට", "ජලය එක් කිරීමට"], e: "කිරූ සියලු ද්‍රාව්‍යය ප්ලාස්කුවට ළඟා විය යුතුය." },
+    { q: "0.1 mol dm⁻³ ද්‍රාවණ 100 cm³ සඳහා අවශ්‍ය 1 mol dm⁻³ තොග ද්‍රාවණ පරිමාව:", o: ["1 cm³", "10 cm³", "100 cm³", "0.1 cm³"], e: "c₁V₁ = c₂V₂." },
+    { q: "සලකුණ ඉක්මවා ජලය එක් කළහොත් සාන්ද්‍රණය…", o: ["වැඩි වේ", "අඩු වේ", "නොවෙනස්ව පවතී", "ශුන්‍ය වේ"], e: "එකම මවුල ප්‍රමාණය වැඩි පරිමාවක." },
+  ],
+},
+ta: {
+  eyebrow: "க.பொ.த (உ/த) இரசாயனவியல் · அலகு 03 · இரசாயனக் கணிப்புகள் · பரிசோதனை 4", title: "நியமக் கரைசல்களைத் தயாரித்தல்", student: "மாணவர்: {name}{cls}", reset: "மீண்டும் தொடங்கு",
+  taskL: "பணி", tA: "A · 1 mol dm⁻³ கரைசல் 250 cm³", tB: "B · 0.100 mol dm⁻³ இற்கு ஐதாக்கல்", gog: "பாதுகாப்புக் கண்ணாடி அணி", gogOn: "கண்ணாடி அணிந்துள்ளீர்",
+  lockB: "முதலில் பணி A ஐ முடிக்க. பணி B இல் ஐதாக்கப்படுவது பணி A இல் நீங்கள் தயாரிக்கும் கரைசலே.", tGog: "முதலில் பாதுகாப்புக் கண்ணாடி அணிக. Na₂CO₃ கண்களை உறுத்தும்.",
+  check: "சரிபார்", working: "தீர்வைக் காட்டு",
+  cQ: "1 mol dm⁻³ கரைசல் 250 cm³ இற்குத் தேவையான Na₂CO₃ இன் திணிவைக் கணிக்க. Na₂CO₃ இன் மூலர்த் திணிவு = 106 g mol⁻¹.",
+  fN: "தேவையான அளவு, n (mol)", fM: "தேவையான திணிவு, m (g)",
+  cOk: "சரி: n = 1 × 0.250 = 0.25 mol, m = 0.25 × 106 = 26.5 g.", cBadN1000: "நீங்கள் 250 ஐ நேரடியாகப் பயன்படுத்தியுள்ளீர்கள். முதலில் 250 cm³ ஐ dm³ ஆக மாற்றுக: 250 ÷ 1000 = 0.250 dm³.", cBadN: "V ஐ dm³ இல் எடுத்து n = c × V ஐப் பயன்படுத்துக.",
+  cBadM106: "106 g என்பது 1 mol இன் திணிவு. உங்களுக்கு {n} mol மட்டுமே தேவை.", cBadM: "திணிவு = n × M = {n} × 106.",
+  cWork: "n = c × V = 1 mol dm⁻³ × 0.250 dm³ = 0.25 mol.  m = n × M = 0.25 mol × 106 g mol⁻¹ = 26.5 g.",
+  b0: "தட்டு வெறுமையாக இருக்கத் தராசைப் பூச்சியமாக்குக: சுட்டி 0 இல் நிற்கும் வரை பூச்சியச் சீராக்கத் திருகைச் சுழற்றுக.", zeroL: "பூச்சியச் சீராக்கம்",
+  b1: "சுத்தமான, உலர்ந்த கடிகாரக் கண்ணாடியைத் தட்டில் வைக்க.", place: "கடிகாரக் கண்ணாடியைத் தட்டில் வை",
+  b2: "சுட்டி 0 இற்கு வரும் வரை பெரிய கோலிலிருந்து சிறிய கோல் வரை நகர் படிகளை நகர்த்துக. பின் கடிகாரக் கண்ணாடியின் திணிவு w ஐப் பதிக.",
+  fW: "கடிகாரக் கண்ணாடியின் திணிவு, w (g)", recordW: "w ஐப் பதி",
+  b3: "நகர் படிகளை (26.50 + w) g = {t} g இற்கு அமைக்க. கடிகாரக் கண்ணாடியைத் தட்டிலேயே வைத்திருக்க.", setDone: "நகர் படிகள் அமைக்கப்பட்டன",
+  b4: "சுட்டி மீண்டும் 0 இற்கு வரும் வரை சிறு கரண்டியால் Na₂CO₃ சேர்க்க.", spat5: "சிறு கரண்டி +0.5 g", spat1: "சிறு கரண்டி +0.1 g", spatBack: "0.1 g எடு",
+  beamL: "{b} கோல்", left: "இடப்புறம் நகர்த்து", right: "வலப்புறம் நகர்த்து",
+  tZeroFirst: "முதலில் தட்டு வெறுமையாக இருக்கத் தராசைப் பூச்சியமாக்குக. இல்லையெனில் ஒவ்வொரு திணிவிலும் பூச்சிய வழு சேரும்.", tZeroObj: "தட்டு வெறுமையாக இருக்கும்போது மட்டும் பூச்சியமாக்குக.",
+  tCoarse: "பெரிய கோலிலிருந்து தொடங்கிப் பின் 10 g, 1 g, 0.01 g. பெரியதிலிருந்து சிறியதுக்குச் செல்வது விரைவானது.", tRiderLock: "நகர் படிகளை {t} g இலேயே வைத்திருக்க. சரியாக 26.50 g சேர்ந்ததும் சுட்டி அதைக் காட்டும்.",
+  nSwing: "வாசிக்கும் முன் சுட்டி ஆடுவது நிற்கும் வரை காத்திருக்க.", nNotZero: "சுட்டி இன்னும் 0 இல் நிற்கவில்லை. நகர் படிகளைத் தொடர்ந்து சீராக்குக.",
+  wBad: "சரியில்லை. ஒவ்வொரு கோலிலும் நகர் படி உள்ள இடத்தை வாசித்து அவற்றைக் கூட்டுக.", wType: "திணிவைக் கிராமில் உள்ளிடுக, உ-ம் 28.47.",
+  setBad: "நகர் படிகள் {r} g காட்டுகின்றன. அவை 26.50 + {w} = {t} g காட்ட வேண்டும்.", tSpatEarly: "முதலில் நகர் படிகளை (26.50 + w) g இற்கு அமைக்க. அப்போது சரியாக 26.50 g சேர்ந்ததும் சுட்டி காட்டும்.",
+  tSolidOver: "அதிகம்: சுட்டி 0 ஐத் தாண்டி மறுபக்கம் சென்றுவிட்டது. சிறு கரண்டியால் சிறிது எடுத்துக் கழிவு முகவையில் இடுக; ஒருபோதும் போத்தலுக்குள் மீண்டும் இடாதீர்.",
+  f0: "250 cm³ அளவீட்டுக் குடுவையின் கழுத்தில் புனலை வைக்க.", funnelIn: "புனலைக் குடுவையில் வை",
+  f1: "கடிகாரக் கண்ணாடியிலுள்ள Na₂CO₃ ஐப் புனலுக்குள் சரிக்க.", tip: "திண்மத்தைப் புனலுக்குள் சரி",
+  f2: "கடிகாரக் கண்ணாடியிலும் புனலிலும் இன்னும் வெள்ளைத் திண்மப் பூச்சு உள்ளது. கழுவும் போத்தலால் இரண்டையும் குடுவைக்குள் கழுவி விடுக.", rinseWG: "கடிகாரக் கண்ணாடியைக் கழுவு", rinseF: "புனலைக் கழுவு",
+  f3: "புனலை அகற்றுக.", funnelOut: "புனலை அகற்று",
+  f4: "குமிழ் அரைவாசி நிரம்பும் வரை காய்ச்சி வடித்த நீர் சேர்க்க. பின் குடுவையை மூடியால் மூடி, திண்மம் முழுவதும் கரையும் வரை சுழற்றுக.",
+  wash: "அழுத்திப் பிடி: கழுவும் போத்தல்", swirl: "அழுத்திப் பிடி: மூடிச் சுழற்று",
+  f6: "மட்டம் கழுத்தில் குறிக்குச் சற்றுக் கீழே வரும் வரை நிரப்பி, பின் கண் மட்டத்தில் பிறையின் அடிப்பகுதி குறியில் அமரும் வரை துளி துளியாக நீர் சேர்க்க.",
+  drop: "ஒரு துளி சேர்", onMark: "அது குறியில் உள்ளது", eyeL: "கண் நிலை", eyeBelow: "கீழ்", eyeAbove: "மேல்",
+  f8: "குடுவையை மூடிக் கலக்கப் பல முறை தலைகீழாகத் திருப்புக (இதுவரை {n} முறை).", invert: "குடுவையைத் தலைகீழாக்கு",
+  doneA: "பணி A முடிந்தது: Na₂CO₃ {c} mol dm⁻³ கரைசல் {v} cm³. இப்போது பணி B இல் ஐதாக்கலைச் செய்க.", goB: "பணி B இற்குச் செல்",
+  tRinseFirst: "முதலில் கடிகாரக் கண்ணாடியையும் புனலையும் கழுவுக. அவற்றில் எஞ்சும் திண்மம் இழக்கப்படும்; கரைசல் 1 mol dm⁻³ ஐ விட வலு குறைந்ததாகும்.",
+  tWaterFirst: "முதலில் நீர் சேர்க்க: திண்மம் கரைய இடமிருக்கக் குமிழின் அரைவாசி அளவு.", tDissolveFirst: "கழுத்து வரை நிரப்பும் முன் திண்மத்தைக் கரைக்க. குடுவை நிரம்பும் நிலையில் நன்றாகச் சுழற்ற முடியாது; திண்மம் கரையும்போது கனவளவும் மாறும்.",
+  tSwitchDropper: "நீங்கள் குறிக்கு அண்மையில் உள்ளீர்கள். குறியைத் தாண்டாமலிருக்க இப்போது துளிக்குழாய்க்கு மாறுக.", tNotYet: "இன்னும் இல்லை. பிறையின் அடிப்பகுதி இன்னும் குறிக்குக் கீழே உள்ளது.",
+  tEyeNot: "உங்கள் கண் {p} உள்ளது. முதலில் அதைக் குறியின் மட்டத்துக்குக் கொண்டுவருக. அப்போது வளையக் குறி நேர்கோடாகத் தெரியும்.", eyeIs: "கண் {p}", eyePosAbove: "குறிக்கு மேலே", eyePosLevel: "குறியின் மட்டத்தில்", eyePosBelow: "குறிக்குக் கீழே",
+  overA: "பிறை குறிக்கு மேலே உள்ளது. கனவளவு இப்போது 250.0 cm³ ஐ விட அதிகம்; எனவே செறிவு 1 mol dm⁻³ ஐ விடக் குறைவு. நீரை மீண்டும் எடுக்க முடியாததால் இக்கரைசலை மீண்டும் தயாரிக்க வேண்டும்.",
+  overB: "பிறை குறிக்கு மேலே உள்ளது. கனவளவு இப்போது 100.0 cm³ ஐ விட அதிகம்; எனவே செறிவு 0.100 mol dm⁻³ ஐ விடக் குறைவு. ஐதாக்கலை மீண்டும் செய்க.",
+  restart: "மீண்டும் தயாரி", tMarkOk: "குறி வரை நிரப்பப்பட்டது.", tInvertMore: "தொடர்ந்து தலைகீழாக்குக: சீரற்ற கலத்தலின் கோடுகள் இன்னும் தெரிகின்றன.",
+  dQ: "0.100 mol dm⁻³ கரைசல் 100.0 cm³ தயாரிக்கத் தேவையான 1.000 mol dm⁻³ தாய்க் கரைசலின் கனவளவைக் கணிக்க.", fV1: "தாய்க் கரைசல் கனவளவு, V₁ (cm³)",
+  dOk: "சரி: V₁ = c₂V₂ ÷ c₁ = 0.100 × 100.0 ÷ 1.000 = 10.00 cm³.", dBad: "c₁V₁ = c₂V₂ ஐப் பயன்படுத்துக; எனவே V₁ = (0.100 × 100.0) ÷ 1.000.",
+  d1: "10.00 cm³ குழாயியைச் சிறிதளவு தாய்க் கரைசலால் கழுவுக.", rinseP: "குழாயியைத் தாய்க் கரைசலால் கழுவு",
+  d2: "குழாயி நிரப்பியால் தாய்க் கரைசலைக் குறிக்கு மேலே உறிஞ்சுக.", drawUp: "நிரப்பியால் உறிஞ்சு", drawAgain: "மீண்டும் உறிஞ்சு",
+  d3: "கண் மட்டத்தில் பிறையின் அடிப்பகுதி குறியில் வரும் வரை கரைசலை மெதுவாக வெளியேற விடுக.", release: "அழுத்திப் பிடி: மெதுவாக விடு",
+  d4: "10.00 cm³ ஐ 100 cm³ அளவீட்டுக் குடுவைக்குள் வடிய விடுக. நுனியைக் கண்ணாடியில் தொடுக; கடைசித் துளியை ஊதி வெளியேற்றாதீர்.", deliver: "குடுவைக்குள் வடிய விடு",
+  d5: "காய்ச்சி வடித்த நீரால் குறி வரை நிரப்புக: முதலில் கழுவும் போத்தல், குறிக்கு அண்மையில் துளிக்குழாய்.",
+  doneB: "பணி B முடிந்தது: Na₂CO₃ {c} mol dm⁻³ கரைசல் 100.0 cm³.", tRinsePFirst: "முதலில் குழாயியைத் தாய்க் கரைசலால் கழுவுக. உள்ளே எஞ்சும் நீர் நீங்கள் அளக்கும் 10.00 cm³ ஐ ஐதாக்கும்.",
+  tPipBelow: "பிறை குறிக்குக் கீழே சென்றுவிட்டது. கரைசலை மீண்டும் உறிஞ்சி மேலும் மெதுவாக விடுக.", tPipNot: "இன்னும் இல்லை. பிறையின் அடிப்பகுதி இன்னும் குறிக்கு மேலே உள்ளது.",
+  tDone: "செய்முறை முடிந்தது! இப்போது வினாக்கள் தாவலில் உள்ள வினாக்களுக்கு விடையளிக்க.",
+  chipPtr: "சுட்டி {s}", ptrSwing: "ஆடுகிறது", ptrZero: "0 இல்", ptrHigh: "0 இற்கு மேல்", ptrLow: "0 இற்குக் கீழ்", chipRiders: "நகர் படிகள் {t} g", chipFlask: "{v} cm³ அளவீட்டுக் குடுவை", chipPip: "10.00 cm³ குழாயி",
+  cvColourless: "நிறமற்றது", cvSolid: "வெள்ளைத் திண்மம்", cvMark: "குறி", cvStreaks: "கலத்தல் கோடுகள்", cvCoat: "வெள்ளைப் பூச்சு", cvZoom: "குறியருகே கழுத்து · ×12", cvZoomP: "குழாயிக் குறி · ×12", cvStock: "தாய்க் கரைசல் 1.000 mol dm⁻³", cvWaste: "கழிவு",
+  lCalc: "தேவையான திணிவு: n = 1 × 0.250 = 0.25 mol; m = 0.25 × 106 = 26.5 g.", lZero: "தட்டு வெறுமையாக இருக்கத் தராசு பூச்சியமாக்கப்பட்டது.", lW: "கடிகாரக் கண்ணாடியின் திணிவு, w = {w} g.", lSet: "நகர் படிகள் (26.50 + {w}) = {t} g இற்கு அமைக்கப்பட்டன.",
+  lSolid: "சுட்டி பூச்சியத்துக்கு வரும் வரை Na₂CO₃ சேர்க்கப்பட்டது: 26.50 g நிறுக்கப்பட்டது.", lTip: "திண்மம் புனலுக்குள் சரிக்கப்பட்டது. கடிகாரக் கண்ணாடியிலும் புனலிலும் வெள்ளைத் திண்மப் பூச்சு எஞ்சுகிறது.",
+  lRinse: "கடிகாரக் கண்ணாடியும் புனலும் குடுவைக்குள் கழுவப்பட்டன: வெள்ளைப் பூச்சு கழுவப்பட்டது.", lDissolve: "சுழற்றும்போது வெள்ளைத் திண்மம் முழுமையாகக் கரைந்து நிறமற்ற கரைசல் கிடைக்கிறது.",
+  lMarkA: "குறி வரை நிரப்பப்பட்டது: கண் மட்டத்தில் பிறையின் அடிப்பகுதி குறியில் உள்ளது. கனவளவு = {v} cm³.", lInvert: "குடுவை {n} முறை தலைகீழாக்கப்பட்டது: கலத்தல் கோடுகள் மறைந்து கரைசல் சீரானது.",
+  lOver: "குறியைத் தாண்டி நீர் சேர்க்கப்பட்டது. கரைசல் கொட்டப்பட்டு மீண்டும் தயாரிக்கப்பட்டது.", lV1: "தேவையான தாய்க் கரைசல் கனவளவு: V₁ = 0.100 × 100.0 ÷ 1.000 = 10.00 cm³.", lPip: "கண் மட்டத்தில் குழாயி குறி வரை நிரப்பப்பட்டது: தாய்க் கரைசல் 10.00 cm³.",
+  lDeliver: "தாய்க் கரைசல் 10.00 cm³ 100 cm³ அளவீட்டுக் குடுவைக்குள் வடிக்கப்பட்டது.", lMarkB: "கண் மட்டத்தில் குறி வரை நிரப்பப்பட்டது. கனவளவு = {v} cm³.",
+  tabGuide: "வழிகாட்டி", tabObs: "அவதானிப்புகள்", tabColours: "நிறங்கள்", tabQuiz: "வினாக்கள்",
+  aimH: "நோக்கம்", aim: "நான்கு கோல் தராசையும் அளவீட்டுக் குடுவையையும் பயன்படுத்தி 1 mol dm⁻³ Na₂CO₃ கரைசல் 250 cm³ ஐத் துல்லியமாகத் தயாரித்தல்.",
+  appH: "உபகரணங்களும் இரசாயனங்களும்", app: ["250 cm³ அளவீட்டுக் குடுவை", "100 cm³ அளவீட்டுக் குடுவை", "முகவைகள்", "புனல்", "கடிகாரக் கண்ணாடி", "நான்கு கோல் தராசு", "சிறு கரண்டி", "கழுவும் போத்தல்", "துளிக்குழாய்", "10.00 cm³ குழாயி + நிரப்பி", "Na₂CO₃(s)", "காய்ச்சி வடித்த நீர்"],
+  procH: "செய்முறை", steps: ["திணிவைக் கணிக்க: n = 1 × 0.250 = 0.25 mol; m = 0.25 × 106 = 26.5 g", "கடிகாரக் கண்ணாடியை நிறுத்து (w g); நகர் படிகளை (26.5 + w) g இற்கு அமைக்க", "சுட்டி பூச்சியத்துக்கு வரும் வரை Na₂CO₃ சேர்க்க", "புனல் வழியாகக் குடுவைக்குள் மாற்றி, கடிகாரக் கண்ணாடியையும் புனலையும் குடுவைக்குள் கழுவுக", "நீர் சேர்த்து, மூடிச் சுழற்றிக் கரைக்க; குறி வரை நிரப்புக (கண் மட்டத்தில் பிறையின் அடிப்பகுதி)", "மூடிப் பல முறை தலைகீழாக்குக", "இரண்டாம் பணி: ஐதாக்கல் மூலம் 0.100 mol dm⁻³ கரைசல் 100 cm³ தயாரிக்க (10.00 cm³ குழாயியால் எடுக்க)"],
+  safeH: "பாதுகாப்பு", safe: ["பாதுகாப்புக் கண்ணாடி அணிக. Na₂CO₃ குறிப்பாகக் கண்களை உறுத்தும்.", "திண்மத்தைக் கையால் அல்லாமல் சிறு கரண்டியால் கையாளுக.", "ஒருபோதும் வாயால் உறிஞ்சாதீர். எப்போதும் குழாயி நிரப்பியைப் பயன்படுத்துக.", "சிந்திய அல்லது மிகையான திண்மத்தைக் கழிவு முகவையில் இடுக; ஒருபோதும் போத்தலுக்குள் மீண்டும் இடாதீர்."],
+  logH: "அவதானிப்புப் பதிவு", resA: "பணி A · 1 mol dm⁻³ கரைசல் 250 cm³", resB: "பணி B · 0.100 mol dm⁻³ கரைசல் 100 cm³", none: "இதுவரை எதுவும் பதியப்படவில்லை.",
+  rW: "கடிகாரக் கண்ணாடியின் திணிவு, w", rT: "நகர் படிகள் அமைத்த அளவு (26.50 + w)", rM: "Na₂CO₃ இன் திணிவு", rN: "Na₂CO₃ இன் அளவு", rV: "கரைசலின் கனவளவு", rC: "செறிவு", rV1: "குழாயியால் எடுத்த தாய்க் கரைசல் கனவளவு",
+  coloursH: "நிறங்களும் காணக்கூடிய மாற்றங்களும்", noColour: "இச்செய்முறையில் நிறமாற்றம் இல்லை. Na₂CO₃ கரைசல் நிறமற்றது. நீங்கள் தெளிவாகக் காண வேண்டிய மாற்றங்கள் இந்த அட்டைகளில் உள்ளன.",
+  k1b: "கடிகாரக் கண்ணாடியிலும் புனலிலும் வெள்ளைத் திண்மப் பூச்சு", k1r: "கழுவும் போத்தலால் கழுவு", k1a: "சுத்தமான கண்ணாடி; எல்லாத் திண்மமும் குடுவையில்",
+  k2b: "அடியில் வெள்ளைத் திண்மம்", k2r: "மூடிச் சுழற்று", k2a: "நிறமற்ற கரைசல்", k2v: "இடையில் காண்பது: கலங்கல், சிறுக்கும் துகள்கள்",
+  k3b: "சீரற்ற கலத்தலின் கோடுகள்", k3r: "பல முறை தலைகீழாக்கு", k3a: "சீரான நிறமற்ற கரைசல்",
+  before: "முன்", after: "பின்", seen: "பதியப்பட்டது", notYet: "இன்னும் செய்யவில்லை",
+  replayH: "மீண்டும் பார்: திண்மம் கரைதல்", play: "மெதுவாக இயக்கு", pause: "நிறுத்து", rNone: "திண்மம் கரைவதைப் பதிவு செய்யப் பணி A இல் குடுவையைச் சுழற்றுக.", rAt: "கரையாத திண்மம்: {p}%",
+  quizH: "அறிவுச் சோதனை", tryAgain: "மீண்டும் முயல்க", best: "அதிகூடியது {p}%", scoreLeft: "{n} மீதம்", correct: "சரி. ", notQuite: "சரியில்லை. ",
+  canvasAria: "தற்போதைய உபகரணங்களைக் காட்டும் ஆய்வுகூட மேசை: நான்கு கோல் தராசு, புனலும் கழுவும் போத்தலுமுள்ள அளவீட்டுக் குடுவை, அல்லது குழாயி. பெரிதாக்கிய தோற்றம் குறியுடன் பிறையைக் காட்டுகிறது.",
+  quiz: [
+    { q: "1 mol dm⁻³ கரைசல் 250 cm³ இற்கு Na₂CO₃ (M = 106) இன் திணிவு?", o: ["106 g", "26.5 g", "53 g", "10.6 g"], e: "0.25 mol × 106." },
+    { q: "கடிகாரக் கண்ணாடியைக் குடுவைக்குள் ஏன் கழுவ வேண்டும்?", o: ["அதைச் சுத்தமாக்க", "கரையம் இழக்கப்படாதிருக்க", "அதைக் குளிர்விக்க", "நீர் சேர்க்க"], e: "நிறுத்த எல்லாக் கரையமும் குடுவையை அடைய வேண்டும்." },
+    { q: "0.1 mol dm⁻³ கரைசல் 100 cm³ இற்குத் தேவையான 1 mol dm⁻³ தாய்க் கரைசலின் கனவளவு:", o: ["1 cm³", "10 cm³", "100 cm³", "0.1 cm³"], e: "c₁V₁ = c₂V₂." },
+    { q: "குறியைத் தாண்டி நீர் சேர்த்தால் செறிவு…", o: ["அதிகரிக்கும்", "குறையும்", "மாறாது", "பூச்சியமாகும்"], e: "அதே மூல் எண்ணிக்கை கூடிய கனவளவில்." },
+  ],
+},
+};
+const QUIZ_ANS = [1, 1, 1, 1];
+let LANG = "en";
+try { const s = localStorage.getItem("svl-lang") || localStorage.getItem("kmno4-lang"); if (s && I18N[s]) LANG = s; else { const n = (navigator.language || "").slice(0, 2); if (I18N[n]) LANG = n; } } catch (e) {}
+function t(key, p) { let s = I18N[LANG][key]; if (s === undefined) s = I18N.en[key]; if (s === undefined) return key; if (p && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (_, k) => p[k] ?? ""); return s; }
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const fmtG = h => (h / 100).toFixed(2);
+
+// =====================================================================
+// STATE
+// =====================================================================
+const PA = ["calc", "zero", "place", "weigh", "set", "solid", "funnel", "tip", "rinse", "out", "water", "makeup", "invert", "doneA"];
+const PB = ["dcalc", "rinseP", "draw", "release", "deliver", "makeupB", "invertB", "doneB"];
+const BEAMS = [{ lab: "100 g", steps: 2, unit: 10000 }, { lab: "10 g", steps: 10, unit: 1000 }, { lab: "1 g", steps: 10, unit: 100 }, { lab: "0.01 g", steps: 100, unit: 1 }];
+const newFlask = cap => ({ cap, V: 0, und: 0, solidIn: false, streak: 0, inv: 0, funnel: false, coatF: 0, stopper: false, label: null });
+let S;
+function freshState() {
+  return {
+    task: "A", ph: "calc", phB: "dcalc", goggles: false, ev: {}, logs: [], answered: {}, done: false, confetti: [],
+    calc: { vals: ["", ""], wrong: null, tries: 0, note: null, work: false }, dcalc: { val: "", wrong: false, tries: 0, note: null },
+    bal: { off: (Math.random() < .5 ? -1 : 1) * ri(25, 80), knob: 0, r: [0, 0, 0, 0], th: 0, w: 0, settled: false, obj: false, wg: ri(2200, 3600), solid: 0, coarseWarned: false, overWarn: false, note: null, wRec: null, hist: [] },
+    fl: newFlask(250), flB: newFlask(100), wgHeap: true, wgCoat: 0, rinsedWG: false, rinsedF: false, fall: -1, rinseAnim: null,
+    eye: .7, hold: null, drop: -1, over: false, invT: -1, swirlHist: [], histT: 0,
+    pip: { vol: 0, rinsed: false, rinseT: -1, deliverT: -1, warned: false },
+    res: {},
+  };
+}
+const curPh = () => S.task === "A" ? S.ph : S.phB;
+const cf = () => S.task === "A" ? S.fl : S.flB;
+const idxA = p => PA.indexOf(p), idxB = p => PB.indexOf(p);
+function setPh(p) { if (S.task === "A") S.ph = p; else S.phB = p; renderAll(); }
+function view() { const p = curPh(); if (["calc", "zero", "place", "weigh", "set", "solid"].includes(p)) return "balance"; if (["dcalc", "rinseP", "draw", "release", "deliver"].includes(p)) return "pipette"; return "flask"; }
+
+// =====================================================================
+// FLASK GEOMETRY (local units: u = height above the base)
+// =====================================================================
+const FG = { R: 95, hc: 87.4, nr: 13, top: 400, mark: 330 };
+FG.join = FG.hc + Math.sqrt(FG.R * FG.R - FG.nr * FG.nr);
+const fR = u => u <= FG.join ? Math.sqrt(Math.max(0, FG.R * FG.R - (u - FG.hc) ** 2)) : FG.nr;
+const FV = (() => { const a = [0]; let s = 0; for (let u = 0; u < FG.top; u++) { s += Math.PI * fR(u + .5) ** 2; a.push(s); } return a; })();
+function flaskU(V, cap) { const k = cap / FV[FG.mark], tgt = V / k; let lo = 0, hi = FG.top; if (tgt >= FV[FG.top]) return FG.top; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (FV[m] < tgt) lo = m; else hi = m; } return lo + (tgt - FV[lo]) / ((FV[hi] - FV[lo]) || 1); }
+// pipette geometry
+const PG = { stem: 2.6, b0: 150, b1: 262, br: 15, top: 430, mark: 345 };
+const pR = u => u < PG.b0 - 14 ? PG.stem : u < PG.b0 ? PG.stem + (PG.br - PG.stem) * ((u - PG.b0 + 14) / 14) : u <= PG.b1 ? PG.br : u < PG.b1 + 14 ? PG.br - (PG.br - PG.stem) * ((u - PG.b1) / 14) : PG.stem;
+const PV = (() => { const a = [0]; let s = 0; for (let u = 0; u < PG.top; u++) { s += Math.PI * pR(u + .5) ** 2; a.push(s); } return a; })();
+function pipU(vol) { const k = 10 / PV[PG.mark], tgt = vol / k; let lo = 0, hi = PG.top; if (tgt >= PV[PG.top]) return PG.top; while (hi - lo > 1) { const m = (lo + hi) >> 1; if (PV[m] < tgt) lo = m; else hi = m; } return lo + (tgt - PV[lo]) / ((PV[hi] - PV[lo]) || 1); }
+
+// =====================================================================
+// CANVAS
+// =====================================================================
+const W = 960, H = 540;
+const cv = $("cv"), ctx = cv.getContext("2d"), vp = $("viewport");
+let dpr = 1, cw = 0, ch = 0, sc = 1, ox = 0, oy = 0, T = {};
+function resize() { const r = vp.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2.5); cw = r.width; ch = r.height; cv.width = Math.round(cw * dpr); cv.height = Math.round(ch * dpr); sc = Math.min(cw / W, ch / H); ox = (cw - W * sc) / 2; oy = (ch - H * sc) / 2; }
+function readTokens() { const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim(); T = { wallTop: g("--wall-top"), wallBot: g("--wall-bot"), bench: g("--bench"), benchEdge: g("--bench-edge"), glass: g("--glass"), ink: g("--ink"), muted: g("--muted"), accent: g("--accent") }; }
+new ResizeObserver(resize).observe(vp);
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readTokens);
+new MutationObserver(readTokens).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+const FONT = (w, s) => `${w} ${s}px 'IBM Plex Sans','Noto Sans Sinhala','Noto Sans Tamil',sans-serif`;
+const MONO = (w, s) => `${w} ${s}px 'IBM Plex Mono', monospace`;
+function rr(c, x, y, w, h, r) { c.beginPath(); c.roundRect(x, y, w, h, r); }
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+let hatch = null;
+function makeHatch(c) { const h = document.createElement("canvas"); h.width = h.height = 10; const x = h.getContext("2d"); x.strokeStyle = "rgba(60,90,110,.3)"; x.lineWidth = 1; x.beginPath(); x.moveTo(0, 10); x.lineTo(10, 0); x.stroke(); return c.createPattern(h, "repeat"); }
+const seeded = i => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+function bench(c) { c.fillStyle = T.bench; c.fillRect(-ox / sc - 2, 470, cw / sc + 4, (ch - oy) / sc - 470 + 4); c.fillStyle = T.benchEdge; c.fillRect(-ox / sc - 2, 470, cw / sc + 4, 4); }
+
+// ---------- balance (Experiment 3 model) ----------
+const PIV = { x: 250, y: 300 }, BX0 = 90, BX1 = 590, BEAM_Y = [-66, -30, 6, 42], PAN_X = -110, PTR_X = 660;
+const riderX = (i, n) => BX0 + 30 + (n / BEAMS[i].steps) * (BX1 - BX0 - 60);
+const riderSum = () => S.bal.r.reduce((a, n, i) => a + n * BEAMS[i].unit, 0);
+const diffH = () => (S.bal.obj ? S.bal.wg + S.bal.solid : 0) + S.bal.off + S.bal.knob - riderSum();
+let rdrag = null;
+function drawBalance() {
+  const b = S.bal, th = b.th; bench(ctx);
+  ctx.fillStyle = "#2f3a40"; rr(ctx, 90, 418, 830, 54, 10); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,.1)"; ctx.fillRect(96, 420, 818, 3);
+  ctx.fillStyle = "#3b4a52"; ctx.beginPath(); ctx.moveTo(PIV.x - 26, 420); ctx.lineTo(PIV.x - 8, PIV.y + 6); ctx.lineTo(PIV.x + 8, PIV.y + 6); ctx.lineTo(PIV.x + 26, 420); ctx.closePath(); ctx.fill();
+  const sx = PIV.x + PTR_X + 14; ctx.fillStyle = "#e9eef0"; rr(ctx, sx, PIV.y - 70, 46, 140, 6); ctx.fill(); ctx.strokeStyle = "#7d878c"; ctx.stroke();
+  ctx.strokeStyle = "#1c2a31"; for (let k = -10; k <= 10; k++) { const y = PIV.y + k * 6; ctx.lineWidth = k === 0 ? 2.5 : 1; ctx.beginPath(); ctx.moveTo(sx + 4, y); ctx.lineTo(sx + (k === 0 ? 30 : k % 5 === 0 ? 22 : 14), y); ctx.stroke(); }
+  ctx.fillStyle = "#1c2a31"; ctx.font = MONO(700, 12); ctx.textAlign = "left"; ctx.textBaseline = "middle"; ctx.fillText("0", sx + 33, PIV.y);
+  ctx.fillStyle = "#2f3a40"; ctx.fillRect(sx + 40, PIV.y - 70, 8, 160);
+  ctx.save(); ctx.translate(PIV.x, PIV.y); ctx.rotate(-th);
+  ctx.strokeStyle = "#7d878c"; ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(PAN_X, 0); ctx.lineTo(PAN_X, -78); ctx.stroke();
+  ctx.fillStyle = "#4a5359"; rr(ctx, PAN_X - 10, -4, 210, 14, 4); ctx.fill();
+  BEAMS.forEach((bm, i) => { const y = BEAM_Y[i];
+    const g = ctx.createLinearGradient(0, y - 7, 0, y + 9); g.addColorStop(0, "#e3e8ea"); g.addColorStop(.5, "#b9c3c8"); g.addColorStop(1, "#7f8a90");
+    ctx.fillStyle = g; rr(ctx, BX0, y - 7, PTR_X - BX0 - 20, 16, 3); ctx.fill(); ctx.strokeStyle = "rgba(0,0,0,.25)"; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = "#1c2a31"; ctx.font = MONO(600, 11); ctx.textAlign = "right"; ctx.fillText(bm.lab, BX0 - 6, y + 1);
+    for (let n = 0; n <= bm.steps; n++) { const x = riderX(i, n);
+      if (i < 3) { ctx.fillStyle = "#2b353b"; ctx.beginPath(); ctx.moveTo(x - 4, y - 7); ctx.lineTo(x + 4, y - 7); ctx.lineTo(x, y - 2); ctx.closePath(); ctx.fill();
+        ctx.font = MONO(500, 9.5); ctx.textAlign = "center"; ctx.fillStyle = "#1c2a31"; ctx.fillText(String(i === 0 ? n * 100 : i === 1 ? n * 10 : n), x, y + 4.5); }
+      else { const big = n % 10 === 0, mid = n % 5 === 0; ctx.strokeStyle = "#1c2a31"; ctx.lineWidth = big ? 1.4 : .7; ctx.beginPath(); ctx.moveTo(x, y + 9); ctx.lineTo(x, y + 9 - (big ? 9 : mid ? 6 : 3.5)); ctx.stroke();
+        if (big) { ctx.font = MONO(500, 9); ctx.textAlign = "center"; ctx.fillStyle = "#1c2a31"; ctx.fillText((n / 100).toFixed(1), x, y - 2); } } }
+    const x = riderX(i, b.r[i]), hot = rdrag && rdrag.i === i;
+    ctx.fillStyle = hot ? "#c98a00" : "#d9a441"; ctx.strokeStyle = "#5c4a1c"; ctx.lineWidth = 1.2;
+    if (i < 2) { ctx.beginPath(); ctx.moveTo(x - 9, y - 16); ctx.lineTo(x + 9, y - 16); ctx.lineTo(x + 9, y + 12); ctx.lineTo(x + 3, y + 18); ctx.lineTo(x - 3, y + 18); ctx.lineTo(x - 9, y + 12); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.fillStyle = "#3b2c0c"; ctx.beginPath(); ctx.moveTo(x - 3, y - 16); ctx.lineTo(x + 3, y - 16); ctx.lineTo(x, y - 9); ctx.closePath(); ctx.fill(); }
+    else { rr(ctx, x - 7, y - 12, 14, 26, 3); ctx.fill(); ctx.stroke(); ctx.strokeStyle = "#c0392b"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, y - 12); ctx.lineTo(x, y + 14); ctx.stroke(); }
+  });
+  ctx.fillStyle = "#4a5359"; ctx.beginPath(); ctx.moveTo(PTR_X - 30, -4); ctx.lineTo(PTR_X + 20, -1); ctx.lineTo(PTR_X + 20, 1); ctx.lineTo(PTR_X - 30, 4); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#c0392b"; ctx.beginPath(); ctx.moveTo(PTR_X + 20, -3); ctx.lineTo(PTR_X + 30, 0); ctx.lineTo(PTR_X + 20, 3); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = "#1c2a31"; ctx.beginPath(); ctx.arc(0, 0, 6, 0, 7); ctx.fill();
+  const pg = ctx.createLinearGradient(PAN_X - 90, 0, PAN_X + 90, 0); pg.addColorStop(0, "#9aa5ab"); pg.addColorStop(.5, "#eef2f4"); pg.addColorStop(1, "#8a959b");
+  ctx.fillStyle = pg; ctx.beginPath(); ctx.ellipse(PAN_X, -82, 88, 14, 0, 0, 7); ctx.fill(); ctx.strokeStyle = "#5b666c"; ctx.lineWidth = 1.2; ctx.stroke();
+  if (b.obj) drawWatchGlass(ctx, PAN_X, -90, 1, b.solid / 2650, 0);
+  ctx.restore();
+  const kx = PIV.x + PAN_X, ky = 400; ctx.fillStyle = "#1c2a31"; ctx.beginPath(); ctx.ellipse(kx, ky, 18, 10, 0, 0, 7); ctx.fill();
+  ctx.strokeStyle = "#9aa5ab"; ctx.lineWidth = 1.5; for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3 + b.knob * .12; ctx.beginPath(); ctx.moveTo(kx + Math.cos(a) * 6, ky + Math.sin(a) * 3.3); ctx.lineTo(kx + Math.cos(a) * 16, ky + Math.sin(a) * 9); ctx.stroke(); }
+  ctx.fillStyle = "#dfe6e8"; ctx.font = FONT(600, 11); ctx.textAlign = "center"; ctx.fillText(t("zeroL"), kx, ky + 26);
+  // reagent bottle + spatula
+  ctx.fillStyle = "rgba(235,245,250,.5)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 1.4; rr(ctx, 760, 386, 70, 84, 8); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = "#f4f4f2"; ctx.fillRect(764, 420, 62, 48); ctx.fillStyle = "#3b4a52"; rr(ctx, 772, 372, 46, 16, 3); ctx.fill();
+  ctx.fillStyle = "#ffffff"; rr(ctx, 768, 398, 54, 20, 2); ctx.fill(); ctx.fillStyle = "#1c2a31"; ctx.font = MONO(700, 10); ctx.fillText("Na₂CO₃(s)", 795, 408);
+  ctx.strokeStyle = "#9aa5ab"; ctx.lineWidth = 4; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(850, 460); ctx.lineTo(905, 410); ctx.stroke(); ctx.lineCap = "butt";
+}
+function drawWatchGlass(c, x, y, s, heap, coat) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  if (heap > 0.001) { const hh = 6 + 26 * Math.sqrt(heap), hw = 14 + 34 * Math.sqrt(heap); c.fillStyle = "#f7f7f4"; c.strokeStyle = "#c9cbc4"; c.lineWidth = 1; c.beginPath(); c.moveTo(-hw, 4); c.quadraticCurveTo(0, 4 - hh * 2, hw, 4); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle = "rgba(0,0,0,.08)"; for (let i = 0; i < 30; i++) { c.beginPath(); c.arc((seeded(i) - .5) * hw * 1.4, 2 - seeded(i + 40) * hh * .9, 1, 0, 7); c.fill(); } }
+  c.fillStyle = "rgba(214,234,242,.65)"; c.strokeStyle = "#4f6b78"; c.lineWidth = 1.5; c.beginPath(); c.moveTo(-50, -2); c.quadraticCurveTo(0, 18, 50, -2); c.quadraticCurveTo(0, 8, -50, -2); c.fill(); c.stroke();
+  if (coat > .01) { c.fillStyle = `rgba(250,250,247,${.95 * coat})`; for (let i = 0; i < 26; i++) { const xx = (seeded(i + 7) - .5) * 80, yy = 4 + Math.abs(xx) * -.07 + seeded(i + 90) * 3; c.beginPath(); c.arc(xx, yy, 1.4 + seeded(i) * 1.2, 0, 7); c.fill(); } c.strokeStyle = `rgba(150,150,140,${.5 * coat})`; c.lineWidth = .6;
+    for (let i = 0; i < 26; i++) { const xx = (seeded(i + 7) - .5) * 80, yy = 4 + Math.abs(xx) * -.07 + seeded(i + 90) * 3; c.beginPath(); c.arc(xx, yy, 1.4 + seeded(i) * 1.2, 0, 7); c.stroke(); } }
+  c.restore();
+}
+
+// ---------- volumetric flask ----------
+function flaskPath(c) { c.beginPath(); c.moveTo(-FG.nr - 2, -FG.top); for (let u = FG.top; u >= 0; u -= 3) c.lineTo(-fR(u) - 2, -u); c.lineTo(fR(0) + 2, 0); for (let u = 0; u <= FG.top; u += 3) c.lineTo(fR(u) + 2, -u); c.closePath(); }
+function innerPath(c) { c.beginPath(); c.moveTo(-FG.nr, -FG.top); for (let u = FG.top; u >= 0; u -= 3) c.lineTo(-fR(u), -u); c.lineTo(fR(0), 0); for (let u = 0; u <= FG.top; u += 3) c.lineTo(fR(u), -u); c.closePath(); }
+function drawFlask(c, f, x, y, s, rot, opt = {}) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  if (rot) { c.translate(0, -FG.top / 2); c.rotate(rot); c.translate(0, FG.top / 2); }
+  const uL = flaskU(f.V, f.cap);
+  // liquid
+  c.save(); innerPath(c); c.clip();
+  if (f.V > .01) {
+    if (rot && Math.abs(rot) > .3) { c.fillStyle = "rgba(225,240,247,.85)"; c.fillRect(-120, -FG.top, 240, FG.top); }
+    else { c.fillStyle = "rgba(225,240,247,.85)"; c.fillRect(-120, -uL, 240, uL + 2); c.fillStyle = hatch; c.fillRect(-120, -uL, 240, uL + 2);
+      if (f.und > 0) { c.fillStyle = `rgba(250,250,247,${.35 * Math.min(1, f.und * 1.5) * (opt.swirling ? 1 : .5)})`; c.fillRect(-120, -uL, 240, uL); }
+      if (f.streak > .02) { c.strokeStyle = `rgba(120,160,190,${.55 * f.streak})`; c.lineWidth = 2.5; for (let k = 0; k < 7; k++) { c.beginPath(); const bx = -70 + k * 22; c.moveTo(bx, -10); c.bezierCurveTo(bx + 30, -60, bx - 30, -110, bx + 10, -Math.min(uL - 6, 170)); c.stroke(); } }
+      c.strokeStyle = "#3a6a80"; c.lineWidth = 1.6; const rw = fR(uL); c.beginPath(); c.moveTo(-rw, -uL - 2); c.quadraticCurveTo(0, -uL + 3, rw, -uL - 2); c.stroke(); }
+  }
+  // undissolved solid
+  if (f.solidIn && f.und > 0) { const n = Math.round(70 * f.und); for (let i = 0; i < n; i++) { const xx = (seeded(i) - .5) * 64 + (opt.swirling ? Math.sin(opt.t * 9 + i) * 6 : 0), yy = -6 - seeded(i + 50) * 16 - (opt.swirling ? seeded(i + 9) * 30 * Math.abs(Math.sin(opt.t * 5 + i)) : 0); c.fillStyle = "#f7f7f4"; c.strokeStyle = "rgba(120,120,110,.6)"; c.lineWidth = .7; c.beginPath(); c.arc(xx, yy, 2.6 + seeded(i + 3) * 2, 0, 7); c.fill(); c.stroke(); } }
+  c.restore();
+  // glass
+  flaskPath(c); c.fillStyle = "rgba(235,245,250,.12)"; c.fill(); c.strokeStyle = T.glass; c.lineWidth = 2; c.stroke();
+  c.strokeStyle = "rgba(255,255,255,.65)"; c.lineWidth = 4; c.lineCap = "round"; c.beginPath(); c.arc(0, -FG.hc, FG.R - 14, Math.PI * 1.05, Math.PI * 1.45); c.stroke(); c.beginPath(); c.moveTo(-FG.nr + 4, -FG.top + 10); c.lineTo(-FG.nr + 4, -FG.join - 10); c.stroke(); c.lineCap = "butt";
+  // ring mark
+  c.strokeStyle = "#1c2a31"; c.lineWidth = 1.8; c.beginPath(); c.ellipse(0, -FG.mark, FG.nr + 1, 2.5, 0, 0, 7); c.stroke();
+  c.fillStyle = "#1c2a31"; c.font = MONO(600, 13); c.textAlign = "center"; if (!f.label) { c.fillText(`${f.cap} cm³`, 0, -FG.hc + 10); c.font = MONO(500, 10); c.fillText("20 °C", 0, -FG.hc + 26); }
+  if (f.stopper) { c.fillStyle = "#3b4a52"; rr(c, -FG.nr - 3, -FG.top - 18, 2 * FG.nr + 6, 22, 3); c.fill(); }
+  // label
+  if (f.label) { c.fillStyle = "#ffffff"; c.strokeStyle = "#9aa5ab"; rr(c, -66, -FG.hc - 22, 132, 56, 4); c.fill(); c.stroke(); c.fillStyle = "#1c2a31"; c.font = MONO(700, 13); c.fillText("Na₂CO₃(aq)", 0, -FG.hc - 2); c.font = MONO(600, 11.5); c.fillText(f.label, 0, -FG.hc + 18); }
+  c.restore();
+}
+function drawFunnel(c, x, y, s, coat) {
+  c.save(); c.translate(x, y); c.scale(s, s);
+  c.fillStyle = "rgba(214,234,242,.55)"; c.strokeStyle = "#4f6b78"; c.lineWidth = 2; c.beginPath(); c.moveTo(-46, -62); c.lineTo(46, -62); c.lineTo(6, -6); c.lineTo(6, 40); c.lineTo(-6, 40); c.lineTo(-6, -6); c.closePath(); c.fill(); c.stroke();
+  if (coat > .01) { c.fillStyle = `rgba(250,250,247,${.95 * coat})`; c.strokeStyle = `rgba(140,140,130,${.6 * coat})`; c.lineWidth = .6; for (let i = 0; i < 28; i++) { const q = seeded(i + 31), yy = -58 + q * 56, half = 42 * (1 - q) + 5; const xx = (seeded(i + 77) < .5 ? -1 : 1) * (half - 3 - seeded(i) * 4); c.beginPath(); c.arc(xx, yy, 1.5 + seeded(i + 5), 0, 7); c.fill(); c.stroke(); } }
+  c.restore();
+}
+function drawWashBottle(c, x, y, tilt, squeezing) {
+  c.save(); c.translate(x, y); c.rotate(tilt);
+  c.fillStyle = squeezing ? "rgba(240,246,250,.92)" : "rgba(240,246,250,.85)"; c.strokeStyle = "#5b6f78"; c.lineWidth = 1.6;
+  const w = squeezing ? 46 : 52; rr(c, -w / 2, -110, w, 110, 14); c.fill(); c.stroke();
+  c.fillStyle = "rgba(225,240,247,.9)"; c.fillRect(-w / 2 + 3, -70, w - 6, 66); c.fillStyle = hatch; c.fillRect(-w / 2 + 3, -70, w - 6, 66);
+  c.fillStyle = "#e05a2a"; rr(c, -12, -124, 24, 16, 3); c.fill();
+  c.strokeStyle = "#5b6f78"; c.lineWidth = 3; c.beginPath(); c.moveTo(0, -124); c.lineTo(0, -150); c.quadraticCurveTo(0, -162, -18, -164); c.lineTo(-40, -164); c.stroke();
+  c.fillStyle = "#1c2a31"; c.font = MONO(600, 9); c.textAlign = "center"; c.fillText("H₂O", 0, -86);
+  c.restore();
+}
+function drawInset(c, x, y, w, h, V, target, ppu, e, title) {
+  c.save(); c.fillStyle = "#ffffff"; rr(c, x, y, w, h, 12); c.fill(); c.strokeStyle = "#cbd5d4"; c.lineWidth = 1; c.stroke();
+  rr(c, x, y, w, h, 12); c.clip();
+  const cx = x + w / 2, cy = y + h / 2, tw = w * .32, K = 22, ry = Math.abs(e) * 10;
+  const yTrue = cy - (V - target) * ppu, yApp = yTrue - e * K;
+  c.fillStyle = "rgba(225,240,247,.9)"; c.fillRect(cx - tw, yApp - 14, 2 * tw, h); c.fillStyle = hatch; c.fillRect(cx - tw, yApp - 14, 2 * tw, h);
+  c.fillStyle = "#ffffff"; c.beginPath(); c.moveTo(cx - tw, yApp - 14); c.bezierCurveTo(cx - tw + 26, yApp + 1, cx + tw - 26, yApp + 1, cx + tw, yApp - 14); c.lineTo(cx + tw, yApp - 30); c.lineTo(cx - tw, yApp - 30); c.closePath(); c.fill();
+  c.strokeStyle = "#3a6a80"; c.lineWidth = 2.5; c.beginPath(); c.moveTo(cx - tw, yApp - 14); c.bezierCurveTo(cx - tw + 26, yApp + 1, cx + tw - 26, yApp + 1, cx + tw, yApp - 14); c.stroke();
+  c.strokeStyle = "#1c2a31"; c.lineWidth = 2; c.beginPath();
+  if (ry < .5) { c.moveTo(cx - tw, cy); c.lineTo(cx + tw, cy); c.stroke(); }
+  else { c.ellipse(cx, cy, tw, ry, 0, e > 0 ? 0 : Math.PI, e > 0 ? Math.PI : 2 * Math.PI); c.stroke(); c.setLineDash([4, 4]); c.strokeStyle = "rgba(28,42,49,.4)"; c.beginPath(); c.ellipse(cx, cy, tw, ry, 0, e > 0 ? Math.PI : 0, e > 0 ? 2 * Math.PI : Math.PI); c.stroke(); c.setLineDash([]); }
+  c.strokeStyle = "#7a9aa8"; c.lineWidth = 3; c.beginPath(); c.moveTo(cx - tw, y); c.lineTo(cx - tw, y + h); c.moveTo(cx + tw, y); c.lineTo(cx + tw, y + h); c.stroke();
+  c.fillStyle = "#1c2a31"; c.font = FONT(600, 12); c.textAlign = "left"; c.textBaseline = "middle"; c.fillText(t("cvMark"), cx + tw + 6, cy);
+  c.fillStyle = "#3a6a80"; c.textAlign = "center"; c.fillText(t("cvColourless"), cx, Math.min(y + h - 14, Math.max(yApp + 26, y + 30)));
+  // eye
+  const ex = x + w - 22, ey = cy - e * (h * .38), lvl = Math.abs(e) <= .06;
+  c.strokeStyle = lvl ? "#2c7a4d" : "#c0392b"; c.setLineDash([5, 4]); c.lineWidth = 1.6; c.beginPath(); c.moveTo(ex - 12, ey); c.lineTo(cx + tw, cy); c.stroke(); c.setLineDash([]);
+  c.fillStyle = "#ffffff"; c.strokeStyle = "#1c2a31"; c.lineWidth = 1.6; c.beginPath(); c.moveTo(ex - 14, ey); c.quadraticCurveTo(ex, ey - 10, ex + 14, ey); c.quadraticCurveTo(ex, ey + 10, ex - 14, ey); c.closePath(); c.fill(); c.stroke();
+  c.fillStyle = "#1c2a31"; c.beginPath(); c.arc(ex - 4, ey, 4, 0, 7); c.fill();
+  c.restore();
+  c.fillStyle = T.ink; c.font = FONT(600, 12); c.textAlign = "center"; c.textBaseline = "alphabetic"; c.fillText(title, x + w / 2, y + h + 18);
+}
+const FX = 330, FY = 462;
+function drawFlaskScene() {
+  bench(ctx); const f = cf(), A = S.task === "A", p = curPh(), s = A ? .95 : .78;
+  ctx.fillStyle = "#ffffff"; rr(ctx, FX - 120, 462, 240, 10, 2); ctx.fill();
+  // watch glass + waste on left (task A)
+  if (A && idxA(p) <= idxA("rinse")) { ctx.fillStyle = "#ffffff"; rr(ctx, 40, 456, 130, 8, 2); ctx.fill(); drawWatchGlass(ctx, 105, 448, 1, S.wgHeap ? 1 : 0, S.wgCoat);
+    if (S.wgCoat > .1) { ctx.fillStyle = T.ink; ctx.font = FONT(600, 11); ctx.textAlign = "center"; ctx.fillText(t("cvCoat"), 105, 420); } }
+  let rot = 0;
+  if (S.invT >= 0) rot = Math.PI * Math.sin(Math.min(1, S.invT / 1.1) * Math.PI);
+  else if (S.hold === "swirl") rot = Math.sin(time * 11) * .07;
+  drawFlask(ctx, f, FX, FY, s, rot, { swirling: S.hold === "swirl", t: time });
+  const neckTop = FY - FG.top * s;
+  if (f.funnel) drawFunnel(ctx, FX, neckTop - 2, s, f.coatF);
+  // falling solid
+  if (S.fall >= 0) { const q = S.fall; ctx.fillStyle = "#f7f7f4"; ctx.strokeStyle = "rgba(120,120,110,.6)"; for (let i = 0; i < 40; i++) { const k = (q * 1.6 + seeded(i)) % 1; const yy = neckTop - 60 + k * (FG.top * s); ctx.beginPath(); ctx.arc(FX + (seeded(i + 4) - .5) * 8, yy, 2, 0, 7); ctx.fill(); ctx.stroke(); }
+    drawWatchGlass(ctx, FX - 50, neckTop - 90, .8, 1 - q, 0); }
+  // wash bottle
+  const pouring = S.hold === "wash" || S.rinseAnim;
+  if (pouring) { const tx = S.rinseAnim && S.rinseAnim.what === "wg" ? 150 : FX + 64; const ty = S.rinseAnim && S.rinseAnim.what === "wg" ? 380 : neckTop - 40;
+    drawWashBottle(ctx, tx, ty, -.5, true); const nx = tx - 40 * Math.cos(.5) - 70 * Math.sin(.5) + 2, ny = ty - 164 * Math.cos(.5) + 40 * Math.sin(.5);
+    const ly = FY - flaskU(f.V, f.cap) * s; ctx.strokeStyle = "rgba(170,205,225,.95)"; ctx.lineWidth = 2.2; ctx.beginPath();
+    if (S.rinseAnim && S.rinseAnim.what === "wg") { ctx.moveTo(nx, ny); ctx.quadraticCurveTo(110, 420, 105, 446); } else { ctx.moveTo(nx, ny); ctx.quadraticCurveTo(FX + 2, ny + 10, FX + 1, ly); } ctx.stroke(); }
+  else drawWashBottle(ctx, 610, 470, 0, false);
+  // dropper
+  if (S.drop >= 0 || ["makeup", "makeupB"].includes(p)) { const dx = FX + 2, dy = neckTop - 26; ctx.fillStyle = "rgba(235,245,250,.8)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 1.2;
+    if (S.drop >= 0 || S.hold !== "wash") { ctx.beginPath(); ctx.moveTo(dx - 3, dy - 50); ctx.lineTo(dx - 3, dy - 6); ctx.lineTo(dx - 1, dy); ctx.lineTo(dx + 1, dy); ctx.lineTo(dx + 3, dy - 6); ctx.lineTo(dx + 3, dy - 50); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.fillStyle = "#3b3434"; ctx.beginPath(); ctx.ellipse(dx, dy - 58, 7, 12, 0, 0, 7); ctx.fill();
+      if (S.drop >= 0) { const ly = FY - flaskU(f.V, f.cap) * s, yy = dy + (ly - dy) * Math.min(1, S.drop / .35); ctx.fillStyle = "rgba(200,225,240,.95)"; ctx.strokeStyle = "rgba(60,90,110,.6)"; ctx.beginPath(); ctx.arc(dx, yy, 2.4, 0, Math.PI); ctx.lineTo(dx, yy - 5); ctx.closePath(); ctx.fill(); ctx.stroke(); } } }
+  // inset
+  if (["makeup", "makeupB", "invert", "invertB", "doneA", "doneB"].includes(p)) drawInset(ctx, 680, 40, 240, 300, f.V, f.cap, 60, S.eye, t("cvZoom"));
+  // labels
+  ctx.fillStyle = T.ink; ctx.font = FONT(600, 11); ctx.textAlign = "left";
+  if (f.solidIn && f.und > 0) { ctx.fillText(t("cvSolid"), FX + 70, FY - 12); }
+  if (f.streak > .05) ctx.fillText(t("cvStreaks"), FX + 92, FY - 90);
+  if (f.V > 5 && !f.streak) ctx.fillText(t("cvColourless"), FX + 92, FY - 60);
+}
+// ---------- pipette ----------
+function drawPipetteScene() {
+  bench(ctx); const P = S.pip, p = curPh(), px = 300, ps = .9;
+  const delivering = P.deliverT >= 0 || idxB(p) >= idxB("deliver");
+  // receiving vessel
+  ctx.fillStyle = "#ffffff"; rr(ctx, 180, 462, 240, 10, 2); ctx.fill();
+  if (delivering) drawFlask(ctx, S.flB, px, FY, .78, 0, {});
+  else { // stock beaker
+    ctx.fillStyle = "rgba(214,234,242,.35)"; ctx.strokeStyle = T.glass; ctx.lineWidth = 2; rr(ctx, px - 70, 340, 140, 122, 8); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "rgba(225,240,247,.9)"; ctx.fillRect(px - 67, 380, 134, 80); ctx.fillStyle = hatch; ctx.fillRect(px - 67, 380, 134, 80);
+    ctx.fillStyle = "#ffffff"; rr(ctx, px - 60, 400, 120, 36, 3); ctx.fill(); ctx.fillStyle = "#1c2a31"; ctx.font = MONO(700, 10); ctx.textAlign = "center"; ctx.fillText("Na₂CO₃(aq)", px, 413); ctx.font = MONO(500, 9); ctx.fillText(t("cvStock"), px, 427); }
+  // pipette
+  const tipY = delivering ? FY - FG.top * .78 + 30 : 452;
+  ctx.save(); ctx.translate(px, tipY); ctx.scale(1, ps);
+  const uL = pipU(P.vol);
+  ctx.beginPath(); ctx.moveTo(-PG.stem, 0); for (let u = 0; u <= PG.top; u += 2) ctx.lineTo(-pR(u), -u); for (let u = PG.top; u >= 0; u -= 2) ctx.lineTo(pR(u), -u); ctx.closePath();
+  ctx.save(); ctx.clip(); if (P.vol > .001) { ctx.fillStyle = "rgba(200,225,240,.95)"; ctx.fillRect(-20, -uL, 40, uL); ctx.fillStyle = hatch; ctx.fillRect(-20, -uL, 40, uL); }
+  if (P.rinseT >= 0) { ctx.fillStyle = "rgba(200,225,240,.8)"; const q = Math.sin(P.rinseT / 1.4 * Math.PI); ctx.fillRect(-20, -PG.b1 * q, 40, PG.b1 * q); } ctx.restore();
+  ctx.strokeStyle = T.glass; ctx.lineWidth = 1.6; ctx.stroke();
+  ctx.strokeStyle = "#1c2a31"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.ellipse(0, -PG.mark, PG.stem + 1.5, 1.5, 0, 0, 7); ctx.stroke();
+  ctx.fillStyle = "#1c2a31"; ctx.font = MONO(600, 10); ctx.textAlign = "center"; ctx.fillText("10 cm³", 0, -(PG.b0 + PG.b1) / 2 + 4);
+  // filler
+  ctx.fillStyle = "#c0392b"; ctx.beginPath(); ctx.ellipse(0, -PG.top - 22, 13, 20, 0, 0, 7); ctx.fill(); ctx.fillStyle = "#7a1f16"; ctx.fillRect(-4, -PG.top - 6, 8, 8);
+  ctx.restore();
+  ctx.fillStyle = T.ink; ctx.font = FONT(600, 11); ctx.textAlign = "left"; ctx.fillText(t("cvMark"), px + 12, tipY - PG.mark * ps);
+  if (["release", "deliver"].includes(p) || P.vol > 0) drawInset(ctx, 600, 40, 260, 300, P.vol, 10, 520, S.eye, t("cvZoomP"));
+}
+
+// =====================================================================
+// LOOP
+// =====================================================================
+let time = 0, last = performance.now(), uiT = 0;
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now; time += dt;
+  step(dt);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const g = ctx.createLinearGradient(0, 0, 0, ch); g.addColorStop(0, T.wallTop); g.addColorStop(1, T.wallBot); ctx.fillStyle = g; ctx.fillRect(0, 0, cw, ch);
+  ctx.setTransform(dpr * sc, 0, 0, dpr * sc, dpr * ox, dpr * oy);
+  if (!hatch) hatch = makeHatch(ctx);
+  const v = view(); if (v === "balance") drawBalance(); else if (v === "pipette") drawPipetteScene(); else drawFlaskScene();
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  S.confetti.forEach(p => { p.vy += 260 * dt; p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt; ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.fillStyle = p.c; ctx.fillRect(-3, -1.5, 6, 3); ctx.restore(); });
+  S.confetti = S.confetti.filter(p => p.y < ch + 20);
+  if (playing) { const r = Math.min(1000, +$("replay").value + dt / 4 * 1000); $("replay").value = r; if (r >= 1000) { playing = false; renderReplayCtl(); } }
+  uiT += dt; if (uiT > .12) { uiT = 0; renderLive(); if (!$("pane-colours").hidden) drawMini(); }
+  requestAnimationFrame(frame);
+}
+function step(dt) {
+  const b = S.bal, d = diffH(), target = Math.max(-.075, Math.min(.075, d * .0021)), w0 = 4, z = .25;
+  for (let i = 0; i < 4; i++) { const h = dt / 4, acc = -w0 * w0 * (b.th - target) - 2 * z * w0 * b.w; b.w += acc * h; b.th += b.w * h; }
+  if (reduceMotion) { b.th = target; b.w = 0; }
+  b.settled = Math.abs(b.w) < .004 && Math.abs(b.th - target) < .002;
+  const p = curPh();
+  if (S.task === "A") {
+    if (p === "zero" && !b.obj && d === 0 && b.settled) { S.ev.zero = 1; log(["lZero"]); toast("lZero", "good"); setPh("place"); }
+    if (p === "solid") { if (d === 0 && b.settled && b.solid > 0) { log(["lSolid"]); S.res.m = b.solid; toast("lSolid", "good", 3200); setPh("funnel"); }
+      else if (d > 0 && b.settled && !b.overWarn) { b.overWarn = true; toast("tSolidOver", "warn", 5200); } else if (d <= 0) b.overWarn = false; }
+  }
+  // tip animation
+  if (S.fall >= 0) { S.fall += dt / 1.3; if (S.fall >= 1) { S.fall = -1; S.wgHeap = false; S.wgCoat = 1; S.fl.coatF = 1; S.fl.solidIn = true; S.fl.und = 1; log(["lTip"]); setPh("rinse"); } }
+  if (S.rinseAnim) { S.rinseAnim.t += dt; const q = Math.min(1, S.rinseAnim.t / 1.2); if (S.rinseAnim.what === "wg") S.wgCoat = 1 - q; else S.fl.coatF = 1 - q; S.fl.V += 4.5 * dt / 1.2;
+    if (q >= 1) { const w = S.rinseAnim.what; S.rinseAnim = null; if (w === "wg") S.rinsedWG = true; else S.rinsedF = true; if (S.rinsedWG && S.rinsedF) { log(["lRinse"]); setPh("out"); } else renderAll(); } }
+  const f = cf();
+  // hold: wash bottle
+  if (S.hold === "wash") { const rate = f.cap === 250 ? 16 : 7, dv = rate * dt;
+    if (p === "water" && f.und > 0 && f.V + dv > f.cap * .7) { stopHold(); toast("tDissolveFirst", "warn", 5200); }
+    else if (["makeup", "makeupB"].includes(p) && f.V + dv > f.cap - 1.5) { if (f.V < f.cap - 1.5) f.V = f.cap - 1.5; stopHold(); toast("tSwitchDropper", "warn", 4200); }
+    else f.V += dv; }
+  // hold: swirl
+  if (S.hold === "swirl") { f.stopper = true; f.und = Math.max(0, f.und - dt * .22); S.histT += dt; if (S.histT >= .08) { S.histT = 0; S.swirlHist.push(f.und); }
+    if (f.und <= 0) { stopHold(); f.stopper = false; f.solidIn = false; S.swirlHist.push(0); S.ev.dissolved = 1; log(["lDissolve"]); toast("lDissolve", "good", 3600); setPh("makeup"); } }
+  else if (p === "water" && f.stopper) f.stopper = false;
+  // drop
+  if (S.drop >= 0) { S.drop += dt; if (S.drop >= .35) { S.drop = -1; f.V += .05; if (f.V > f.cap + .06) { S.over = true; renderPanel(); } } }
+  // invert
+  if (S.invT >= 0) { S.invT += dt; if (S.invT >= 1.1) { S.invT = -1; f.inv++; f.streak *= .45; if (f.inv >= 5 && f.streak < .05) finishInvert(); else renderPanel(); } }
+  // pipette
+  const P = S.pip;
+  if (P.rinseT >= 0) { P.rinseT += dt; if (P.rinseT >= 1.4) { P.rinseT = -1; P.rinsed = true; setPh("draw"); } }
+  if (S.hold === "release") { const r = P.vol > 10.4 ? .45 : .06; P.vol = Math.max(0, P.vol - r * dt); if (P.vol < 9.97 && !P.warned) { P.warned = true; stopHold(); toast("tPipBelow", "warn", 4600); renderPanel(); } }
+  if (P.deliverT >= 0) { P.deliverT += dt; const q = Math.min(1, P.deliverT / 2.4); const nv = 10 * (1 - q); S.flB.V += (P.vol - nv); P.vol = nv; if (q >= 1) { P.deliverT = -1; P.vol = 0; S.flB.V = 10; log(["lDeliver"]); setPh("makeupB"); } }
+}
+function finishInvert() {
+  const f = cf(); f.streak = 0; f.stopper = false;
+  if (S.task === "A") { const c = (S.bal.solid / 100 / 106) / (f.V / 1000); f.label = `${c.toFixed(3)} mol dm⁻³ · ${f.cap} cm³`; S.res.cA = c; S.res.VA = f.V; log(["lInvert", { n: f.inv }]); S.ev.doneA = 1; setPh("doneA"); }
+  else { const c = 1.000 * 10 / f.V * (S.res.cA || 1); f.label = `${c.toFixed(3)} mol dm⁻³ · ${f.cap} cm³`; S.res.cB = c; S.res.VB = f.V; log(["lInvert", { n: f.inv }]); setPh("doneB"); if (!S.done) { S.done = true; celebrate(); } }
+}
+
+// =====================================================================
+// ACTIONS
+// =====================================================================
+function needGog() { if (!S.goggles) { toast("tGog", "warn", 3800); return true; } return false; }
+function checkCalc() {
+  const v = [...$("panel").querySelectorAll("input[data-c]")].map(i => parseFloat(i.value)), c = S.calc; c.vals = [...$("panel").querySelectorAll("input[data-c]")].map(i => i.value);
+  const nOk = Math.abs(v[0] - .25) < .001, mOk = Math.abs(v[1] - 26.5) < .051; c.wrong = [!nOk, !mOk]; c.tries++;
+  if (nOk && mOk) { c.note = ["ok", "cOk"]; S.ev.calc = 1; log(["lCalc"]); setPh("zero"); return; }
+  if (!nOk) c.note = ["bad", Math.abs(v[0] - 250) < 1 ? "cBadN1000" : "cBadN"]; else c.note = ["bad", Math.abs(v[1] - 106) < .1 ? "cBadM106" : "cBadM", { n: "0.25" }];
+  renderPanel();
+}
+function setKnob(v) { if (S.bal.obj) { toast("tZeroObj", "warn"); return; } S.bal.knob = Math.max(-100, Math.min(100, v)); const el = $("zero"); if (el) el.value = S.bal.knob; }
+function placeWG() { if (curPh() !== "place") return toast("tZeroFirst", "warn"); S.bal.obj = true; setPh("weigh"); }
+function moveRider(i, n) {
+  const b = S.bal, p = curPh(); n = Math.max(0, Math.min(BEAMS[i].steps, n)); if (n === b.r[i]) return;
+  if (p === "solid") return toast("tRiderLock", "warn", 4200, { t: fmtG(b.wRec + 2650) });
+  if (!["weigh", "set"].includes(p)) return toast("tZeroFirst", "warn", 4200);
+  if (p === "weigh" && !b.coarseWarned) { const m = b.wg, want = [Math.floor(m / 10000), Math.floor(m % 10000 / 1000), Math.floor(m % 1000 / 100), m % 100]; for (let j = 0; j < i; j++) if (b.r[j] !== want[j]) { b.coarseWarned = true; toast("tCoarse", "warn", 4600); break; } }
+  b.r[i] = n; renderBeamCtl();
+}
+function recordW() {
+  const b = S.bal, v = parseFloat(($("wIn") || {}).value);
+  if (!isFinite(v)) { b.note = ["bad", "wType"]; return renderPanel(); }
+  if (!b.settled) { b.note = ["bad", "nSwing"]; return renderPanel(); }
+  if (diffH() !== 0) { b.note = ["bad", "nNotZero"]; return renderPanel(); }
+  if (Math.round(v * 100) !== riderSum()) { b.note = ["bad", "wBad"]; return renderPanel(); }
+  b.wRec = riderSum(); b.note = null; S.res.w = b.wRec; log(["lW", { w: fmtG(b.wRec) }]); setPh("set");
+}
+function ridersSet() {
+  const b = S.bal, tgt = b.wRec + 2650;
+  if (riderSum() !== tgt) { b.note = ["bad", "setBad", { r: fmtG(riderSum()), w: fmtG(b.wRec), t: fmtG(tgt) }]; return renderPanel(); }
+  b.note = null; S.res.t = tgt; S.ev.set = 1; log(["lSet", { w: fmtG(b.wRec), t: fmtG(tgt) }]); setPh("solid");
+}
+function spatula(dm) { if (needGog()) return; if (curPh() !== "solid") return toast("tSpatEarly", "warn", 4200); S.bal.solid = Math.max(0, S.bal.solid + dm); }
+function funnelIn() { S.fl.funnel = true; setPh("tip"); }
+function tipSolid() { if (!S.fl.funnel) return toast("tFunnelFirst"); S.fall = 0; renderPanel(); }
+function rinse(what) { if (S.rinseAnim) return; S.rinseAnim = { what, t: 0 }; renderPanel(); }
+function funnelOut() { if (!(S.rinsedWG && S.rinsedF)) return toast("tRinseFirst", "warn", 5200); S.fl.funnel = false; S.ev.transfer = 1; setPh("water"); }
+function startHold(name) {
+  const f = cf(), p = curPh();
+  if (name === "swirl") { if (f.V < f.cap * .3) return toast("tWaterFirst", "warn", 4200); }
+  if (name === "wash" && ["makeup", "makeupB"].includes(p) && f.V >= f.cap - 1.5) return toast("tSwitchDropper", "warn", 4200);
+  if (name === "release") { if (S.pip.vol < 9.97) return toast("tPipBelow", "warn", 4200); }
+  S.hold = name; document.querySelectorAll(`[data-hold="${name}"]`).forEach(b => b.classList.add("active"));
+}
+function stopHold() { S.hold = null; document.querySelectorAll("[data-hold]").forEach(b => b.classList.remove("active")); }
+function addDrop() { if (S.drop >= 0 || S.over) return; S.drop = 0; }
+const eyeLvl = () => Math.abs(S.eye) <= .06;
+const eyePos = () => eyeLvl() ? "eyePosLevel" : S.eye > 0 ? "eyePosAbove" : "eyePosBelow";
+function onMark() {
+  const f = cf(); if (S.drop >= 0) return;
+  if (!eyeLvl()) return toast("tEyeNot", "warn", 4600, { p: t(eyePos()) });
+  if (f.V < f.cap - .05) return toast("tNotYet", "warn", 3800);
+  f.streak = 1; f.stopper = true; toast("tMarkOk", "good");
+  if (S.task === "A") { S.ev.madeup = 1; log(["lMarkA", { v: f.V.toFixed(2) }]); setPh("invert"); } else { log(["lMarkB", { v: f.V.toFixed(2) }]); setPh("invertB"); }
+}
+function invert() { if (S.invT >= 0) return; S.invT = reduceMotion ? 1.05 : 0; }
+function restart() {
+  S.over = false; log(["lOver"]);
+  if (S.task === "A") { S.fl = newFlask(250); S.bal.solid = 0; S.wgHeap = true; S.wgCoat = 0; S.rinsedWG = false; S.rinsedF = false; S.bal.overWarn = false; S.ph = "solid"; }
+  else { S.flB = newFlask(100); S.pip.vol = 0; S.pip.warned = false; S.phB = "draw"; }
+  renderAll();
+}
+function checkD() {
+  const v = parseFloat(($("dIn") || {}).value), c = S.dcalc; c.val = ($("dIn") || {}).value || "";
+  if (Math.abs(v - 10) < .005) { c.wrong = false; c.note = ["ok", "dOk"]; S.res.V1 = 10; log(["lV1"]); setPh("rinseP"); return; }
+  c.wrong = true; c.note = ["bad", "dBad"]; renderPanel();
+}
+function rinseP() { if (needGog()) return; S.pip.rinseT = 0; renderPanel(); }
+function drawUp() { if (needGog()) return; if (!S.pip.rinsed) return toast("tRinsePFirst", "warn", 4600); S.pip.vol = 11.6; S.pip.warned = false; setPh("release"); }
+function pipOn() {
+  if (!eyeLvl()) return toast("tEyeNot", "warn", 4600, { p: t(eyePos()) });
+  if (S.pip.vol > 10.03) return toast("tPipNot", "warn", 3800);
+  if (S.pip.vol < 9.97) return toast("tPipBelow", "warn", 4200);
+  S.pip.vol = 10; log(["lPip"]); setPh("deliver");
+}
+function deliver() { S.pip.deliverT = 0; renderPanel(); }
+function goTask(tk) { if (tk === "B" && !S.ev.doneA) return toast("lockB", "warn", 4200); stopHold(); S.task = tk; S.eye = .7; renderAll(); }
+
+// =====================================================================
+// UI
+// =====================================================================
+let toastT;
+function toast(k, kind = "", ms = 3600, p) { const el = $("toast"); el.textContent = t(k, p); el.className = "toast show " + kind; clearTimeout(toastT); toastT = setTimeout(() => el.className = "toast " + kind, ms); }
+I18N.en.tFunnelFirst = "Put the funnel in first, so no solid misses the neck."; I18N.si.tFunnelFirst = "ඝනය බෙල්ලෙන් පිටතට නොවැටීමට පළමුව පුනීලය දමන්න."; I18N.ta.tFunnelFirst = "திண்மம் கழுத்துக்கு வெளியே விழாதிருக்க முதலில் புனலை வைக்க.";
+function log(...parts) { S.logs.unshift({ time: new Date().toTimeString().slice(0, 8), parts }); renderLog(); }
+function renderLog() { const box = $("log"); box.innerHTML = ""; S.logs.forEach(e => { const d = document.createElement("div"), s = document.createElement("span"), m = document.createElement("div"); s.textContent = e.time; m.textContent = e.parts.map(([k, p]) => t(k, p)).join(" "); d.append(s, m); box.append(d); }); }
+function promptKey() {
+  const p = curPh(), f = cf();
+  const map = { calc: "cQ", zero: "b0", place: "b1", weigh: "b2", set: "b3", solid: "b4", funnel: "f0", tip: "f1", rinse: "f2", out: "f3", water: "f4", makeup: "f6", invert: "f8", doneA: "doneA",
+    dcalc: "dQ", rinseP: "d1", draw: "d2", release: "d3", deliver: "d4", makeupB: "d5", invertB: "f8", doneB: "doneB" };
+  return [map[p], { t: S.bal.wRec !== null ? fmtG(S.bal.wRec + 2650) : "", n: f.inv, v: (S.res.VA || 250).toFixed(1), c: ((S.task === "A" ? S.res.cA : S.res.cB) || 1).toFixed(3) }];
+}
+function inp(id, attr, val, cls, ph) { return `<input type="number" ${id ? `id="${id}"` : ""} ${attr || ""} step="any" inputmode="decimal" value="${esc(val)}" class="${cls || ""}" placeholder="${ph || ""}">`; }
+function holdBtn(name, label) { return `<button class="btn primary hold" data-hold="${name}">${esc(t(label))}</button>`; }
+function eyeRow() { return `<div class="row"><label class="label" for="eye">${esc(t("eyeL"))}</label><span class="small">${esc(t("eyeBelow"))}</span><div class="slider"><input type="range" id="eye" min="-100" max="100" value="${Math.round(S.eye * 100)}"></div><span class="small">${esc(t("eyeAbove"))}</span></div>`; }
+function noteHTML(n) { return n ? `<div class="note ${n[0]}">${esc(t(n[1], n[2]))}</div>` : ""; }
+function beamCtlHTML() { return `<div class="beamctl" id="beamctl"></div>`; }
+function renderBeamCtl() {
+  const el = $("beamctl"); if (!el) return;
+  el.innerHTML = BEAMS.map((bm, i) => `<div><button class="btn sm" data-b="${i}" data-d="-1" aria-label="${esc(t("beamL", { b: bm.lab }) + ": " + t("left"))}">◀</button><span>${esc(t("beamL", { b: bm.lab }))}<br>${i === 3 ? (S.bal.r[3] / 100).toFixed(2) : S.bal.r[i] * [100, 10, 1][i]} g</span><button class="btn sm" data-b="${i}" data-d="1" aria-label="${esc(t("beamL", { b: bm.lab }) + ": " + t("right"))}">▶</button></div>`).join("");
+  el.querySelectorAll("button").forEach(btn => btn.onclick = () => moveRider(+btn.dataset.b, S.bal.r[+btn.dataset.b] + +btn.dataset.d));
+}
+function renderPanel() {
+  const p = curPh(), P = $("panel"), f = cf(); let h = `<p>${esc(t(...promptKey()))}</p>`;
+  if (S.over) { h = `<div class="note bad">${esc(t(S.task === "A" ? "overA" : "overB"))}</div><div class="row"><button class="btn primary" id="restartBtn">${esc(t("restart"))}</button></div>`; P.innerHTML = h; $("restartBtn").onclick = restart; return; }
+  const c = S.calc;
+  if (p === "calc") h += `<div class="fields"><label>${esc(t("fN"))}${inp("", 'data-c="0"', c.vals[0], c.wrong ? (c.wrong[0] ? "bad" : "ok") : "", "0.00")}</label><label>${esc(t("fM"))}${inp("", 'data-c="1"', c.vals[1], c.wrong ? (c.wrong[1] ? "bad" : "ok") : "", "0.0")}</label></div>
+    <div class="row"><button class="btn primary" id="calcBtn">${esc(t("check"))}</button>${c.tries >= 1 ? `<button class="btn" id="workBtn">${esc(t("working"))}</button>` : ""}</div>${noteHTML(c.note)}${c.work ? `<div class="note info calcline">${esc(t("cWork"))}</div>` : ""}`;
+  if (p === "zero") h += `<div class="row"><label class="label" for="zero">${esc(t("zeroL"))}</label><button class="btn sm" id="zM" aria-label="−">−</button><div class="slider"><input type="range" id="zero" min="-100" max="100" value="${S.bal.knob}"></div><button class="btn sm" id="zP" aria-label="+">+</button></div>`;
+  if (p === "place") h += `<div class="row"><button class="btn primary" id="placeBtn">${esc(t("place"))}</button></div>`;
+  if (p === "weigh") h += beamCtlHTML() + `<div class="row"><label class="label" for="wIn">${esc(t("fW"))}</label>${inp("wIn", "", "", "", "0.00")}<button class="btn primary" id="wBtn">${esc(t("recordW"))}</button></div>` + noteHTML(S.bal.note);
+  if (p === "set") h += beamCtlHTML() + `<div class="row"><button class="btn primary" id="setBtn">${esc(t("setDone"))}</button></div>` + noteHTML(S.bal.note);
+  if (p === "solid") h += `<div class="row"><button class="btn primary" data-sp="50">${esc(t("spat5"))}</button><button class="btn primary" data-sp="10">${esc(t("spat1"))}</button><button class="btn" data-sp="-10">${esc(t("spatBack"))}</button></div>`;
+  if (p === "funnel") h += `<div class="row"><button class="btn primary" id="fiBtn">${esc(t("funnelIn"))}</button></div>`;
+  if (p === "tip") h += `<div class="row"><button class="btn primary" id="tipBtn" ${S.fall >= 0 ? "disabled" : ""}>${esc(t("tip"))}</button></div>`;
+  if (p === "rinse") h += `<div class="row"><button class="btn primary" id="rwBtn" ${S.rinsedWG || S.rinseAnim ? "disabled" : ""}>${S.rinsedWG ? "✓ " : ""}${esc(t("rinseWG"))}</button><button class="btn primary" id="rfBtn" ${S.rinsedF || S.rinseAnim ? "disabled" : ""}>${S.rinsedF ? "✓ " : ""}${esc(t("rinseF"))}</button><button class="btn" id="foBtn">${esc(t("funnelOut"))}</button></div>`;
+  if (p === "out") h += `<div class="row"><button class="btn primary" id="foBtn">${esc(t("funnelOut"))}</button></div>`;
+  if (p === "water") h += `<div class="row">${holdBtn("wash", "wash")}${holdBtn("swirl", "swirl")}</div>`;
+  if (p === "makeup" || p === "makeupB") h += `<div class="row">${holdBtn("wash", "wash")}<button class="btn primary" id="dropBtn">${esc(t("drop"))}</button><button class="btn" id="markBtn">${esc(t("onMark"))}</button></div>` + eyeRow();
+  if (p === "invert" || p === "invertB") h += `<div class="row"><button class="btn primary" id="invBtn">${esc(t("invert"))}</button></div>`;
+  if (p === "doneA") h = `<div class="note ok">${esc(t(...promptKey()))}</div><div class="row"><button class="btn primary" id="goBBtn">${esc(t("goB"))}</button></div>`;
+  if (p === "doneB") h = `<div class="note ok">${esc(t(...promptKey()))}</div>`;
+  const d = S.dcalc;
+  if (p === "dcalc") h += `<div class="fields"><label>${esc(t("fV1"))}${inp("dIn", "", d.val, d.note ? (d.wrong ? "bad" : "ok") : "", "0.00")}</label></div><div class="row"><button class="btn primary" id="dBtn">${esc(t("check"))}</button></div>${noteHTML(d.note)}`;
+  if (p === "rinseP") h += `<div class="row"><button class="btn primary" id="rpBtn" ${S.pip.rinseT >= 0 ? "disabled" : ""}>${esc(t("rinseP"))}</button></div>`;
+  if (p === "draw") h += `<div class="row"><button class="btn primary" id="duBtn">${esc(t("drawUp"))}</button></div>`;
+  if (p === "release") h += `<div class="row">${holdBtn("release", "release")}<button class="btn" id="pmBtn">${esc(t("onMark"))}</button><button class="btn" id="duBtn">${esc(t("drawAgain"))}</button></div>` + eyeRow();
+  if (p === "deliver") h += `<div class="row"><button class="btn primary" id="dvBtn" ${S.pip.deliverT >= 0 ? "disabled" : ""}>${esc(t("deliver"))}</button></div>`;
+  P.innerHTML = h;
+  const on = (id, fn) => { const el = $(id); if (el) el.onclick = fn; };
+  on("calcBtn", checkCalc); on("workBtn", () => { S.calc.work = true; renderPanel(); });
+  P.querySelectorAll("input[data-c]").forEach(i => i.oninput = () => { S.calc.vals[+i.dataset.c] = i.value; });
+  if ($("zero")) $("zero").oninput = e => setKnob(+e.target.value);
+  on("zM", () => setKnob(S.bal.knob - 1)); on("zP", () => setKnob(S.bal.knob + 1));
+  on("placeBtn", placeWG); on("wBtn", recordW); on("setBtn", ridersSet);
+  P.querySelectorAll("[data-sp]").forEach(b => b.onclick = () => spatula(+b.dataset.sp));
+  on("fiBtn", funnelIn); on("tipBtn", tipSolid); on("rwBtn", () => rinse("wg")); on("rfBtn", () => rinse("f")); on("foBtn", funnelOut);
+  on("dropBtn", addDrop); on("markBtn", onMark); on("invBtn", invert); on("goBBtn", () => goTask("B"));
+  on("dBtn", checkD); on("rpBtn", rinseP); on("duBtn", drawUp); on("pmBtn", pipOn); on("dvBtn", deliver);
+  if ($("eye")) $("eye").oninput = e => { S.eye = +e.target.value / 100; };
+  ["wIn", "dIn"].forEach(id => { const el = $(id); if (el) el.onkeydown = e => { if (e.key === "Enter") (id === "wIn" ? recordW : checkD)(); }; });
+  P.querySelectorAll("input[data-c]").forEach(i => i.onkeydown = e => { if (e.key === "Enter") checkCalc(); });
+  P.querySelectorAll("[data-hold]").forEach(b => {
+    b.addEventListener("pointerdown", e => { e.preventDefault(); try { b.setPointerCapture(e.pointerId); } catch (_) {} startHold(b.dataset.hold); });
+    ["pointerup", "pointercancel", "lostpointercapture"].forEach(ev => b.addEventListener(ev, stopHold));
+    b.addEventListener("keydown", e => { if ((e.key === " " || e.key === "Enter") && !e.repeat) { e.preventDefault(); startHold(b.dataset.hold); } });
+    b.addEventListener("keyup", e => { if (e.key === " " || e.key === "Enter") stopHold(); });
+  });
+  renderBeamCtl();
+}
+function stepsDone() {
+  return [!!S.ev.calc, !!S.ev.set, idxA(S.ph) > idxA("solid"), !!S.ev.transfer, !!S.ev.madeup, S.ph === "doneA", S.phB === "doneB"];
+}
+function renderGuide() {
+  const d = stepsDone(), cur = d.indexOf(false), k = d.filter(Boolean).length;
+  $("steps").innerHTML = t("steps").map((s, i) => `<li class="${d[i] ? "done" : i === cur ? "now" : ""}"><span class="tick">${d[i] ? "✓" : i + 1}</span><span>${esc(s)}</span></li>`).join("");
+  $("ringTxt").textContent = `${k}/7`; $("ringArc").style.strokeDashoffset = String(113.1 * (1 - k / 7));
+}
+function renderLive() {
+  const v = view(), c = [];
+  if (v === "balance") { const b = S.bal, d = diffH(), s = !b.settled ? "ptrSwing" : d === 0 ? "ptrZero" : d > 0 ? "ptrHigh" : "ptrLow"; c.push(`<span class="chip ${s === "ptrZero" ? "ok" : ""}">${esc(t("chipPtr", { s: t(s) }))}</span>`);
+    if (["solid"].includes(S.ph)) c.push(`<span class="chip">${esc(t("chipRiders", { t: fmtG(riderSum()) }))}</span>`); }
+  else if (v === "flask") { c.push(`<span class="chip">${esc(t("chipFlask", { v: cf().cap }))}</span>`); if (["makeup", "makeupB"].includes(curPh())) c.push(`<span class="chip ${eyeLvl() ? "ok" : "bad"}">${esc(t("eyeIs", { p: t(eyePos()) }))}</span>`); }
+  else { c.push(`<span class="chip">${esc(t("chipPip"))}</span>`); if (curPh() === "release") c.push(`<span class="chip ${eyeLvl() ? "ok" : "bad"}">${esc(t("eyeIs", { p: t(eyePos()) }))}</span>`); }
+  const h = c.join(""); if ($("chips").innerHTML !== h) $("chips").innerHTML = h;
+}
+function renderTables() {
+  const r = S.res, row = (k, v) => `<tr><td>${esc(t(k))}</td><td class="num">${v}</td></tr>`;
+  const a = [];
+  if (r.w !== undefined) a.push(row("rW", fmtG(r.w) + " g")); if (r.t !== undefined) a.push(row("rT", fmtG(r.t) + " g"));
+  if (r.m !== undefined) { a.push(row("rM", fmtG(r.m) + " g")); a.push(row("rN", (r.m / 100 / 106).toFixed(4) + " mol")); }
+  if (r.VA !== undefined) { a.push(row("rV", r.VA.toFixed(2) + " cm³")); a.push(row("rC", r.cA.toFixed(3) + " mol dm⁻³")); }
+  $("tbA").innerHTML = a.length ? a.join("") : `<tr><td class="muted">${esc(t("none"))}</td></tr>`;
+  const bb = [];
+  if (r.V1 !== undefined) bb.push(row("rV1", "10.00 cm³")); if (r.VB !== undefined) { bb.push(row("rV", r.VB.toFixed(2) + " cm³")); bb.push(row("rC", r.cB.toFixed(3) + " mol dm⁻³")); }
+  $("tbB").innerHTML = bb.length ? bb.join("") : `<tr><td class="muted">${esc(t("none"))}</td></tr>`;
+}
+function render() {
+  document.querySelectorAll("#taskSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.t === S.task)));
+  $("gogBtn").textContent = t(S.goggles ? "gogOn" : "gog"); $("gogBtn").setAttribute("aria-pressed", String(S.goggles));
+  $("prompt").textContent = t(...promptKey());
+  renderPanel(); renderGuide(); renderTables(); renderLive(); renderCards();
+}
+function renderAll() { render(); }
+function celebrate() {
+  toast("tDone", "party", 5200); $("quizTab").classList.add("ping");
+  if (!reduceMotion) { const cols = ["#4BA3E3", "#d9a441", "#9fe6b8", "#b08cec"]; for (let i = 0; i < 90; i++) S.confetti.push({ x: cw / 2 + (Math.random() - .5) * 200, y: ch * .3, vx: (Math.random() - .5) * 340, vy: -150 - Math.random() * 220, rot: Math.random() * 6, vr: (Math.random() - .5) * 10, c: cols[i % cols.length] }); }
+}
+// colour cards
+function svgCard(kind) {
+  if (kind === "coat") return `<svg viewBox="0 0 90 60" aria-hidden="true"><path d="M8 26 Q45 46 82 26 Q45 38 8 26Z" fill="#d6eaf2" stroke="#4f6b78"/>${Array.from({ length: 14 }, (_, i) => `<circle cx="${18 + i * 4.2}" cy="${31 + Math.abs(i - 6.5) * -.5}" r="1.6" fill="#ffffff" stroke="#8a8a80" stroke-width=".5"/>`).join("")}</svg>`;
+  if (kind === "clean") return `<svg viewBox="0 0 90 60" aria-hidden="true"><path d="M8 26 Q45 46 82 26 Q45 38 8 26Z" fill="#d6eaf2" stroke="#4f6b78"/></svg>`;
+  const hatchDef = `<defs><pattern id="hp${kind}" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="rgba(60,90,110,.3)"/></pattern></defs>`;
+  const flask = `<path d="M40 4 L40 20 Q18 26 18 40 Q18 56 45 56 Q72 56 72 40 Q72 26 50 20 L50 4" fill="none" stroke="#4f6b78" stroke-width="1.5"/>`;
+  const liq = `<path d="M20 34 L70 34 Q72 40 72 42 Q72 56 45 56 Q18 56 18 42 Q18 38 20 34Z" fill="#e1f0f7"/><path d="M20 34 L70 34 Q72 40 72 42 Q72 56 45 56 Q18 56 18 42 Q18 38 20 34Z" fill="url(#hp${kind})"/>`;
+  if (kind === "solid") return `<svg viewBox="0 0 90 60" aria-hidden="true">${hatchDef}${liq}${Array.from({ length: 16 }, (_, i) => `<circle cx="${30 + (i % 8) * 4.4}" cy="${52 - Math.floor(i / 8) * 3}" r="1.8" fill="#ffffff" stroke="#8a8a80" stroke-width=".5"/>`).join("")}${flask}</svg>`;
+  if (kind === "clear") return `<svg viewBox="0 0 90 60" aria-hidden="true">${hatchDef}${liq}${flask}</svg>`;
+  if (kind === "streak") return `<svg viewBox="0 0 90 60" aria-hidden="true">${hatchDef}${liq}<path d="M30 54 C40 46 28 42 38 36 M46 55 C56 47 44 43 54 36 M60 52 C68 46 58 42 64 37" stroke="#78a0be" stroke-width="2" fill="none"/>${flask}</svg>`;
+  return "";
+}
+const CARDS = [{ k: ["k1b", "coat", "k1r", "k1a", "clean"], done: () => S.rinsedWG && S.rinsedF }, { k: ["k2b", "solid", "k2r", "k2a", "clear"], via: "k2v", done: () => !!S.ev.dissolved }, { k: ["k3b", "streak", "k3r", "k3a", "clear"], done: () => idxA(S.ph) >= idxA("doneA") }];
+function renderCards() {
+  $("cards").innerHTML = CARDS.map(c => { const ok = c.done(); const [b, bs, r, a, as] = c.k;
+    return `<div class="cc"><div class="ttl"><em class="${ok ? "ok" : ""}">${ok ? "✓ " + esc(t("seen")) : esc(t("notYet"))}</em></div><div class="flow"><div class="st"><small>${esc(t("before"))}</small>${svgCard(bs)}<span>${esc(t(b))}</span></div><div class="arrow"><b>→</b><span>${esc(t(r))}</span></div><div class="st"><small>${esc(t("after"))}</small>${svgCard(as)}<span>${esc(t(a))}</span></div></div>${c.via ? `<div class="via">${esc(t(c.via))}</div>` : ""}</div>`; }).join("");
+}
+const mini = $("mini"), mctx = mini.getContext("2d"); let playing = false;
+function drawMini() {
+  const w = mini.width, h = mini.height, hs = S.swirlHist, ok = hs.length > 5; mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.fillStyle = "#ffffff"; mctx.fillRect(0, 0, w, h);
+  if (!hatch) return;
+  const idx = ok ? Math.min(hs.length - 1, Math.round(+$("replay").value / 1000 * (hs.length - 1))) : 0, und = ok ? hs[idx] : 1;
+  mctx.save(); mctx.translate(w / 2, h - 16); mctx.scale(.9, .9);
+  const f = { cap: 250, V: 120, und, solidIn: und > 0, streak: 0, stopper: true, label: null };
+  const oc = ctx; drawFlaskMini(f);
+  mctx.restore();
+  $("rname").textContent = ok ? t("rAt", { p: Math.round(und * 100) }) : t("rNone");
+}
+function drawFlaskMini(f) { const save = { V: f.V }; drawFlask(mctx, f, 0, 0, 1, 0, { swirling: f.und > 0 && f.und < 1, t: 1 }); }
+function renderReplayCtl() { const ok = S.swirlHist.length > 5; $("replay").disabled = !ok; $("playBtn").disabled = !ok; $("playBtn").textContent = t(playing ? "pause" : "play"); }
+// quiz
+function readScores() { try { return JSON.parse(localStorage.getItem("svl-scores") || "{}") || {}; } catch (e) { return {}; } }
+function saveScore(pct) { try { const s = readScores(); if (!(s[SIM_ID] >= pct)) { s[SIM_ID] = pct; localStorage.setItem("svl-scores", JSON.stringify(s)); } } catch (e) {} }
+function renderQuiz() {
+  const Q = t("quiz"), L = ["A", "B", "C", "D"];
+  $("quiz").innerHTML = Q.map((q, i) => `<div class="q" id="q${i}"><p>${i + 1}. ${esc(q.q)}</p>${q.o.map((o, j) => `<button data-q="${i}" data-o="${j}">${L[j]}) ${esc(o)}</button>`).join("")}<div class="exp"></div></div>`).join("");
+  Object.entries(S.answered).forEach(([i, j]) => markAnswer(+i, j)); score();
+}
+function markAnswer(i, j) {
+  const ok = j === QUIZ_ANS[i];
+  $("q" + i).querySelectorAll("button").forEach((x, k) => { x.disabled = true; if (k === QUIZ_ANS[i]) x.classList.add("right"); else if (k === j) x.classList.add("wrong"); });
+  const d = document.createElement("div"); d.className = "note " + (ok ? "ok" : "bad"); d.textContent = t(ok ? "correct" : "notQuite") + t("quiz")[i].e;
+  const ex = $("q" + i).querySelector(".exp"); ex.innerHTML = ""; ex.append(d);
+}
+$("quiz").onclick = e => { const b = e.target.closest("button[data-q]"); if (!b) return; const i = +b.dataset.q, j = +b.dataset.o; if (i in S.answered) return; S.answered[i] = j; markAnswer(i, j); score(); };
+function score() {
+  const n = Object.keys(S.answered).length, s = Object.entries(S.answered).filter(([i, j]) => j === QUIZ_ANS[+i]).length, N = QUIZ_ANS.length;
+  if (n === N) saveScore(Math.round(s / N * 100));
+  const best = readScores()[SIM_ID];
+  $("score").textContent = `${s} / ${N}` + (n < N ? " · " + t("scoreLeft", { n: N - n }) : "") + (best !== undefined ? " · " + t("best", { p: best }) : "");
+}
+$("retryBtn").onclick = () => { S.answered = {}; renderQuiz(); };
+function applyStatic() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll("#langSeg button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === LANG)));
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-aria]").forEach(el => el.setAttribute("aria-label", t(el.dataset.i18nAria)));
+  cv.setAttribute("aria-label", t("canvasAria"));
+  $("appList").innerHTML = t("app").map(a => `<span>${esc(a)}</span>`).join("");
+  $("safeList").innerHTML = t("safe").map(a => `<li>${esc(a)}</li>`).join("");
+  try { const st = JSON.parse(localStorage.getItem("svl-student") || "null"); if (st && st.name) { $("student").hidden = false; $("student").textContent = t("student", { name: st.name, cls: st.cls ? " · " + st.cls : "" }); } } catch (e) {}
+}
+function fullRender() { applyStatic(); render(); renderLog(); renderQuiz(); renderReplayCtl(); }
+function applyLang(l) { LANG = l; try { localStorage.setItem("svl-lang", l); } catch (e) {} fullRender(); }
+document.querySelectorAll("#langSeg button").forEach(b => b.onclick = () => applyLang(b.dataset.lang));
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.setAttribute("aria-selected", String(x === b)));
+  ["guide", "obs", "colours", "quiz"].forEach(id => $("pane-" + id).hidden = id !== b.dataset.tab);
+  if (b.dataset.tab === "quiz") b.classList.remove("ping");
+  if (b.dataset.tab === "colours") { renderReplayCtl(); drawMini(); }
+});
+document.querySelectorAll("#taskSeg button").forEach(b => b.onclick = () => goTask(b.dataset.t));
+$("gogBtn").onclick = () => { S.goggles = !S.goggles; render(); };
+$("resetBtn").onclick = () => { const ans = S.answered; S = freshState(); S.answered = ans; $("quizTab").classList.remove("ping"); fullRender(); };
+$("replay").oninput = () => { playing = false; renderReplayCtl(); drawMini(); };
+$("playBtn").onclick = () => { playing = !playing; if (playing && +$("replay").value >= 1000) $("replay").value = 0; renderReplayCtl(); };
+// canvas: drag riders on the balance, drag the eye in the zoom inset
+function toLogical(e) { const r = cv.getBoundingClientRect(); return { x: (e.clientX - r.left - ox) / sc, y: (e.clientY - r.top - oy) / sc }; }
+function toBeamLocal(p) { const th = S.bal.th, dx = p.x - PIV.x, dy = p.y - PIV.y, c = Math.cos(th), s = Math.sin(th); return { x: dx * c - dy * s, y: dx * s + dy * c }; }
+let eyeDrag = null;
+cv.addEventListener("pointerdown", e => {
+  const p = toLogical(e), v = view();
+  if (v === "balance") { const q = toBeamLocal(p); for (let i = 0; i < 4; i++) if (Math.abs(q.y - BEAM_Y[i]) < 18 && Math.abs(q.x - riderX(i, S.bal.r[i])) < 18) { rdrag = { i }; cv.setPointerCapture(e.pointerId); return; } }
+  else if (p.x > 600 && p.y < 360) { const ix = v === "pipette" ? 600 : 680, h = 300; eyeDrag = { cy: 40 + h / 2, h }; cv.setPointerCapture(e.pointerId); S.eye = Math.max(-1, Math.min(1, (eyeDrag.cy - p.y) / (h * .38))); const el = $("eye"); if (el) el.value = Math.round(S.eye * 100); }
+});
+cv.addEventListener("pointermove", e => { const p = toLogical(e);
+  if (rdrag) { const q = toBeamLocal(p), n = Math.round((q.x - BX0 - 30) / (BX1 - BX0 - 60) * BEAMS[rdrag.i].steps); moveRider(rdrag.i, n); }
+  if (eyeDrag) { S.eye = Math.max(-1, Math.min(1, (eyeDrag.cy - p.y) / (eyeDrag.h * .38))); if (Math.abs(S.eye) < .05) S.eye = 0; const el = $("eye"); if (el) el.value = Math.round(S.eye * 100); } });
+["pointerup", "pointercancel"].forEach(ev => cv.addEventListener(ev, () => { rdrag = null; eyeDrag = null; }));
+
+readTokens(); resize(); S = freshState(); fullRender();
+requestAnimationFrame(frame);
+})();
+</script>
+
+</body>
+</html>
