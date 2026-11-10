@@ -255,6 +255,85 @@ td.num{font-family:var(--f-mono);white-space:nowrap;text-align:right}
 </div>
 
 <script>
+// ---- NL: natural liquids (Beer–Lambert colour, absorbance mixing, depth shading, mixing plumes) + digital readouts ----
+// Shared by every bench. All drawing functions take the canvas context explicitly.
+var NL = window.NL || (window.NL = (() => {
+  const BG = [251, 251, 248]; // white tile / white card behind the vessel
+  const parse = c => { if (Array.isArray(c)) return c.slice(0, 3); if (c[0] === "#") return [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16)); const m = String(c).match(/[\d.]+/g) || [255, 255, 255]; return [+m[0], +m[1], +m[2]]; };
+  // absorbance per channel of a colour seen through the reference depth (k = 1) against the white background
+  const A = c => parse(c).map((v, i) => -Math.log10(Math.max(2, Math.min(BG[i], v)) / BG[i]));
+  const fromA = (a, k = 1) => `rgb(${a.map((x, i) => Math.round(BG[i] * Math.pow(10, -x * k))).join(",")})`;
+  const depth = (c, k) => fromA(A(c), k);
+  // mixing two solutions (or partial conversion of one coloured species into another): absorbances add, like real dyes
+  const mixA = (c1, c2, f) => { const a = A(c1), b = A(c2); f = Math.max(0, Math.min(1, f)); return fromA(a.map((v, i) => v * (1 - f) + b[i] * f)); };
+  // sum of several coloured species with weights (e.g. [["#7A4A12", 0.3], ["#14143C", 0.7]])
+  const sumA = parts => { const s = [0, 0, 0]; parts.forEach(([c, w]) => A(c).forEach((v, i) => s[i] += v * w)); return fromA(s); };
+
+  function liquid(ctx, path, x0, x1, lvl, base, col, opt = {}) {
+    const a = A(col), h = Math.max(1, base - lvl), w = x1 - x0;
+    ctx.save(); path(); ctx.closePath(); ctx.clip(); ctx.globalAlpha = opt.alpha ?? 1;
+    // deeper liquid looks darker (Beer–Lambert): lighter just under the surface, deepest at the bottom
+    const g = ctx.createLinearGradient(0, lvl, 0, base); g.addColorStop(0, fromA(a, opt.kTop ?? .78)); g.addColorStop(.5, fromA(a, 1)); g.addColorStop(1, fromA(a, opt.kBot ?? 1.5));
+    ctx.fillStyle = g; ctx.fillRect(x0, lvl, w, h + 3);
+    // curved glass: darker towards the walls, a soft light band on the left
+    const s = ctx.createLinearGradient(x0, 0, x1, 0);
+    s.addColorStop(0, "rgba(0,0,0,.18)"); s.addColorStop(.16, "rgba(255,255,255,.12)"); s.addColorStop(.3, "rgba(255,255,255,0)"); s.addColorStop(.72, "rgba(0,0,0,0)"); s.addColorStop(1, "rgba(0,0,0,.16)");
+    ctx.fillStyle = s; ctx.fillRect(x0, lvl, w, h + 3);
+    if (opt.hatch) { ctx.fillStyle = opt.hatch; ctx.fillRect(x0, lvl, w, h + 3); }
+    if (opt.surface !== false) { // liquid surface seen slightly from above, tilting when swirled
+      const cx = opt.cx ?? (x0 + x1) / 2, rx = opt.rx ?? w / 2, ry = Math.min(3.6, Math.max(1.3, rx * .09));
+      ctx.fillStyle = fromA(a, .5); ctx.beginPath(); ctx.ellipse(cx, lvl, rx, ry, opt.tilt || 0, 0, 7); ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,.65)"; ctx.lineWidth = .8; ctx.stroke(); }
+    ctx.restore();
+  }
+
+  // a drop of reagent spreading and reacting: radial clouds that grow, sink, swirl and fade
+  class Plumes {
+    constructor() { this.p = []; }
+    spawn(x, y, col, s = 1, r = 4) { this.p.push({ x, y, col: parse(col), s: Math.min(1.4, s), r, age: 0, ph: Math.random() * 6 }); if (this.p.length > 60) this.p.shift(); }
+    step(dt, k = 1, swirl = false, t = 0, floorY = 1e9) { for (let i = this.p.length - 1; i >= 0; i--) { const p = this.p[i]; p.age += dt;
+      p.r += (swirl ? 46 : 12) * dt / (1 + p.age); p.y = Math.min(floorY - p.r * .4, p.y + (swirl ? 30 : 16) * dt / (1 + p.age * .6));
+      if (swirl) p.x += Math.sin(t * 5.2 + p.ph) * 34 * dt; p.s *= Math.exp(-k * dt); if (p.s < .02) this.p.splice(i, 1); } }
+    draw(ctx, path, dx = 0, topY = -1e9) { if (!this.p.length) return; ctx.save(); path(); ctx.closePath(); ctx.clip(); ctx.beginPath(); ctx.rect(-1e4, topY, 2e4, 2e4); ctx.clip();
+      this.p.forEach(p => { const a = Math.min(.92, p.s * .9), c = p.col.join(","), g = ctx.createRadialGradient(p.x + dx, p.y, 0, p.x + dx, p.y, p.r);
+        g.addColorStop(0, `rgba(${c},${a})`); g.addColorStop(.6, `rgba(${c},${a * .45})`); g.addColorStop(1, `rgba(${c},0)`); ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(p.x + dx, p.y, p.r * 1.25, p.r, 0, 0, 7); ctx.fill(); });
+      ctx.restore(); }
+    clear() { this.p = []; }
+    get active() { return this.p.length > 0; }
+  }
+
+  // ---- digital readout toggle (remembered across practicals) ----
+  let dig = false; try { dig = localStorage.getItem("svl-digital") === "1"; } catch (e) {}
+  const DL = { en: "Digital readout", si: "ඩිජිටල් කියවීම", ta: "இலக்க வாசிப்பு" };
+  function mountDigital(onChange, where) {
+    if (document.getElementById("nlDig")) return;
+    if (!document.getElementById("nlDigCss")) { const st = document.createElement("style"); st.id = "nlDigCss";
+      st.textContent = ".nl-dig{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:1.5px solid var(--line,#d9d3c5);border-radius:999px;font-weight:500;cursor:pointer;user-select:none;background:var(--surface,#fff);color:var(--ink,#162127)}.nl-dig input{width:18px;height:18px;accent-color:var(--accent,#6D4AD6);margin:0}.nl-dig:focus-within{outline:3px solid #FFC857;outline-offset:2px}.nl-dig.fixed{position:absolute;right:12px;bottom:12px;z-index:5;min-height:38px;font-size:13px}";
+      document.head.appendChild(st); }
+    const lab = document.createElement("label"); lab.className = "nl-dig"; lab.innerHTML = '<input type="checkbox" id="nlDig"><span></span>';
+    const bar = where ? document.querySelector(where) : document.querySelector(".modebar");
+    if (bar) { const sp = bar.querySelector('span[style*="flex:1"]'); bar.insertBefore(lab, sp ? sp.nextSibling : null); }
+    else { const vp = document.getElementById("viewport") || document.body; lab.classList.add("fixed"); vp.appendChild(lab); }
+    const cb = lab.querySelector("input"); cb.checked = dig;
+    const setL = () => { const l = document.documentElement.lang; lab.querySelector("span").textContent = DL[l] || DL.en; };
+    setL(); new MutationObserver(setL).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+    cb.onchange = () => { dig = cb.checked; try { localStorage.setItem("svl-digital", dig ? "1" : "0"); } catch (e) {} onChange && onChange(dig); };
+  }
+  // small LCD panel: x = centre, y = top
+  function lcd(ctx, x, y, txt, opt = {}) {
+    const size = opt.size || 14; ctx.save(); ctx.font = `600 ${size}px 'IBM Plex Mono', ui-monospace, monospace`;
+    const tw = Math.max(ctx.measureText(txt).width, opt.minW || 0), w = tw + 20, h = size + 14, bx = x - w / 2;
+    ctx.shadowColor = "rgba(0,0,0,.3)"; ctx.shadowBlur = 6; ctx.shadowOffsetY = 2; ctx.fillStyle = "#1f2a33"; ctx.beginPath(); ctx.roundRect(bx, y, w, h, 6); ctx.fill(); ctx.shadowColor = "transparent";
+    const g = ctx.createLinearGradient(0, y + 3, 0, y + h - 3); g.addColorStop(0, "#d3e4cc"); g.addColorStop(1, "#b2cba9"); ctx.fillStyle = g; ctx.beginPath(); ctx.roundRect(bx + 4, y + 3, w - 8, h - 6, 3); ctx.fill();
+    ctx.fillStyle = "rgba(18,38,27,.12)"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(txt.replace(/[0-9]/g, "8"), x, y + h / 2 + 1);
+    ctx.fillStyle = "#12261b"; ctx.fillText(txt, x, y + h / 2 + 1);
+    if (opt.cap) { ctx.font = "600 9px 'IBM Plex Sans','Noto Sans Sinhala','Noto Sans Tamil',sans-serif"; ctx.fillStyle = opt.capCol || "#1c2a31"; ctx.textBaseline = "alphabetic"; ctx.fillText(opt.cap, x, y - 4); }
+    ctx.restore(); return { w, h };
+  }
+  return { parse, A, fromA, depth, mixA, sumA, liquid, Plumes, mountDigital, lcd, get digital() { return dig; } };
+})());
+</script>
+<script>
 (() => {
 "use strict";
 const $ = id => document.getElementById(id);
@@ -593,7 +672,7 @@ function drawLevelInset(g) {
   ctx.strokeStyle = "#7a9aa8"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx0, y); ctx.lineTo(cx0, y + h); ctx.moveTo(cx1, y); ctx.lineTo(cx1, y + h); ctx.stroke();
   const eq = Math.abs(g.s) < 2.5; ctx.strokeStyle = eq ? "#2c7a4d" : "#c0392b"; ctx.setLineDash([5, 4]); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x, toY(SURF)); ctx.lineTo(x + w, toY(SURF)); ctx.stroke(); ctx.setLineDash([]);
   ctx.fillStyle = "#1c2a31"; ctx.font = FONT(600, 10); ctx.textAlign = "right"; ctx.fillText(t("cvOut"), x + w - 4, toY(SURF) - 8); ctx.textAlign = "left"; ctx.fillText(t("cvIn"), cx1 + 4, cy + 12);
-  ctx.restore(); ctx.fillStyle = T.ink; ctx.font = FONT(600, 11); ctx.textAlign = "center"; ctx.fillText(t("cvZoom"), x + w / 2, y + h + 14);
+  ctx.restore(); ctx.fillStyle = T.ink; ctx.font = FONT(600, 11); ctx.textAlign = "center"; ctx.fillText(t("cvZoom"), x + w / 2, y + h + 14); if (NL.digital) NL.lcd(ctx, x + w / 2, y + h + 22, g.V.toFixed(2) + " cm³", { size: 14 });
 }
 
 // =====================================================================
@@ -795,7 +874,7 @@ cv.addEventListener("pointermove", e => { if (!tDrag) return; const p = toLogica
 ["pointerup", "pointercancel"].forEach(ev => cv.addEventListener(ev, () => { tDrag = null; }));
 cv.addEventListener("keydown", e => { if (S.ph !== "level") return; if (e.key === "ArrowUp") { e.preventDefault(); setY(S.yTop - 1); } if (e.key === "ArrowDown") { e.preventDefault(); setY(S.yTop + 1); } });
 
-readTokens(); resize(); S = freshState(); fullRender();
+readTokens(); resize(); S = freshState(); fullRender(); NL.mountDigital(() => {});
 requestAnimationFrame(frame);
 })();
 </script>

@@ -496,6 +496,84 @@ function wrap(txt, maxW, sz, w = 600) { ctx.font = FONT(w, sz); const words = St
   words.forEach(wd => { const tst = cur ? cur + " " + wd : wd; if (ctx.measureText(tst).width > maxW && cur) { lines.push(cur); cur = wd; } else cur = tst; }); if (cur) lines.push(cur); return lines; }
 function pill(txt, x, y, al = "center", sz = 11, bg = "#ffffff", fg = "#1c2a31") { ctx.font = FONT(700, sz); const w = ctx.measureText(txt).width + 14, x0 = al === "center" ? x - w / 2 : al === "right" ? x - w : x; ctx.fillStyle = bg; rr(ctx, x0, y - sz - 3, w, sz + 9, (sz + 9) / 2); ctx.fill(); label(txt, x0 + w / 2, y + 1, "center", fg, sz, 700); }
 
+// ---- NL: natural liquids (Beer–Lambert colour, absorbance mixing, depth shading, mixing plumes) + digital readouts ----
+// Shared by every bench. All drawing functions take the canvas context explicitly.
+var NL = window.NL || (window.NL = (() => {
+  const BG = [251, 251, 248]; // white tile / white card behind the vessel
+  const parse = c => { if (Array.isArray(c)) return c.slice(0, 3); if (c[0] === "#") return [1, 3, 5].map(i => parseInt(c.slice(i, i + 2), 16)); const m = String(c).match(/[\d.]+/g) || [255, 255, 255]; return [+m[0], +m[1], +m[2]]; };
+  // absorbance per channel of a colour seen through the reference depth (k = 1) against the white background
+  const A = c => parse(c).map((v, i) => -Math.log10(Math.max(2, Math.min(BG[i], v)) / BG[i]));
+  const fromA = (a, k = 1) => `rgb(${a.map((x, i) => Math.round(BG[i] * Math.pow(10, -x * k))).join(",")})`;
+  const depth = (c, k) => fromA(A(c), k);
+  // mixing two solutions (or partial conversion of one coloured species into another): absorbances add, like real dyes
+  const mixA = (c1, c2, f) => { const a = A(c1), b = A(c2); f = Math.max(0, Math.min(1, f)); return fromA(a.map((v, i) => v * (1 - f) + b[i] * f)); };
+  // sum of several coloured species with weights (e.g. [["#7A4A12", 0.3], ["#14143C", 0.7]])
+  const sumA = parts => { const s = [0, 0, 0]; parts.forEach(([c, w]) => A(c).forEach((v, i) => s[i] += v * w)); return fromA(s); };
+
+  function liquid(ctx, path, x0, x1, lvl, base, col, opt = {}) {
+    const a = A(col), h = Math.max(1, base - lvl), w = x1 - x0;
+    ctx.save(); path(); ctx.closePath(); ctx.clip(); ctx.globalAlpha = opt.alpha ?? 1;
+    // deeper liquid looks darker (Beer–Lambert): lighter just under the surface, deepest at the bottom
+    const g = ctx.createLinearGradient(0, lvl, 0, base); g.addColorStop(0, fromA(a, opt.kTop ?? .78)); g.addColorStop(.5, fromA(a, 1)); g.addColorStop(1, fromA(a, opt.kBot ?? 1.5));
+    ctx.fillStyle = g; ctx.fillRect(x0, lvl, w, h + 3);
+    // curved glass: darker towards the walls, a soft light band on the left
+    const s = ctx.createLinearGradient(x0, 0, x1, 0);
+    s.addColorStop(0, "rgba(0,0,0,.18)"); s.addColorStop(.16, "rgba(255,255,255,.12)"); s.addColorStop(.3, "rgba(255,255,255,0)"); s.addColorStop(.72, "rgba(0,0,0,0)"); s.addColorStop(1, "rgba(0,0,0,.16)");
+    ctx.fillStyle = s; ctx.fillRect(x0, lvl, w, h + 3);
+    if (opt.hatch) { ctx.fillStyle = opt.hatch; ctx.fillRect(x0, lvl, w, h + 3); }
+    if (opt.surface !== false) { // liquid surface seen slightly from above, tilting when swirled
+      const cx = opt.cx ?? (x0 + x1) / 2, rx = opt.rx ?? w / 2, ry = Math.min(3.6, Math.max(1.3, rx * .09));
+      ctx.fillStyle = fromA(a, .5); ctx.beginPath(); ctx.ellipse(cx, lvl, rx, ry, opt.tilt || 0, 0, 7); ctx.fill();
+      ctx.strokeStyle = "rgba(255,255,255,.65)"; ctx.lineWidth = .8; ctx.stroke(); }
+    ctx.restore();
+  }
+
+  // a drop of reagent spreading and reacting: radial clouds that grow, sink, swirl and fade
+  class Plumes {
+    constructor() { this.p = []; }
+    spawn(x, y, col, s = 1, r = 4) { this.p.push({ x, y, col: parse(col), s: Math.min(1.4, s), r, age: 0, ph: Math.random() * 6 }); if (this.p.length > 60) this.p.shift(); }
+    step(dt, k = 1, swirl = false, t = 0, floorY = 1e9) { for (let i = this.p.length - 1; i >= 0; i--) { const p = this.p[i]; p.age += dt;
+      p.r += (swirl ? 46 : 12) * dt / (1 + p.age); p.y = Math.min(floorY - p.r * .4, p.y + (swirl ? 30 : 16) * dt / (1 + p.age * .6));
+      if (swirl) p.x += Math.sin(t * 5.2 + p.ph) * 34 * dt; p.s *= Math.exp(-k * dt); if (p.s < .02) this.p.splice(i, 1); } }
+    draw(ctx, path, dx = 0, topY = -1e9) { if (!this.p.length) return; ctx.save(); path(); ctx.closePath(); ctx.clip(); ctx.beginPath(); ctx.rect(-1e4, topY, 2e4, 2e4); ctx.clip();
+      this.p.forEach(p => { const a = Math.min(.92, p.s * .9), c = p.col.join(","), g = ctx.createRadialGradient(p.x + dx, p.y, 0, p.x + dx, p.y, p.r);
+        g.addColorStop(0, `rgba(${c},${a})`); g.addColorStop(.6, `rgba(${c},${a * .45})`); g.addColorStop(1, `rgba(${c},0)`); ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(p.x + dx, p.y, p.r * 1.25, p.r, 0, 0, 7); ctx.fill(); });
+      ctx.restore(); }
+    clear() { this.p = []; }
+    get active() { return this.p.length > 0; }
+  }
+
+  // ---- digital readout toggle (remembered across practicals) ----
+  let dig = false; try { dig = localStorage.getItem("svl-digital") === "1"; } catch (e) {}
+  const DL = { en: "Digital readout", si: "ඩිජිටල් කියවීම", ta: "இலக்க வாசிப்பு" };
+  function mountDigital(onChange, where) {
+    if (document.getElementById("nlDig")) return;
+    if (!document.getElementById("nlDigCss")) { const st = document.createElement("style"); st.id = "nlDigCss";
+      st.textContent = ".nl-dig{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 14px;border:1.5px solid var(--line,#d9d3c5);border-radius:999px;font-weight:500;cursor:pointer;user-select:none;background:var(--surface,#fff);color:var(--ink,#162127)}.nl-dig input{width:18px;height:18px;accent-color:var(--accent,#6D4AD6);margin:0}.nl-dig:focus-within{outline:3px solid #FFC857;outline-offset:2px}.nl-dig.fixed{position:absolute;right:12px;bottom:12px;z-index:5;min-height:38px;font-size:13px}";
+      document.head.appendChild(st); }
+    const lab = document.createElement("label"); lab.className = "nl-dig"; lab.innerHTML = '<input type="checkbox" id="nlDig"><span></span>';
+    const bar = where ? document.querySelector(where) : document.querySelector(".modebar");
+    if (bar) { const sp = bar.querySelector('span[style*="flex:1"]'); bar.insertBefore(lab, sp ? sp.nextSibling : null); }
+    else { const vp = document.getElementById("viewport") || document.body; lab.classList.add("fixed"); vp.appendChild(lab); }
+    const cb = lab.querySelector("input"); cb.checked = dig;
+    const setL = () => { const l = document.documentElement.lang; lab.querySelector("span").textContent = DL[l] || DL.en; };
+    setL(); new MutationObserver(setL).observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+    cb.onchange = () => { dig = cb.checked; try { localStorage.setItem("svl-digital", dig ? "1" : "0"); } catch (e) {} onChange && onChange(dig); };
+  }
+  // small LCD panel: x = centre, y = top
+  function lcd(ctx, x, y, txt, opt = {}) {
+    const size = opt.size || 14; ctx.save(); ctx.font = `600 ${size}px 'IBM Plex Mono', ui-monospace, monospace`;
+    const tw = Math.max(ctx.measureText(txt).width, opt.minW || 0), w = tw + 20, h = size + 14, bx = x - w / 2;
+    ctx.shadowColor = "rgba(0,0,0,.3)"; ctx.shadowBlur = 6; ctx.shadowOffsetY = 2; ctx.fillStyle = "#1f2a33"; ctx.beginPath(); ctx.roundRect(bx, y, w, h, 6); ctx.fill(); ctx.shadowColor = "transparent";
+    const g = ctx.createLinearGradient(0, y + 3, 0, y + h - 3); g.addColorStop(0, "#d3e4cc"); g.addColorStop(1, "#b2cba9"); ctx.fillStyle = g; ctx.beginPath(); ctx.roundRect(bx + 4, y + 3, w - 8, h - 6, 3); ctx.fill();
+    ctx.fillStyle = "rgba(18,38,27,.12)"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(txt.replace(/[0-9]/g, "8"), x, y + h / 2 + 1);
+    ctx.fillStyle = "#12261b"; ctx.fillText(txt, x, y + h / 2 + 1);
+    if (opt.cap) { ctx.font = "600 9px 'IBM Plex Sans','Noto Sans Sinhala','Noto Sans Tamil',sans-serif"; ctx.fillStyle = opt.capCol || "#1c2a31"; ctx.textBaseline = "alphabetic"; ctx.fillText(opt.cap, x, y - 4); }
+    ctx.restore(); return { w, h };
+  }
+  return { parse, A, fromA, depth, mixA, sumA, liquid, Plumes, mountDigital, lcd, get digital() { return dig; } };
+})());
+
 // ---- Realistic apparatus rendering (glass shine, metal, liquids with depth, shadows, bench) ----
 const darker = (c, f) => mix(c, "#0b0b10", f);
 function softShadow(x, y, rx, ry, a = .38) { ctx.save(); ctx.translate(x, y); ctx.scale(1, ry / rx); const g = ctx.createRadialGradient(0, 0, 0, 0, 0, rx); g.addColorStop(0, `rgba(0,0,0,${a})`); g.addColorStop(1, "rgba(0,0,0,0)"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, rx, 0, 7); ctx.fill(); ctx.restore(); }
@@ -516,19 +594,21 @@ function drawRoom() {
   ctx.fillStyle = "rgba(0,0,0,.35)"; ctx.fillRect(L, BENCH + 18, R - L, 2);
 }
 function drawStand(withClamp = true) {
-  softShadow(360, BENCH + 2, 130, 7, .45);
-  // heavy base plate
-  let g = ctx.createLinearGradient(0, BENCH - 12, 0, BENCH); g.addColorStop(0, "#6b767c"); g.addColorStop(.25, "#4a555b"); g.addColorStop(1, "#2c3438"); ctx.fillStyle = g; rr(ctx, 250, BENCH - 12, 220, 12, 3); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,.25)"; ctx.fillRect(253, BENCH - 12, 214, 1.2);
-  // rod
-  ctx.fillStyle = metalGrad(295, 0, 305, 0); rr(ctx, 295, 26, 10, BENCH - 36, 4); ctx.fill(); ctx.fillStyle = "#c7ced2"; ctx.beginPath(); ctx.ellipse(300, 27, 5, 2, 0, 0, 7); ctx.fill();
+  softShadow(360, BENCH + 2, 140, 7, .5);
+  // cast-iron base plate with a bevelled top
+  let g = ctx.createLinearGradient(0, BENCH - 12, 0, BENCH); g.addColorStop(0, "#5d676d"); g.addColorStop(.18, "#3d464b"); g.addColorStop(1, "#23292c"); ctx.fillStyle = g; rr(ctx, 246, BENCH - 12, 228, 12, 3); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,.28)"; ctx.fillRect(249, BENCH - 12, 222, 1);
+  // slim polished rod with end cap
+  ctx.fillStyle = metalGrad(296, 0, 304, 0); rr(ctx, 296, 18, 8, BENCH - 28, 3); ctx.fill(); g = ctx.createLinearGradient(295, 0, 305, 0); g.addColorStop(0, "#3a4246"); g.addColorStop(.5, "#7b868c"); g.addColorStop(1, "#30383c"); ctx.fillStyle = g; rr(ctx, 295, 14, 10, 6, 2); ctx.fill();
   if (!withClamp) return;
-  // boss head + clamp arm
-  g = ctx.createLinearGradient(0, 108, 0, 132); g.addColorStop(0, "#8c969b"); g.addColorStop(.5, "#56616a"); g.addColorStop(1, "#3b444a"); ctx.fillStyle = g; rr(ctx, 289, 108, 22, 24, 3); ctx.fill();
-  ctx.fillStyle = metalGrad(0, 116, 0, 125); rr(ctx, 305, 116, BX - 305 - 8, 9, 3); ctx.fill();
-  ctx.fillStyle = "#2f373b"; ctx.beginPath(); ctx.arc(300, 140, 5, 0, 7); ctx.fill(); ctx.fillStyle = "#79848a"; ctx.fillRect(298, 132, 4, 8);
-  // jaws with cork pads around the burette
-  g = ctx.createLinearGradient(BX - 16, 0, BX + 16, 0); g.addColorStop(0, "#4b555b"); g.addColorStop(.5, "#9aa5ab"); g.addColorStop(1, "#4b555b"); ctx.fillStyle = g; rr(ctx, BX - 17, 108, 7, 26, 2); ctx.fill(); rr(ctx, BX + 10, 108, 7, 26, 2); ctx.fill();
-  ctx.fillStyle = "#b98a5a"; ctx.fillRect(BX - 11, 111, 3, 20); ctx.fillRect(BX + 8, 111, 3, 20);
+  // dark boss head with a brass thumb-screw
+  g = ctx.createLinearGradient(0, 108, 0, 132); g.addColorStop(0, "#3b4448"); g.addColorStop(1, "#1d2326"); ctx.fillStyle = g; rr(ctx, 289, 108, 22, 24, 3); ctx.fill(); ctx.strokeStyle = "rgba(255,255,255,.12)"; ctx.lineWidth = 1; rr(ctx, 289.5, 108.5, 21, 23, 3); ctx.stroke();
+  g = ctx.createRadialGradient(281, 118, 1, 282, 120, 6); g.addColorStop(0, "#ffe08a"); g.addColorStop(.6, "#d9a21f"); g.addColorStop(1, "#8a6410"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(282, 120, 5, 0, 7); ctx.fill(); ctx.fillStyle = "#8a6410"; ctx.fillRect(286, 118, 4, 4);
+  // polished arm
+  ctx.fillStyle = metalGrad(0, 116, 0, 125); rr(ctx, 311, 116, BX - 311 - 14, 9, 3); ctx.fill();
+  // clamp: dark jaws hugging the burette, with cork pads
+  g = ctx.createLinearGradient(BX - 18, 0, BX + 18, 0); g.addColorStop(0, "#1f2528"); g.addColorStop(.5, "#4a555b"); g.addColorStop(1, "#1f2528"); ctx.strokeStyle = g; ctx.lineWidth = 5; ctx.beginPath(); ctx.ellipse(BX, 120, 13, 6, 0, Math.PI * .95, Math.PI * 2.05); ctx.stroke();
+  ctx.fillStyle = g; rr(ctx, BX - 16, 110, 5, 24, 2); ctx.fill(); rr(ctx, BX + 11, 110, 5, 24, 2); ctx.fill();
+  ctx.fillStyle = "#c4783a"; ctx.fillRect(BX - 11, 112, 2.5, 20); ctx.fillRect(BX + 8.5, 112, 2.5, 20);
 }
 function drawTile(x, y, w, h) { softShadow(x + w / 2, y + h + 1, w * .55, 5, .35); let g = ctx.createLinearGradient(0, y, 0, y + h); g.addColorStop(0, "#ffffff"); g.addColorStop(1, "#dfe4e6"); ctx.fillStyle = g; rr(ctx, x, y, w, h, 2); ctx.fill(); ctx.fillStyle = "#c3cacd"; ctx.fillRect(x + 1, y + h - 3, w - 2, 3); }
 function glassBack(path) { ctx.save(); path(); ctx.closePath(); ctx.fillStyle = "rgba(214,232,240,.20)"; ctx.fill(); ctx.restore(); }
@@ -537,10 +617,7 @@ function glassFront(path, x0, x1, y0, y1) {
   g.addColorStop(0, "rgba(255,255,255,.10)"); g.addColorStop(.1, "rgba(255,255,255,.62)"); g.addColorStop(.17, "rgba(255,255,255,.12)"); g.addColorStop(.3, "rgba(255,255,255,0)"); g.addColorStop(.8, "rgba(255,255,255,0)"); g.addColorStop(.9, "rgba(255,255,255,.30)"); g.addColorStop(1, "rgba(120,150,165,.25)");
   ctx.fillStyle = g; ctx.fillRect(x0, y0, x1 - x0, y1 - y0); ctx.restore();
   ctx.save(); ctx.lineJoin = "round"; ctx.strokeStyle = "rgba(105,138,152,.95)"; ctx.lineWidth = 2.2; path(); ctx.stroke(); ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = .8; path(); ctx.stroke(); ctx.restore(); }
-function liquid(path, x0, x1, lvl, base, col, hatchOn) { ctx.save(); path(); ctx.closePath(); ctx.clip();
-  const g = ctx.createLinearGradient(0, lvl, 0, base); g.addColorStop(0, col); g.addColorStop(1, darker(col, .16)); ctx.fillStyle = g; ctx.fillRect(x0, lvl, x1 - x0, base - lvl + 2);
-  if (hatchOn) { ctx.fillStyle = hatch; ctx.fillRect(x0, lvl, x1 - x0, base - lvl + 2); }
-  ctx.fillStyle = "rgba(255,255,255,.45)"; ctx.fillRect(x0, lvl, x1 - x0, 1.6); ctx.fillStyle = "rgba(0,0,0,.10)"; ctx.fillRect(x0, lvl + 1.6, x1 - x0, 2); ctx.restore(); }
+function liquid(path, x0, x1, lvl, base, col, hatchOn, opt) { NL.liquid(ctx, path, x0, x1, lvl, base, col, Object.assign({ hatch: hatchOn ? hatch : null }, opt || {})); }
 function drawBottle(x, col, lab, sub, amber, noCap) {
   const yb = 444, path = () => { ctx.beginPath(); ctx.moveTo(x - 7, 368); ctx.lineTo(x - 7, 378); ctx.quadraticCurveTo(x - 18, 382, x - 18, 394); ctx.lineTo(x - 18, yb - 5); ctx.quadraticCurveTo(x - 18, yb, x - 13, yb); ctx.lineTo(x + 13, yb); ctx.quadraticCurveTo(x + 18, yb, x + 18, yb - 5); ctx.lineTo(x + 18, 394); ctx.quadraticCurveTo(x + 18, 382, x + 7, 378); ctx.lineTo(x + 7, 368); };
   softShadow(x, yb + 1, 22, 4, .4);
@@ -553,24 +630,40 @@ function drawBottle(x, col, lab, sub, amber, noCap) {
   if (noCap) return; const g = ctx.createLinearGradient(0, 356, 0, 370); g.addColorStop(0, "#5a6870"); g.addColorStop(.5, "#2f3a40"); g.addColorStop(1, "#1d2428"); ctx.fillStyle = g; rr(ctx, x - 8, 356, 16, 13, 2.5); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,.18)"; for (let i = 0; i < 4; i++) ctx.fillRect(x - 6 + i * 4, 358, 1, 9);
 }
 function drawBuretteReal(liqCol, light) {
-  const top = B0 - 22, bot = TAPY - 6, tube = () => { ctx.beginPath(); ctx.rect(BX - 8, top, 16, bot - top); };
+  const top = B0 - 22, bot = TAPY - 6, tube = () => { ctx.beginPath(); ctx.rect(BX - 7, top, 14, bot - top); };
   glassBack(tube);
-  if (S.filled) { const ly = burY(reading()); liquid(tube, BX - 8, BX + 8, ly, bot, liqCol, light); if (!light) { ctx.fillStyle = darker(liqCol, .2); ctx.fillRect(BX - 3, bot, 6, TIP - bot - 2); } }
-  for (let v = 0; v <= 50; v++) { const y = burY(v); ctx.strokeStyle = "rgba(20,30,36,.9)"; ctx.lineWidth = v % 5 ? .6 : 1.1; ctx.beginPath(); ctx.moveTo(BX + 8, y); ctx.lineTo(BX + 8 - (v % 5 ? 4 : 8), y); ctx.stroke(); if (v % 10 === 0) { ctx.fillStyle = T.ink; ctx.font = MONO(600, 8); ctx.textAlign = "left"; ctx.fillText(String(v), BX + 11, y + 3); } }
-  glassFront(tube, BX - 8, BX + 8, top, bot);
-  ctx.fillStyle = "rgba(230,240,245,.6)"; ctx.beginPath(); ctx.ellipse(BX, top, 8, 2.4, 0, 0, 7); ctx.fill(); ctx.strokeStyle = "rgba(105,138,152,.95)"; ctx.lineWidth = 1.2; ctx.stroke();
+  if (S.filled) { const ly = burY(reading()); liquid(tube, BX - 7, BX + 7, ly, bot, liqCol, light); }
+  // fine graduations: 0.5 cm³ minor, 1 cm³ medium, 5 cm³ major (numbers on the left, like a real burette)
+  for (let v2 = 0; v2 <= 100; v2++) { const v = v2 / 2, y = burY(v), major = v % 5 === 0, med = v % 1 === 0; ctx.strokeStyle = S.filled && !light && y > burY(reading()) ? "rgba(255,255,255,.8)" : T.ink; ctx.lineWidth = major ? 1.1 : .6; ctx.beginPath(); ctx.moveTo(BX - 7, y); ctx.lineTo(BX - 7 + (major ? 9 : med ? 6 : 3.5), y); ctx.stroke();
+    if (major) { ctx.fillStyle = T.ink; ctx.font = MONO(600, 9); ctx.textAlign = "right"; ctx.fillText(String(v), BX - 12, y + 3); } }
+  ctx.fillStyle = T.muted || T.ink; ctx.font = MONO(500, 6.5); ctx.textAlign = "left"; ctx.fillText("cm³ · 20 °C", BX + 10, top + 14);
+  glassFront(tube, BX - 7, BX + 7, top, bot);
+  ctx.fillStyle = "rgba(230,240,245,.55)"; ctx.beginPath(); ctx.ellipse(BX, top, 8.5, 2.4, 0, 0, 7); ctx.fill(); ctx.strokeStyle = "rgba(170,195,205,.95)"; ctx.lineWidth = 1.4; ctx.stroke();
   // jet below the tap
-  const jet = () => { ctx.beginPath(); ctx.moveTo(BX - 4, bot); ctx.lineTo(BX - 4, TIP - 10); ctx.lineTo(BX - 1.5, TIP); ctx.lineTo(BX + 1.5, TIP); ctx.lineTo(BX + 4, TIP - 10); ctx.lineTo(BX + 4, bot); };
+  const jet = () => { ctx.beginPath(); ctx.moveTo(BX - 3.5, bot); ctx.lineTo(BX - 3.5, TIP - 12); ctx.lineTo(BX - 1.3, TIP); ctx.lineTo(BX + 1.3, TIP); ctx.lineTo(BX + 3.5, TIP - 12); ctx.lineTo(BX + 3.5, bot); };
   if (S.filled && !light) { ctx.save(); jet(); ctx.closePath(); ctx.clip(); ctx.fillStyle = darker(liqCol, .2); ctx.fillRect(BX - 5, bot, 10, TIP - bot); ctx.restore(); }
   glassFront(jet, BX - 5, BX + 5, bot, TIP);
-  // PTFE stopcock: barrel + rotating key
-  let g = ctx.createLinearGradient(0, TAPY - 7, 0, TAPY + 7); g.addColorStop(0, "#e9eef0"); g.addColorStop(.5, "#b9c4c9"); g.addColorStop(1, "#8d999f"); ctx.fillStyle = g; rr(ctx, BX - 11, TAPY - 7, 22, 14, 4); ctx.fill();
-  ctx.save(); ctx.translate(BX, TAPY); ctx.rotate(S.tap * Math.PI / 180); g = ctx.createLinearGradient(0, -5, 0, 5); g.addColorStop(0, "#5aa0e6"); g.addColorStop(.45, "#2a6fb5"); g.addColorStop(1, "#174a80"); ctx.fillStyle = g; rr(ctx, -24, -4.5, 48, 9, 4.5); ctx.fill(); ctx.fillStyle = "rgba(255,255,255,.35)"; ctx.fillRect(-20, -3.5, 40, 1.4); ctx.restore();
-  g = ctx.createRadialGradient(BX - 2, TAPY - 2, 1, BX, TAPY, 7); g.addColorStop(0, "#6aa9e8"); g.addColorStop(1, "#163f6e"); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(BX, TAPY, 6.5, 0, 7); ctx.fill();
+  // white PTFE stopcock: glass barrel + key with a dark grip
+  let g = ctx.createLinearGradient(0, TAPY - 6, 0, TAPY + 6); g.addColorStop(0, "rgba(235,242,246,.95)"); g.addColorStop(.5, "rgba(190,205,212,.95)"); g.addColorStop(1, "rgba(150,168,176,.95)"); ctx.fillStyle = g; rr(ctx, BX - 10, TAPY - 6, 20, 12, 5); ctx.fill();
+  ctx.save(); ctx.translate(BX, TAPY); ctx.rotate(S.tap * Math.PI / 180);
+  g = ctx.createLinearGradient(0, -4, 0, 4); g.addColorStop(0, "#ffffff"); g.addColorStop(.55, "#e6eaec"); g.addColorStop(1, "#a9b4b9"); ctx.fillStyle = g; rr(ctx, -20, -3.5, 34, 7, 3.5); ctx.fill();
+  g = ctx.createLinearGradient(0, -5, 0, 5); g.addColorStop(0, "#56626a"); g.addColorStop(1, "#22292d"); ctx.fillStyle = g; rr(ctx, 14, -5, 12, 10, 2.5); ctx.fill(); ctx.restore();
+  ctx.fillStyle = "#e9eef0"; ctx.beginPath(); ctx.arc(BX, TAPY, 3.2, 0, 7); ctx.fill(); ctx.strokeStyle = "#8b979d"; ctx.lineWidth = .8; ctx.stroke();
 }
+const VOLH = [[0, 0], [50, 14], [100, 30], [150, 48], [200, 70], [250, 95]];
+function volH(V) { for (let i = 1; i < VOLH.length; i++) if (V <= VOLH[i][0]) { const [v0, h0] = VOLH[i - 1], [v1, h1] = VOLH[i]; return h0 + (h1 - h0) * (V - v0) / (v1 - v0); } return 95; }
 function conical(dx) { return () => flaskPath(dx); }
-function flaskGlass(dx, contents) { const p = conical(dx), base = BENCH - 22, nt = TIP - 6; softShadow(BX + dx, base + 1, 70, 6, .45); glassBack(p); contents(p); glassFront(p, BX - 70 + dx, BX + 70 + dx, nt, base);
-  ctx.strokeStyle = "rgba(105,138,152,.95)"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.ellipse(BX + dx, nt, 14.5, 3, 0, 0, 7); ctx.stroke(); ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = .8; ctx.beginPath(); ctx.ellipse(BX + dx, nt, 13, 2, 0, Math.PI, 0); ctx.stroke(); }
+function flaskGlass(dx, contents) { const p = conical(dx), base = BENCH - 22, nt = TIP - 6; softShadow(BX + dx, base + 1, 72, 6, .5); glassBack(p);
+  ctx.save(); p(); ctx.closePath(); ctx.fillStyle = "rgba(40,55,62,.10)"; ctx.fill(); ctx.restore(); contents(p);
+  // printed graduations on the glass (approximate volumes)
+  ctx.save(); [[50, "50"], [100, "100"], [150, "150"], [200, "200"]].forEach(([v, txt]) => { const h = volH(v), y = base - h, edge = BX + dx + 55 - h * (42 / 95); ctx.globalAlpha = .8; ctx.strokeStyle = T.ink; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(edge - 24, y); ctx.lineTo(edge - 12, y); ctx.stroke(); ctx.fillStyle = T.ink; ctx.font = MONO(600, 6.5); ctx.textAlign = "left"; ctx.fillText(txt, edge - 10, y + 2.5); });
+  ctx.fillStyle = T.ink; ctx.font = MONO(600, 6.5); ctx.textAlign = "center"; ctx.fillText("250 mL", BX + dx - 24, base - 5); ctx.restore();
+  glassFront(p, BX - 70 + dx, BX + 70 + dx, nt, base);
+  // long diagonal highlight on the cone and a vertical one on the neck
+  ctx.save(); p(); ctx.closePath(); ctx.clip(); const g = ctx.createLinearGradient(BX - 50 + dx, base, BX - 20 + dx, nt + 40); g.addColorStop(0, "rgba(255,255,255,.0)"); g.addColorStop(.25, "rgba(255,255,255,.55)"); g.addColorStop(1, "rgba(255,255,255,.08)"); ctx.strokeStyle = g; ctx.lineWidth = 2.6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(BX - 52 + dx, base - 10); ctx.lineTo(BX - 18 + dx, nt + 44); ctx.stroke();
+  ctx.strokeStyle = "rgba(255,255,255,.5)"; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(BX - 8 + dx, nt + 6); ctx.lineTo(BX - 8 + dx, nt + 28); ctx.stroke(); ctx.restore();
+  // flared rim
+  ctx.strokeStyle = "rgba(170,195,205,.95)"; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.ellipse(BX + dx, nt, 15.5, 3.2, 0, 0, 7); ctx.stroke(); ctx.strokeStyle = "rgba(255,255,255,.6)"; ctx.lineWidth = .8; ctx.beginPath(); ctx.ellipse(BX + dx, nt, 13.5, 2.1, 0, Math.PI, 0); ctx.stroke(); }
 function volFlask(vx, topY, markY, fillCol, lvl, hatchOn, crystals, crystalCol) {
   const vb = BENCH - 4, neckB = topY + (markY - topY) + 64, path = () => { ctx.beginPath(); ctx.moveTo(vx - 5, topY); ctx.lineTo(vx - 5, neckB); ctx.bezierCurveTo(vx - 42, neckB + 10, vx - 42, vb, vx - 24, vb); ctx.lineTo(vx + 24, vb); ctx.bezierCurveTo(vx + 42, vb, vx + 42, neckB + 10, vx + 5, neckB); ctx.lineTo(vx + 5, topY); };
   softShadow(vx, vb + 1, 34, 5, .42); glassBack(path);
@@ -625,7 +718,7 @@ function drawScene() {
   // lime water + delivery tube (carbonates only)
   if (sl.k === "c") { const lt = 330, lb = 456; softShadow(LX, BENCH + 1, 36, 4, .4); { const g = ctx.createLinearGradient(0, 444, 0, 456); g.addColorStop(0, "#e2b97c"); g.addColorStop(1, "#9c7742"); ctx.fillStyle = g; rr(ctx, LX - 30, 444, 60, 12, 2); ctx.fill(); ctx.fillRect(LX - 28, 456, 6, 14); ctx.fillRect(LX + 22, 456, 6, 14); }
     const lp = () => { ctx.beginPath(); ctx.moveTo(LX - 13, lt); ctx.lineTo(LX - 13, lb - 10); ctx.quadraticCurveTo(LX, lb + 6, LX + 13, lb - 10); ctx.lineTo(LX + 13, lt); };
-    glassBack(lp); ctx.save(); lp(); ctx.clip(); ctx.fillStyle = mix("#F3F6F8", "#EEF1F3", U.lime); ctx.fillRect(LX - 14, 366, 28, 100); if (U.lime < .5) { ctx.fillStyle = hatch; ctx.fillRect(LX - 14, 366, 28, 100); } if (U.lime > .02) { ctx.fillStyle = `rgba(255,255,255,${U.lime * .92})`; ctx.fillRect(LX - 14, 366, 28, 100); } ctx.restore();
+    glassBack(lp); liquid(lp, LX - 15, LX + 15, 366, lb + 6, "#F3F6F8", U.lime < .5, { rx: 13 }); if (U.lime > .02) { ctx.save(); lp(); ctx.clip(); const mg = ctx.createLinearGradient(0, 366, 0, lb); mg.addColorStop(0, `rgba(250,251,250,${U.lime * .8})`); mg.addColorStop(1, `rgba(238,241,243,${Math.min(1, U.lime * 1.05)})`); ctx.fillStyle = mg; ctx.fillRect(LX - 14, 366, 28, 100); ctx.fillStyle = `rgba(255,255,255,${U.lime * .5})`; for (let k = 0; k < 18 * U.lime; k++) { ctx.beginPath(); ctx.arc(LX - 10 + (k * 7) % 20, 372 + (k * 13) % 80 + Math.sin(time * 1.5 + k) * 2, 1, 0, 7); ctx.fill(); } ctx.restore(); }
     glassFront(lp, LX - 15, LX + 15, lt, lb + 6); pill(t("cvLime") + ": " + tt("c", limeName()), LX, 492, "center", 10.5);
     { const g = ctx.createLinearGradient(0, TT - 10, 0, TT + 3); g.addColorStop(0, "#d98a5a"); g.addColorStop(1, "#8f4a24"); ctx.fillStyle = g; rr(ctx, TX - 15, TT - 10, 30, 13, 3); ctx.fill(); }
     const endY = S.inLime ? 436 : 300; ctx.strokeStyle = "rgba(200,225,235,.95)"; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(TX, TT - 8); ctx.lineTo(TX, 196); ctx.lineTo(LX, 196); ctx.lineTo(LX, endY); ctx.stroke(); ctx.strokeStyle = "#7f99a4"; ctx.lineWidth = 1; ctx.stroke();
